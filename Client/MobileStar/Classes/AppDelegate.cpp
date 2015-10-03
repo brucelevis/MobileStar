@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-//#include "GameWorld.h"
+#include "GameWorld.h"
 #include "DefineHeader.h"
 
 #include "GameClient.h"
@@ -58,28 +58,28 @@ bool AppDelegate::applicationDidFinishLaunching() {
     
     ///////////////////////////로그인 서버로 접속
     
-    GameClient::GetInstance().Initialize();
-    
-    
-    
-    auto networkBGLayer = NetworkLayer::create();
-    networkBGLayer->retain();
-    
-    auto scene = LoginScene::createScene();
-    scene->addChild(networkBGLayer, 0, TAG_NETWORK_LAYER);
-    director->runWithScene(scene);
-    
-    GameClient::GetInstance().currentScene = LOGIN_SCENE_NOW;
-    
+//    GameClient::GetInstance().Initialize();
+//    
+//    
+//    
+//    auto networkBGLayer = NetworkLayer::create();
+//    networkBGLayer->retain();
+//    
+//    auto scene = LoginScene::createScene();
+//    scene->addChild(networkBGLayer, 0, TAG_NETWORK_LAYER);
+//    director->runWithScene(scene);
+//    
+//    GameClient::GetInstance().currentScene = LOGIN_SCENE_NOW;
+//    
     
     
 ////////////////////////////////// 게임 테스트용
     
-//    // create a scene. it's an autorelease object
-//    auto scene = GameWorld::createScene();
-//    
-//    // run
-//    director->runWithScene(scene);
+    // create a scene. it's an autorelease object
+    auto scene = GameWorld::createScene();
+    
+    // run
+    director->runWithScene(scene);
 ///////////////////////////////////
     
     return true;

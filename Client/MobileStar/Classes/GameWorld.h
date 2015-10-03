@@ -42,4 +42,6 @@ public:
     
     Layer* GetCameraLayer()const{ return m_pCameraLayer; }
     Layer* GetUILayer()const{ return m_pUILayer; }
+    
+    Vector<Unit*>& GetUnits(){return m_Units;}
 };

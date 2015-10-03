@@ -33,7 +33,7 @@ private:
     float Calculate(SparseGraph* G,int nd1, int nd2){
         NavGraphNode& n1 = G->GetNode(nd1);
         NavGraphNode& n2 = G->GetNode(nd2);
-        float Dist = pow(n1.getPosition().x - n2.getPosition().x,2) + pow(n1.getPosition().y - n2.getPosition().y,2);
+        float Dist = sqrt(pow(n1.getPosition().x - n2.getPosition().x,2) + pow(n1.getPosition().y - n2.getPosition().y,2));
         return Dist;
     }
 

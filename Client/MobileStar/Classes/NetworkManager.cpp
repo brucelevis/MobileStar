@@ -2,6 +2,9 @@
 #include "cocos2d.h"
 #include "NetworkLayer.h"
 #include "GameDefines.h"
+#include "GameWorld.h"
+#include "State_Unit.h"
+#include "PathPlanner.h"
 
 #define COCOS2D_DEBUG 1
 
@@ -84,14 +87,14 @@ void NetworkManager::DispatchToServer(){
         }
         
         //서버로 buffer를 보낸다.
-        NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-        layer->handler->gameSendClientNotify(nextBuffer,buffer);
+//        NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+//        layer->handler->gameSendClientNotify(nextBuffer,buffer);
         
-        //FetchFromServer(nextBuffer, buffer);
+        FetchFromServer(nextBuffer, buffer);
     }else{
-        NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-        layer->handler->gameSendClientNotify(0,buffer);
-        //FetchFromServer(0, buffer);
+        //NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+        //layer->handler->gameSendClientNotify(0,buffer);
+        FetchFromServer(0, buffer);
         
         //빈 메시지를 보낸다.
         FirstTask.push_back(TelegramWithPacket(FirstTaskPacket,NULL));
@@ -103,8 +106,8 @@ void NetworkManager::DispatchToServer(){
 
 //서버에서 상대방 클라이언트의 Message를 받은 후, Task에 전송한다.
 void NetworkManager::FetchFromServer(int length, const char* str){
-    printf("length : %d\n",length);
-//    printf("str : %s\n",str);
+
+
     int nextBuffer = 0;
     if(length > 0){
         while(nextBuffer < length){
@@ -166,13 +169,11 @@ void NetworkManager::PushBackMessage(Telegram* telegram){
 
 //Task에 쌓인 메시지들을 모두 수행한다.
 void NetworkManager::CarryOutMessages(){
-    
     //상대방에게 날아온 메시지가 비어있다면
     if(SecondTask.empty()){
         //통신이 두절
         return ;
     }
-    
     //현재 처리하는 패킷이 통신하는 패킷 번호보다 3보다 작거나 같을 때까지 모두 처리한다.
     while(FirstTask.front().packet <= FirstTaskPacket - 3)
     {
@@ -203,11 +204,14 @@ void NetworkManager::CarryOutFirstTask(int _packet){
                     case TelegramType::Move:
                     {
                         auto pTelegramMove = (TelegramMove*)pTelegram;
-                        printf("First UnitSize : %d\n",pTelegramMove->currentSize);
-                        for(int i=0;i<pTelegramMove->currentSize;i++){
-                            printf("First UnitCode : %d\n",pTelegramMove->subject[i]);
-                        }
-                        printf("First TileIndex : %d\n",pTelegramMove->tileIndex);
+                        
+                        //유닛을 이동시킨다.
+                        auto Units = m_pGameWorld->GetUnits();
+                        auto pUnit = Units.front();
+                        pUnit->GetFSM()->ChangeState(State_Move::Instance());
+                        pUnit->GetPathPlanner()->CreatePathToPosition(pTelegramMove->tileIndex);
+                        
+                        
                         delete pTelegramMove;
                     }
                         break;
@@ -238,11 +242,12 @@ void NetworkManager::CarryOutSecondTask(int _packet){
                     case TelegramType::Move:
                     {
                         auto pTelegramMove = (TelegramMove*)pTelegram;
-                        printf("Second UnitSize : %d\n",pTelegramMove->currentSize);
-                        for(int i=0;i<pTelegramMove->currentSize;i++){
-                            printf("Second UnitCode : %d\n",pTelegramMove->subject[i]);
-                        }
-                        printf("Second TileIndex : %d\n",pTelegramMove->tileIndex);
+                        
+                        //유닛을 이동시킨다.
+                        auto Units = m_pGameWorld->GetUnits();
+                        auto pUnit = Units.front();
+                        pUnit->GetFSM()->ChangeState(State_Move::Instance());
+                        pUnit->GetPathPlanner()->CreatePathToPosition(pTelegramMove->tileIndex);
                         
                         delete pTelegramMove;
                     }

@@ -24,23 +24,24 @@ GameWorld::GameWorld(){
     //맵 생성
     m_pMap = new GameMap();
     //m_pMap->LoadMap(TILE_WIDTH_NUM * TILE_SIZE / NODE_SIZE, TILE_HEIGHT_NUM * TILE_SIZE / NODE_SIZE);
-    m_pMap->LoadMap(5,3);
+    m_pMap->LoadMap(10,5);
     m_pCameraLayer->addChild(m_pMap);
     
     //마린 생성
-    auto pMarine = new Marine(this);
-    pMarine->setPosition(Vec2(10,10));
+    auto pMarine = new Marine(this,5);
     m_pCameraLayer->addChild(pMarine);
     m_Units.pushBack(pMarine);
     
     //카메라 설정 : 맵 크기 (64*256, 64*256)
-    CameraMgr->SetScreen(TILE_SIZE*TILE_WIDTH_NUM, TILE_SIZE*TILE_HEIGHT_NUM);
+    CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
     CameraMgr->SetMovePos(0,100);
+    
+    //네트워크 매니저 초기화
+    NetMgr->SetGameWorld(this);
 
 }
 
 GameWorld::~GameWorld(){
-    delete m_pMap;
 }
 
 void GameWorld::onEnter(){
@@ -59,7 +60,7 @@ void GameWorld::onEnter(){
     
     scheduleUpdate();
     
-    schedule(schedule_selector(GameWorld::updateNetwork),2);
+    schedule(schedule_selector(GameWorld::updateNetwork),0.083);
 }
 
 void GameWorld::update(float eTime){
@@ -71,12 +72,9 @@ void GameWorld::update(float eTime){
     for(auto pUnit : m_Units){
         pUnit->update(eTime);
     }
-    
-    //매 프레임마다 서버로부터 통신을 받아 패킷을 Task에 넣는다.
-    //NetMgr->FetchFromServer(3,"A");
 }
 
-//1초에 2번 실행된다.
+//1초에 4번 실행된다.
 void GameWorld::updateNetwork(float eTime){
     //DispatchTask에 쌓인 메시지를 서버로 보낸다.
     NetMgr->DispatchToServer();
@@ -88,12 +86,6 @@ bool GameWorld::TouchBegan(Touch* touch, Event* _event){
     for(auto pUnit : m_Units){
         pUnit->TouchBegan(touch, _event);
     }
-    
-    auto tel = new TelegramMove(150);
-    tel->PushBackUnitCode(111);
-    tel->PushBackUnitCode(222);
-    tel->PushBackUnitCode(333);
-    NetMgr->PushBackMessage(tel);
     
     return true;
 }

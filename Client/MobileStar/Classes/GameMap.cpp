@@ -46,14 +46,14 @@ bool GameMap::LoadMap(int tileX,int tileY)
     
     m_iTileX = tileX;
     m_iTileY = tileY;
-    m_iNodeX = tileX * (TILE_SIZE / NODE_SIZE);
-    m_iNodeY = tileY * (TILE_SIZE / NODE_SIZE);
+    m_iNodeX = tileX;
+    m_iNodeY = tileY;
     
     //타일 생성
     for(int i=0;i<m_iTileY;i++){
         for(int j=0;j<m_iTileX;j++){
             auto tile = new TileNode();
-            tile->setPosition(Vec2(TILE_SIZE / 2 + TILE_SIZE * j,TILE_SIZE / 2 + TILE_SIZE * i));
+            tile->setPosition(Vec2((j-i) * TILE_WIDTH_SIZE / 2,(j+i) * TILE_HEIGHT_SIZE / 2));
             addChild(tile);
             m_Tiles.push_back(tile);
         }
@@ -64,7 +64,7 @@ bool GameMap::LoadMap(int tileX,int tileY)
     for(int i=0;i<m_iNodeY;i++){
         for(int j=0;j<m_iNodeX;j++){
             NavGraphNode node;
-            node.setPosition(Vec2( NODE_SIZE + j * (NODE_SIZE*2), NODE_SIZE +  i * (NODE_SIZE*2) ));
+            node.setPosition(Vec2((j-i) * TILE_WIDTH_SIZE / 2,(j+i) * TILE_HEIGHT_SIZE / 2));
             m_pNavGraph->AddNode(node);
         }
     }
@@ -88,14 +88,20 @@ GameMap::CalculateCostToTravelBetweenNodes(int nd1, int nd2)const
 }
 
 
-
+int GameMap::GetTileIndexFromPosition(const Vec2& position){
+    Vec2 MovePos = position + Vec2(0,TILE_HEIGHT_SIZE/2);
+    int tileX = (MovePos.x / (TILE_WIDTH_SIZE/2) + MovePos.y / (TILE_HEIGHT_SIZE/2)) / 2;
+    int tileY = (MovePos.y / (TILE_HEIGHT_SIZE/2) - (MovePos.x / (TILE_WIDTH_SIZE/2))) / 2;
+    
+    return tileY * m_iTileX + tileX;
+}
 
 //공간을 분할한다.
 void GameMap::PartitionNavGraph()
 {
     if (m_pCellSpace) delete m_pCellSpace;
     
-    m_pCellSpace = new CellSpace<NavGraphNode*>(TILE_SIZE * TILE_WIDTH_NUM, TILE_SIZE * TILE_HEIGHT_NUM, TILE_WIDTH_NUM / 4, TILE_HEIGHT_NUM / 4, m_pNavGraph->NumNodes());
+    m_pCellSpace = new CellSpace<NavGraphNode*>(TILE_WIDTH_SIZE * TILE_WIDTH_NUM, TILE_HEIGHT_SIZE * TILE_HEIGHT_NUM, TILE_WIDTH_NUM / 4, TILE_HEIGHT_NUM / 4, m_pNavGraph->NumNodes());
     
     //셀 공간에 노드를 집어 넣는다.
     SparseGraph::NodeIterator NodeItr(*m_pNavGraph);

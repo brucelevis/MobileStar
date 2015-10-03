@@ -127,56 +127,56 @@ void SparseGraph::AddAllEdgeFromPresentNode(int cellX,int cellY){
             //위
             if( nodeIndex >= cellX ){
                 int nodeUp = nodeIndex - cellX;
-                GraphEdge newEdge(nodeIndex, nodeUp);
+                GraphEdge newEdge(nodeIndex, nodeUp,71.552);
                 AddEdge(newEdge);
             }
 
             //오른쪽
             if( nodeIndex % cellX < cellX - 1){
                 int nodeRight = nodeIndex + 1;
-                GraphEdge newEdge(nodeIndex, nodeRight);
+                GraphEdge newEdge(nodeIndex, nodeRight,71.552);
                 AddEdge(newEdge);
             }
             
             //왼쪽
             if( nodeIndex % cellX > 0 ){
                 int nodeLeft = nodeIndex - 1;
-                GraphEdge newEdge(nodeIndex,nodeLeft);
+                GraphEdge newEdge(nodeIndex,nodeLeft,71.552);
                 AddEdge(newEdge);
             }
             
             //아래
             if( nodeIndex / cellX < cellY - 1 ){
                 int nodeDown = nodeIndex + cellX;
-                GraphEdge newEdge(nodeIndex,nodeDown);
+                GraphEdge newEdge(nodeIndex,nodeDown,71.552);
                 AddEdge(newEdge);
             }
             
             //오른쪽 위
             if( nodeIndex >= cellX && nodeIndex % cellX < cellX -1){
                 int nodeUpRight = nodeIndex - cellX + 1;
-                GraphEdge newEdge(nodeIndex,nodeUpRight);
+                GraphEdge newEdge(nodeIndex,nodeUpRight, 64);
                 AddEdge(newEdge);
             }
             
             //오른쪽 아래
             if(nodeIndex % cellX < cellX -1 && nodeIndex / cellX < cellY -1){
                 int nodeDownRight = nodeIndex + cellX + 1;
-                GraphEdge newEdge(nodeIndex,nodeDownRight);
+                GraphEdge newEdge(nodeIndex,nodeDownRight, 128);
                 AddEdge(newEdge);
             }
             
             //왼쪽 위
             if( nodeIndex >= cellX && nodeIndex % cellX > 0){
                 int nodeUpLeft = nodeIndex - cellX - 1;
-                GraphEdge newEdge(nodeIndex,nodeUpLeft);
+                GraphEdge newEdge(nodeIndex,nodeUpLeft, 128);
                 AddEdge(newEdge);
             }
             
             //왼쪽 아래
             if( nodeIndex % cellX > 0 && nodeIndex / cellX < cellY - 1){
                 int nodeDownLeft = nodeIndex + cellX - 1;
-                GraphEdge newEdge(nodeIndex,nodeDownLeft);
+                GraphEdge newEdge(nodeIndex,nodeDownLeft, 64);
                 AddEdge(newEdge);
             }
         }

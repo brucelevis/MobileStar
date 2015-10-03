@@ -3,9 +3,12 @@
 #include "Telegram.h"
 #define NetMgr NetworkManager::Instance()
 
+class GameWorld;
 
 class NetworkManager{
 private:
+    GameWorld* m_pGameWorld;
+    
     //내 컴퓨터의 일들
     std::list<TelegramWithPacket> FirstTask;
     int FirstTaskPacket;
@@ -45,4 +48,7 @@ public:
     
     //Task에 쌓인 메시지들을 모두 수행한다.
     void CarryOutMessages();
+    
+    //GameWorld를 설정한다.
+    void SetGameWorld(GameWorld* pGame){m_pGameWorld = pGame;}
 };

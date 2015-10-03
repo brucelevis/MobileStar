@@ -9,7 +9,7 @@ private:
 	Sprite* m_pSprite;
 
 public:
-	Marine(GameWorld* pGame);
+	Marine(GameWorld* pGame, int tileIndex);
 	~Marine();
 
 	void update(float eTime);

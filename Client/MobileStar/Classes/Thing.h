@@ -19,13 +19,13 @@ protected:
 
 	Object_Type m_ObjectType;
 
-	//Y축 유닛 정렬 Float
-	float m_fYSortFloat;
-
+    //해당 Thing이 서있는 타일의 인덱스
+    int m_iTileIndex;
+    
 	//해당 유닛을 지워야 하나?
 	bool m_bErase;
 public:
-	Thing(GameWorld* pGame, Object_Type type);
+	Thing(GameWorld* pGame, Object_Type type, int tileIndex);
 	virtual ~Thing();
 
 	void update(float eTime);
@@ -42,7 +42,8 @@ public:
 	/*							게터세터 함수							*/
 	GameWorld* GetGameWorld()const{ return m_pGameWorld; }
 
-	float GetYSortFloat()const{ return m_fYSortFloat; }
+    void SetTileIndex(int _tileindex);
+	int GetTileIndex()const{ return m_iTileIndex; }
 
 	void SetErase(bool erase){ m_bErase = erase; }
 	bool IsErase()const{ return m_bErase; }

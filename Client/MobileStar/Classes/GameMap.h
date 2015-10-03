@@ -49,6 +49,9 @@ public:
     
     float   CalculateCostToTravelBetweenNodes(int nd1, int nd2)const;
     
+    //해당 노드의 인덱스 좌표를 얻어온다.
+    int GetTileIndexFromPosition(const Vec2& position);
+    
     //게터 세터 함수
     SparseGraph&                       GetNavGraph()const{return *m_pNavGraph;}
     CellSpace<NavGraphNode*>* const    GetCellSpace()const{return m_pCellSpace;}
