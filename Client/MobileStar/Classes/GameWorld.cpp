@@ -1,7 +1,5 @@
 #include "GameWorld.h"
 #include "AStarAlgorithm.h"
-#include "NetworkLayer.h"
-#include "GameClient.h"
 
 Scene* GameWorld::createScene()
 {
@@ -39,12 +37,10 @@ GameWorld::GameWorld(){
     CameraMgr->SetScreen(TILE_SIZE*TILE_WIDTH_NUM, TILE_SIZE*TILE_HEIGHT_NUM);
     CameraMgr->SetMovePos(0,100);
 
-    //유닛 고유 아이디 생성해줄 변수 초기화
-    m_uidGenerator = 0;
 }
 
 GameWorld::~GameWorld(){
- //   delete m_pMap;
+    delete m_pMap;
 }
 
 void GameWorld::onEnter(){
@@ -63,7 +59,7 @@ void GameWorld::onEnter(){
     
     scheduleUpdate();
     
-    schedule(schedule_selector(GameWorld::updateNetwork), 1);
+    schedule(schedule_selector(GameWorld::updateNetwork),2);
 }
 
 void GameWorld::update(float eTime){
@@ -99,13 +95,6 @@ bool GameWorld::TouchBegan(Touch* touch, Event* _event){
     tel->PushBackUnitCode(333);
     NetMgr->PushBackMessage(tel);
     
-    
-    
-//    pause();
-//    NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-//    layer->handler->gameSendFinishGameReq();
-    printf("TouchBegan");
-
     return true;
 }
 void GameWorld::TouchMoved(Touch* touch, Event* _event){
@@ -124,6 +113,4 @@ void GameWorld::TouchEnded(Touch* touch, Event* _event){
     for(auto pUnit : m_Units){
         pUnit->TouchEnded(touch, _event);
     }
-    
-    printf("TouchEnded");
 }

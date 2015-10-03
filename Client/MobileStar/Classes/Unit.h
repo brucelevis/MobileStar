@@ -5,16 +5,10 @@
 
 class GameWorld;
 
-enum UNIT_TYPE
-{
-    UNIT_TYPE_MARINE = 1,
-};
-
 class Unit : public Thing{
 private:
 	enum class Status{
 		Alive,
-        Move,
 		Dead,
 	};
 
@@ -23,22 +17,15 @@ protected:
 	struct Dir{
 		enum{
 			Front,
-            FrontLeft,
 			Left,
-            BackLeft,
 			Back,
-            BackRight,
-			Right,
-            FrontRight,
+			Right
 		};
 	};
 
 public:
 	//유닛의 방향을 담은 변수
 	int m_iDir;
-    
-    int16_t m_unitType;
-    
 protected:
 	Status	m_Status;			//유닛이 죽었나 살았나?
     
@@ -68,7 +55,7 @@ protected:
 	/*-----------------------------------------------------------------------------------*/
 
 public:
-	Unit(GameWorld* pGame, float hp, float mp, float speed, float attackSpeed, float dmg, float armor, int16_t unitType, int zPosition);
+	Unit(GameWorld* pGame, float hp, float mp, float speed, float attackSpeed, float dmg, float armor);
 	~Unit();
 
 	void update(float eTime);

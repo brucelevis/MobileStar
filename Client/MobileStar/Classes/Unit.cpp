@@ -2,8 +2,8 @@
 #include "GameWorld.h"
 #include "State_Unit.h"
 
-Unit::Unit(GameWorld* pGame, float hp, float mp, float speed, float attackSpeed, float dmg, float armor, int16_t unitType, int zPosition)
-: Thing(pGame, Object_Type::Unit, zPosition)
+Unit::Unit(GameWorld* pGame, float hp, float mp, float speed, float attackSpeed, float dmg, float armor)
+: Thing(pGame, Object_Type::Unit)
 , m_Status(Status::Alive)
 , m_fSpeed(speed)
 , m_fAttackSpeed(attackSpeed)
@@ -17,7 +17,6 @@ Unit::Unit(GameWorld* pGame, float hp, float mp, float speed, float attackSpeed,
 , m_fMpRegen(0.0f)
 , m_vHeading(Vec2(0.0f,-1.0f))
 , m_iDir(Dir::Front)
-, m_unitType(unitType)
 {
     //유한 상태 기계 초기화
     m_pFSM = new StateMachine<Unit>(this);

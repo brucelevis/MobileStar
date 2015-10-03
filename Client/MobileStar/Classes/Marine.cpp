@@ -3,7 +3,7 @@
 
 
 Marine::Marine(GameWorld* pGame)
- : Unit(pGame,100,0,150,50,6,1, UNIT_TYPE_MARINE, Z_POSITION_ON)
+ : Unit(pGame,100,0,150,50,6,1)
 {
 	m_pSprite = Sprite::create("Texture/Player.png");
 	addChild(m_pSprite);

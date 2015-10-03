@@ -19,9 +19,6 @@ private:
     GameMap* m_pMap;
     
     Sprite* m_pTile[30][30];
-    
-    //유닛 고유 아이디 생성해줄 변수
-    uint16_t m_uidGenerator;
 public:
     static cocos2d::Scene* createScene();
     

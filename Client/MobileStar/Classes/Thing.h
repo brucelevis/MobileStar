@@ -5,13 +5,6 @@ USING_NS_CC;
 
 class GameWorld;
 
-enum Z_POSITION
-{
-    Z_POSITION_UNDER,
-    Z_POSITION_ON,
-    Z_POSITION_OVER,
-};
-
 enum class Object_Type{
 	Null,
 	Unit,
@@ -26,15 +19,13 @@ protected:
 
 	Object_Type m_ObjectType;
 
-    int16_t m_uid;
-    int m_zPosition;
 	//Y축 유닛 정렬 Float
 	float m_fYSortFloat;
 
 	//해당 유닛을 지워야 하나?
 	bool m_bErase;
 public:
-	Thing(GameWorld* pGame, Object_Type type, int zPosition);
+	Thing(GameWorld* pGame, Object_Type type);
 	virtual ~Thing();
 
 	void update(float eTime);

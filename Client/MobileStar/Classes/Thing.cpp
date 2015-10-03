@@ -1,10 +1,9 @@
 #include "Thing.h"
 
-Thing::Thing(GameWorld* pGame, Object_Type type, int zPosition)
+Thing::Thing(GameWorld* pGame, Object_Type type)
  :m_pGameWorld(pGame)
  , m_ObjectType(type)
  ,m_bErase(false)
- ,m_zPosition(zPosition)
 {
 }
 Thing::~Thing(){

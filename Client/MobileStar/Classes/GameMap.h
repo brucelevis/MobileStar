@@ -21,8 +21,6 @@ private:
     //타일
     std::vector<TileNode*> m_Tiles;
     
-    TileNode** tileMap;
-    
     //이웃 탐색을 위한 셀 공간 탐색 Range
     float  m_fCellSpaceNeighborhoodRange;
     

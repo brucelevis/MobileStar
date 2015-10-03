@@ -38,7 +38,6 @@ public:
     }
     
     bool TouchBegan(Touch* touch, Event* _event){
-        printf("SMTB");
         if (m_pGlobalState)	m_pGlobalState->TouchBegan(m_pOwner, touch, _event);
         
         if (m_pCurrentState) m_pCurrentState->TouchBegan(m_pOwner, touch, _event);
@@ -56,8 +55,6 @@ public:
         if (m_pCurrentState) m_pCurrentState->TouchCancelled(m_pOwner, touch, _event);
     }
     void TouchEnded(Touch* touch, Event* _event){
-        printf("SMTE");
-        
         if (m_pGlobalState)	m_pGlobalState->TouchEnded(m_pOwner, touch, _event);
         
         if (m_pCurrentState) m_pCurrentState->TouchEnded(m_pOwner, touch, _event);
