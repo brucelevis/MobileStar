@@ -1,4 +1,3 @@
-*.xcodeproj
 *.txt
 Client/MobileStar/cocos2d/*
 Client/MobileStar/proj.android/*
