@@ -1,5 +1,6 @@
 #include "GameWorld.h"
 #include "AStarAlgorithm.h"
+#include "GameClient.h"
 
 Scene* GameWorld::createScene()
 {
@@ -30,7 +31,7 @@ GameWorld::GameWorld(){
     //마린 생성
     auto pMarine = new Marine(this,5);
     m_pCameraLayer->addChild(pMarine);
-    m_Units.pushBack(pMarine);
+    m_Units[pMarine->GetID()] = pMarine;
     
     //카메라 설정 : 맵 크기 (64*256, 64*256)
     CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
@@ -38,6 +39,14 @@ GameWorld::GameWorld(){
     
     //네트워크 매니저 초기화
     NetMgr->SetGameWorld(this);
+//    int UserNo = GameClient::GetInstance().userInfo->userNo;
+//    
+//    //플레이어 A인가?
+//    if(GameClient::GetInstance().gameUserInfo[0].userNo == UserNo){
+//        //0번째다.Net
+//    }else{
+//        
+//    }
 
 }
 
@@ -60,7 +69,7 @@ void GameWorld::onEnter(){
     
     scheduleUpdate();
     
-    schedule(schedule_selector(GameWorld::updateNetwork),0.083);
+    schedule(schedule_selector(GameWorld::updateNetwork),1/12.0);
 }
 
 void GameWorld::update(float eTime){
@@ -70,8 +79,10 @@ void GameWorld::update(float eTime){
     
     //유닛 업데이트
     for(auto pUnit : m_Units){
-        pUnit->update(eTime);
+        pUnit.second->update(eTime);
     }
+    
+    //
 }
 
 //1초에 4번 실행된다.
@@ -84,25 +95,25 @@ void GameWorld::updateNetwork(float eTime){
 }
 bool GameWorld::TouchBegan(Touch* touch, Event* _event){
     for(auto pUnit : m_Units){
-        pUnit->TouchBegan(touch, _event);
+        pUnit.second->TouchBegan(touch, _event);
     }
     
     return true;
 }
 void GameWorld::TouchMoved(Touch* touch, Event* _event){
     for(auto pUnit : m_Units){
-        pUnit->TouchMoved(touch, _event);
+        pUnit.second->TouchMoved(touch, _event);
     }
 }
 void GameWorld::TouchCancelled(Touch* touch, Event* _event){
     for(auto pUnit : m_Units){
-        pUnit->TouchCancelled(touch, _event);
+        pUnit.second->TouchCancelled(touch, _event);
     }
     
     TouchEnded(touch, _event);
 }
 void GameWorld::TouchEnded(Touch* touch, Event* _event){
     for(auto pUnit : m_Units){
-        pUnit->TouchEnded(touch, _event);
+        pUnit.second->TouchEnded(touch, _event);
     }
 }

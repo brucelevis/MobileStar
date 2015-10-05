@@ -40,7 +40,7 @@ protected:
 	float	m_fHpRegen;			//유닛의 HP 재생력
 	float	m_fMpRegen;			//유닛의 MP 재생력
 
-	/*----------------------------------- AI관련 변수 -----------------------------------*/
+	/*----------------------------------- AI관련 변수 --------------------------------*/
 
     //유한 상태 기계 머신
     StateMachine<Unit>* m_pFSM;
@@ -53,13 +53,20 @@ protected:
 
 
 	/*-----------------------------------------------------------------------------------*/
+    
+    /*----------------------------------- Network관련 변수 --------------------------------*/
+    
+    //현재 등록된 AutoTaskPacket;
+    int m_iAutoTaskPacket;
+    
+    /*-----------------------------------------------------------------------------------*/
 
 public:
 	Unit(GameWorld* pGame, int tileIndex, float hp, float mp, float speed, float attackSpeed, float dmg, float armor);
 	~Unit();
 
 	void update(float eTime);
-
+    
 	/*								터치 관련 함수								*/
     
     bool TouchBegan(Touch* touch, Event* _event);
@@ -67,6 +74,9 @@ public:
     void TouchEnded(Touch* touch, Event *_event);
     
 	/*								유틸리티 함수								*/
+    
+    //AutoTaskMove의 packet 값이 유효한지?
+    bool IsValidAutoTask(int packet){ return m_iAutoTaskPacket == packet; }
 
 	/*								게터세터 함수								*/
 
@@ -117,6 +127,8 @@ public:
 
 	Vec2	GetHeading()const{ return m_vHeading; }
     void	SetHeading(Vec2 new_heading);
+    
+    void    SetAutoTaskPacket(int packet){m_iAutoTaskPacket = packet;}
     
     StateMachine<Unit>* GetFSM()const{return m_pFSM;}
     

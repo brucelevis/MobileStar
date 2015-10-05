@@ -167,6 +167,11 @@ void NetworkManager::PushBackMessage(Telegram* telegram){
     DispatchTask.push_back(telegram);
 }
 
+//해당 AutoTask를 큐에 쌓는다.
+void NetworkManager::PushAutoTask(AutoTask* autotask){
+    AutoTaskQueue.push(autotask);
+}
+
 //Task에 쌓인 메시지들을 모두 수행한다.
 void NetworkManager::CarryOutMessages(){
     //상대방에게 날아온 메시지가 비어있다면
@@ -178,6 +183,9 @@ void NetworkManager::CarryOutMessages(){
     while(FirstTask.front().packet <= FirstTaskPacket - 3)
     {
         int CurrentPacket = FirstTask.front().packet;
+        
+        //먼저 AutoTask의 일을 처리한다.
+        CarryOutAutoTask(CurrentPacket);
         
         //내가 A 컴퓨터이면 내 일을 먼저 처리한다.
         if(m_iKindOfComputer == 0){
@@ -197,8 +205,9 @@ void NetworkManager::CarryOutFirstTask(int _packet){
     {
         if(_packet == FirstTask.front().packet){
             Telegram* pTelegram = FirstTask.front().tel;
+            int iPacket = FirstTask.front().packet;
+            
             if(pTelegram != NULL){
-                printf("FirstMessageType : %d\n",pTelegram->messageType);
                 
                 switch(pTelegram->messageType){
                     case TelegramType::Move:
@@ -207,10 +216,49 @@ void NetworkManager::CarryOutFirstTask(int _packet){
                         
                         //유닛을 이동시킨다.
                         auto Units = m_pGameWorld->GetUnits();
-                        auto pUnit = Units.front();
-                        pUnit->GetFSM()->ChangeState(State_Move::Instance());
-                        pUnit->GetPathPlanner()->CreatePathToPosition(pTelegramMove->tileIndex);
-                        
+                        for(int i=0;i<pTelegramMove->currentSize; i++){
+                            auto pUnit = Units[pTelegramMove->subject[i]];
+                            
+                            //만일 현재 위치와 TileIndex의 위치가 같으면 종료한다.
+                            if(pUnit->GetTileIndex() == pTelegramMove->tileIndex){
+                                pUnit->GetFSM()->ChangeState(State_Idle::Instance());
+                                break;
+                            }
+                            
+                            //Unit의 길을 찾는다.
+                            pUnit->GetPathPlanner()->CreatePathToPosition(pTelegramMove->tileIndex);
+                            
+                            //플래너의 Path를 가져온다.
+                            std::list<int>& Path = pUnit->GetPathPlanner()->GetPath();
+                            
+                            //만약 Path가 비었다면 Idle 상태로 전환한다.
+                            if(Path.empty()){
+                                pUnit->GetFSM()->ChangeState(State_Idle::Instance());
+                                break;
+                            }
+                            
+                            //Path의 front로 이동한다.
+                            int MoveIndex = Path.front();
+                            Path.pop_front();
+                            
+                            //AutoTask에 다음 Path.front를 넣는다.
+                            PushAutoTask(new AutoTaskMove(iPacket+11,pTelegramMove->subject[i]));
+                            pUnit->SetAutoTaskPacket(iPacket+11);
+                            
+                            //이동시킨다.
+                            pUnit->SetTileIndex(MoveIndex);
+                            Vec2 PathFrontPosition = pUnit->GetGameWorld()->GetMap()->GetNavGraph().GetNode(MoveIndex).getPosition();
+                            
+                            auto move = MoveTo::create(1.1f,PathFrontPosition);
+                            
+                            //액션을 실행한다.
+                            pUnit->stopAllActions();
+                            pUnit->runAction(move);
+                            
+                            //이동 상태로 전환시킨다.
+                            pUnit->GetFSM()->ChangeState(State_Move::Instance());
+
+                        }
                         
                         delete pTelegramMove;
                     }
@@ -236,7 +284,6 @@ void NetworkManager::CarryOutSecondTask(int _packet){
         if(_packet == SecondTask.front().packet){
             Telegram* pTelegram = SecondTask.front().tel;
             if(pTelegram != NULL){
-                printf("SecondMessageType : %d\n",pTelegram->messageType);
                 
                 switch(pTelegram->messageType){
                     case TelegramType::Move:
@@ -244,10 +291,10 @@ void NetworkManager::CarryOutSecondTask(int _packet){
                         auto pTelegramMove = (TelegramMove*)pTelegram;
                         
                         //유닛을 이동시킨다.
-                        auto Units = m_pGameWorld->GetUnits();
-                        auto pUnit = Units.front();
-                        pUnit->GetFSM()->ChangeState(State_Move::Instance());
-                        pUnit->GetPathPlanner()->CreatePathToPosition(pTelegramMove->tileIndex);
+//                        auto Units = m_pGameWorld->GetUnits();
+//                        auto pUnit = Units.begin()->second;
+//                        pUnit->GetPathPlanner()->CreatePathToPosition(pTelegramMove->tileIndex);
+//                        pUnit->GetFSM()->ChangeState(State_Move::Instance());
                         
                         delete pTelegramMove;
                     }
@@ -263,5 +310,62 @@ void NetworkManager::CarryOutSecondTask(int _packet){
         {
             break;
         }
+    }
+}
+
+//AutoTask의 일들을 처리한다.
+void NetworkManager::CarryOutAutoTask(int _packet){
+
+    while(!AutoTaskQueue.empty() &&
+          AutoTaskQueue.top()->packet == _packet){
+        
+        //일을 처리면서 Queue에서 빼낸다.
+        AutoTask* pTask = AutoTaskQueue.top();
+        AutoTaskQueue.pop();
+        
+        switch(pTask->messageType){
+            case AutoTaskType::Move:
+            {
+                auto pMove = (AutoTaskMove*)pTask;
+                //유닛 리스트를 얻어온다.
+                auto Units = m_pGameWorld->GetUnits();
+                
+                //해당 유닛의 포인터를 가져온다.
+                auto pUnit = Units[pMove->unitID];
+                
+                //만약 해당 유닛의 AutoTaskPacket과 동기화 되어 있지 않다면 실행시키지 않는다.
+                if(!pUnit->IsValidAutoTask(pMove->packet))
+                    break;
+                
+                //해당 유닛의 패스를 가져온다.
+                auto& Path = pUnit->GetPathPlanner()->GetPath();
+                
+                if(Path.empty()){
+                    pUnit->GetFSM()->ChangeState(State_Idle::Instance());
+                    break;
+                }
+                
+                //움직일 다음 칸 인덱스를 가져온다.
+                int MoveIndex = Path.front();
+                Path.pop_front();
+                
+                //다음 AutoTask를 등록한다.
+                PushAutoTask(new AutoTaskMove(pMove->packet+11,pMove->unitID));
+                pUnit->SetAutoTaskPacket(pMove->packet+11);
+                
+                //이동시킨다.
+                pUnit->SetTileIndex(MoveIndex);
+                Vec2 PathFrontPosition = pUnit->GetGameWorld()->GetMap()->GetNavGraph().GetNode(MoveIndex).getPosition();
+                
+                auto move = MoveTo::create(1.1f,PathFrontPosition);
+                
+                //액션을 실행한다.
+                pUnit->stopAllActions();
+                pUnit->runAction(move);
+                
+            }
+                break;
+        }
+        delete pTask;
     }
 }

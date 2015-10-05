@@ -69,6 +69,8 @@ bool PathPlanner::CreatePathToPosition(int TargetIndex){
     
     //탐색이 성공이면 참을 반환한다.
     if(!m_Path.empty()){
+        //근원 노드를 제거한다.
+        m_Path.pop_front();
         return true;
     }
     else

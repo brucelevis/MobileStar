@@ -6,6 +6,7 @@
 Thing::Thing(GameWorld* pGame, Object_Type type, int tileIndex)
  :m_pGameWorld(pGame)
  , m_ObjectType(type)
+ , m_iID(IDMgr->GetNextThingID())
  , m_iTileIndex(tileIndex)
  ,m_bErase(false)
 {

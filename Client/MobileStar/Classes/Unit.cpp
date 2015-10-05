@@ -17,6 +17,7 @@ Unit::Unit(GameWorld* pGame, int tileIndex, float hp, float mp, float speed, flo
 , m_fMpRegen(0.0f)
 , m_vHeading(Vec2(0.0f,-1.0f))
 , m_iDir(Dir::Front)
+, m_iAutoTaskPacket(-1)
 {
     //유한 상태 기계 초기화
     m_pFSM = new StateMachine<Unit>(this);

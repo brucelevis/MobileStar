@@ -83,6 +83,7 @@
 		7750D3491B9E7CAE00CF2DCB /* Unit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7750D3451B9E7CAE00CF2DCB /* Unit.cpp */; };
 		7750D3511B9E7DBE00CF2DCB /* MathManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7750D34E1B9E7DBE00CF2DCB /* MathManager.cpp */; };
 		7750D3551B9EBB9100CF2DCB /* Texture in Resources */ = {isa = PBXBuildFile; fileRef = 7750D3541B9EBB9100CF2DCB /* Texture */; };
+		77AEEC821BC01FF600F6B7D3 /* IDManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77AEEC801BC01FF600F6B7D3 /* IDManager.cpp */; settings = {ASSET_TAGS = (); }; };
 		8262943E1AAF051F00CB7CF7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8262943D1AAF051F00CB7CF7 /* Security.framework */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
@@ -246,6 +247,8 @@
 		7750D3561B9FF68800CF2DCB /* GraphNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphNode.h; sourceTree = "<group>"; };
 		7750D3581B9FF77500CF2DCB /* NavGraphNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = NavGraphNode.h; sourceTree = "<group>"; };
 		7750D35B1B9FF81B00CF2DCB /* GraphEdge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphEdge.h; sourceTree = "<group>"; };
+		77AEEC801BC01FF600F6B7D3 /* IDManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IDManager.cpp; sourceTree = "<group>"; };
+		77AEEC811BC01FF600F6B7D3 /* IDManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDManager.h; sourceTree = "<group>"; };
 		8262943D1AAF051F00CB7CF7 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -656,6 +659,7 @@
 		7750D34C1B9E7D9500CF2DCB /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				77AEEC7F1BC01F2200F6B7D3 /* IDManager */,
 				772960611BB3C5AE00516D0A /* NetworkManager */,
 				772E57011BB0F2EC0079EF4E /* CameraManager */,
 				772E57001BB0F2E40079EF4E /* MathManager */,
@@ -705,6 +709,15 @@
 				7750D35B1B9FF81B00CF2DCB /* GraphEdge.h */,
 			);
 			name = Edge;
+			sourceTree = "<group>";
+		};
+		77AEEC7F1BC01F2200F6B7D3 /* IDManager */ = {
+			isa = PBXGroup;
+			children = (
+				77AEEC801BC01FF600F6B7D3 /* IDManager.cpp */,
+				77AEEC811BC01FF600F6B7D3 /* IDManager.h */,
+			);
+			name = IDManager;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -878,6 +891,7 @@
 				77252AF11BA7EA260086351C /* AStarAlgorithm.cpp in Sources */,
 				77252AF91BA944D10086351C /* GameMap.cpp in Sources */,
 				6F86D8011BB3C8B300B3FFDA /* LoginScene.cpp in Sources */,
+				77AEEC821BC01FF600F6B7D3 /* IDManager.cpp in Sources */,
 				77252AF41BA9358E0086351C /* CellSpace.cpp in Sources */,
 				6F86D7FF1BB3C8B300B3FFDA /* GameClient.cpp in Sources */,
 				7750D3471B9E7CAE00CF2DCB /* Marine.cpp in Sources */,

@@ -1,6 +1,10 @@
 #pragma once
 #include <list>
+#include <vector>
+#include <functional>
+#include <queue>
 #include "Telegram.h"
+#include "AutoTask.h"
 #define NetMgr NetworkManager::Instance()
 
 class GameWorld;
@@ -17,6 +21,9 @@ private:
     std::list<TelegramWithPacket> SecondTask;
     int SecondTaskPacket;
     
+    //AutoTask 우선순위 큐
+    std::priority_queue<AutoTask*, std::vector<AutoTask*>, AutoTask::Compare > AutoTaskQueue;
+    
     //서버로 전송해야 할 일들
     std::list<Telegram*> DispatchTask;
     
@@ -28,6 +35,13 @@ private:
     
     //해당 패킷의 상대방 컴퓨터의 일을 처리한다.
     void CarryOutSecondTask(int _packet);
+    
+    //해당 AutoTask를 큐에 쌓는다.
+    void PushAutoTask(AutoTask* autotask);
+    
+    //AutoTask의 일들을 처리한다.
+    void CarryOutAutoTask(int _packet);
+    
 public:
     NetworkManager();
     ~NetworkManager();
@@ -51,4 +65,10 @@ public:
     
     //GameWorld를 설정한다.
     void SetGameWorld(GameWorld* pGame){m_pGameWorld = pGame;}
+    
+    //A 컴퓨터로 설정하기
+    void SetAComputer(){m_iKindOfComputer = 0;}
+    
+    //B 컴퓨터로 설정하기
+    void SetBComputer(){m_iKindOfComputer = 1;}
 };

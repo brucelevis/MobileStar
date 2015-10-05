@@ -1,9 +1,6 @@
 #include "GameMap.h"
 #include "NavGraphNode.h"
 
-//Static 멤버 변수 선언
-int GraphNode::NodeID;
-
 //생성자
 GameMap::GameMap()
 : m_pNavGraph(NULL)
@@ -60,7 +57,6 @@ bool GameMap::LoadMap(int tileX,int tileY)
     }
     
     //노드 생성
-    GraphNode::InitialNodeID();
     for(int i=0;i<m_iNodeY;i++){
         for(int j=0;j<m_iNodeX;j++){
             NavGraphNode node;
@@ -93,7 +89,12 @@ int GameMap::GetTileIndexFromPosition(const Vec2& position){
     int tileX = (MovePos.x / (TILE_WIDTH_SIZE/2) + MovePos.y / (TILE_HEIGHT_SIZE/2)) / 2;
     int tileY = (MovePos.y / (TILE_HEIGHT_SIZE/2) - (MovePos.x / (TILE_WIDTH_SIZE/2))) / 2;
     
-    return tileY * m_iTileX + tileX;
+    int Index = tileY * m_iTileX + tileX;
+    
+    if(Index < 0 || Index >= m_pNavGraph->NumNodes())
+        return -1;
+    else
+        return Index;
 }
 
 //공간을 분할한다.
