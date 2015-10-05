@@ -3,6 +3,7 @@
 #include "Marine.h"
 #include "AStarAlgorithm.h"
 #include "GameMap.h"
+#include <map>
 
 class GameWorld : public cocos2d::Layer
 {
@@ -14,7 +15,7 @@ private:
     Layer* m_pUILayer;
     
     //유닛들
-    Vector<Unit*> m_Units;
+    std::map<int,Unit*> m_Units;
     
     GameMap* m_pMap;
     
@@ -43,5 +44,5 @@ public:
     Layer* GetCameraLayer()const{ return m_pCameraLayer; }
     Layer* GetUILayer()const{ return m_pUILayer; }
     
-    Vector<Unit*>& GetUnits(){return m_Units;}
+    std::map<int,Unit*>& GetUnits(){return m_Units;}
 };

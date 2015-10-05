@@ -32,9 +32,9 @@ struct TelegramMove : public Telegram{
     //현재 subject에 저장된 유닛 수
     int8_t currentSize;
     uint16_t subject[12];
-    uint16_t tileIndex;
+    int16_t tileIndex;
     
-    TelegramMove(uint16_t _tileIndex)
+    TelegramMove(int16_t _tileIndex)
     : Telegram(TelegramType::Move)
     , currentSize(0)
     , tileIndex(_tileIndex)
@@ -50,8 +50,9 @@ struct TelegramMove : public Telegram{
 };
 
 //주체, 방향이 필요한 메시지 : Move
-struct TelegramOD : public Telegram
+class TelegramOD : public Telegram
 {
+public:
     int32_t subject;
     
     int8_t direction;
@@ -69,8 +70,9 @@ struct TelegramOD : public Telegram
 };
 
 //주체, 목적체가 필요한 메시지 : Attack, CreateComplete, CreateCancel
-struct TelegramOO : public Telegram
+class TelegramOO : public Telegram
 {
+public:
     int32_t subject;
     
     int32_t object;
@@ -88,8 +90,9 @@ struct TelegramOO : public Telegram
 };
 
 //주체, 목적체, 방향이 필요한 메시지 : Create
-struct TelegramOOD : public Telegram
+class TelegramOOD : public Telegram
 {
+public:
     int32_t subject;
     
     int32_t object;
@@ -114,7 +117,8 @@ struct TelegramOOD : public Telegram
 
 
 //패킷 번호가 붙여진 메시지
-struct TelegramWithPacket{
+class TelegramWithPacket{
+public:
     int packet;
     Telegram* tel;
     TelegramWithPacket(int pack,Telegram* t)
@@ -123,6 +127,4 @@ struct TelegramWithPacket{
     {
         
     }
-    
-    
 };

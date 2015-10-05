@@ -5,6 +5,7 @@
 #include "MathManager.h"
 #include "CameraManager.h"
 #include "NetworkManager.h"
+#include "IDManager.h"
 
 USING_NS_CC;
 

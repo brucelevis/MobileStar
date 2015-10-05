@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include <functional>
 
 struct AutoTaskType{
     enum {
@@ -8,7 +9,8 @@ struct AutoTaskType{
     };
 };
 
-struct AutoTask{
+class AutoTask{
+public:
     int messageType;
     int packet;
     
@@ -20,18 +22,26 @@ struct AutoTask{
     : messageType(messagetype)
     , packet(_packet)
     {}
+    
+    virtual ~AutoTask(){
+        
+    }
+    
+    struct Compare : public std::binary_function<AutoTask*, AutoTask*, bool>{
+        bool operator()(AutoTask* left, AutoTask* right)const{
+            return left->packet > right->packet;
+        }
+    };
 };
 
 //유닛 이동 메시지
-struct AutoTaskMove : public AutoTask{
-    //현재 subject에 저장된 유닛 수
+class AutoTaskMove : public AutoTask{
+public:
     int unitID;
-    int tileIndex;
     
-    AutoTaskMove(int _packet, int _unitID, int _tileIndex)
+    AutoTaskMove(int _packet, int _unitID)
     : AutoTask(AutoTaskType::Move,_packet)
     , unitID(_unitID)
-    , tileIndex(_tileIndex)
     {
         
     }

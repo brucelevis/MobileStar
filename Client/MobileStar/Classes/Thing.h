@@ -18,6 +18,9 @@ protected:
 	GameWorld* m_pGameWorld;
 
 	Object_Type m_ObjectType;
+    
+    //Thing의 고유 아이디
+    int m_iID;
 
     //해당 Thing이 서있는 타일의 인덱스
     int m_iTileIndex;
@@ -47,6 +50,8 @@ public:
 
 	void SetErase(bool erase){ m_bErase = erase; }
 	bool IsErase()const{ return m_bErase; }
+    
+    int GetID()const{return m_iID;}
 
 	/*							타입 관련 함수							*/
 	void SetObjectType(Object_Type type){ m_ObjectType = type; }
