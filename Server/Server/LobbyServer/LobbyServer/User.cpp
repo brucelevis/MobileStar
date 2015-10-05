@@ -17,7 +17,25 @@ bool User::initialize(SessionId_t* _sid, UserInfo* _userInfo)
     userState = USER_STATE_PROCESS_STATE;
     userLocation = USER_LOCATION_NO;
     locationObject = NULL;
+    
+    requestGameUserNo = INVALID_USER_NO;
+    responseGameUserNoVector.clear();
 	return true;
+}
+
+void User::removeResponseGameUserNo(int64_t _userNo)
+{
+    for(rguvItr = responseGameUserNoVector.begin(); rguvItr != responseGameUserNoVector.end(); )
+    {
+        if(*rguvItr == _userNo)
+        {
+            responseGameUserNoVector.erase(rguvItr);
+            
+            continue;
+        }
+        
+        rguvItr++;
+    }
 }
 
 User::~User()

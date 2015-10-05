@@ -69,6 +69,13 @@ public:
     void clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
     void clientHandleGetChannelListReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
     void clientHandleMoveChannelReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
+    void clientHandleGetUserListReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleGetUserInfoReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleRequestGameReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleRequestGameCancelReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleResponceGameYesReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleResponceGameNoReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
+    
     void clientHandleGetRoomListReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
     void clientHandleCreateRoomReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
     void clientHandleEnterRoomReq(ConnectInfo* connectInfo, const char* body, const int bodySize);

@@ -27,7 +27,7 @@ public:
 	int16_t getChannelNo() { return channelNo; }
     int getChannelNameLen() { return channelNameLen; }
 	const char* getChannelName() { return channelName; }
-	const std::list<User*> getUserList() { return userList; }
+	std::list<User*> getUserList() { return userList; }
 	~Channel();
 
 public:
@@ -39,6 +39,9 @@ private:
     int channelNameLen;
 	char channelName[MAX_CHANNEL_NAME_LEN + 1];
 	std::list<User*> userList;
+    
+    char notifyBuffer[1000];
+    char sendBuffer[10000];
 };
 
 
@@ -52,6 +55,7 @@ public:
 	int16_t getRandomChannelNo();
 	int16_t firstEnterUser(User* user);
     Channel* getChannelByIndex(int index) { return channelList.at(index); }
+//    void resetUserListViewAllChannel();
     int getChannelCount() { return (int)channelList.size(); }
 
 	~ChannelManager();

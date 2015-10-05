@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include "Network.h"
 
-static const char* IP_ADDRESS = "127.0.0.1";
+static const char* IP_ADDRESS = "1.234.65.217";
 
 enum SERVER_MODULE
 {
@@ -32,9 +32,20 @@ public:
 
     ////lobby
     void lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void lobbyHandleChannelInfoNotify(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleFirstConnectOk(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleGetChannelListRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleMoveChannelRes(ConnectInfo* connectInfo, const char* pData, int pDataSize);
+    
+    void lobbyHandleGetUserInfoRes(ConnectInfo* connectInfo, const char* pData, int pDataSize);
+    void lobbyHandleEnterUserInChannelNotify(ConnectInfo* connectInfo, const char* pData, int pDataSize);
+    void lobbyHandleLeaveUserInChannelNotify(ConnectInfo* connectInfo, const char* pData, int pDataSize);
+    void lobbyHandleRequestGameRes(ConnectInfo* connectInfo, const char* pData, int pDataSize);
+    void lobbyHandleRequestGameNotify(ConnectInfo* connectInfo, const char* pData, int pDataSize);
+    void lobbyHandleRequestGameCancelRes(ConnectInfo* connectInfo, const char* pData, int pDataSize);
+    void lobbyHandleResponseGameNoNotify(ConnectInfo* connectInfo, const char* pData, int pDataSize);
+    
+    
     void lobbyHandleGetRoomListRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleCreateRoomRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleEnterRoomRes(ConnectInfo* connectInfo, const char* data, int dataSize);
@@ -72,6 +83,15 @@ public:
     void lobbySendFirstConnectReq();
     void lobbySendGetChannelListReq();
     void lobbySendMoveChannelReq(int channelNo);
+    
+    void lobbySendGetUserInfoReq(int64_t userNo);
+    void lobbySendRequestGameReq(int64_t userNo);
+    void lobbySendRequestGameCancelReq();
+    void lobbySendResponseGameYesReq(int64_t userNo);
+    void lobbySendResponseGameNoReq(int64_t userNo);
+    
+
+    
     void lobbySendGetRoomListReq();
     void lobbySendCreateRoomReq(const char* roomName, int roomNameLen, int mapType);
     void lobbySendEnterRoomReq(int roomNo);
@@ -88,7 +108,7 @@ public:
     void gameSendMoveLobbyOk();
     
     
-    
+
 public:
     
     Network* network;

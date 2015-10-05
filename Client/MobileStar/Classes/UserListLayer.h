@@ -4,16 +4,17 @@
 
 #include "cocos2d.h"
 #include "UserInfoLayer.h"
+#include <vector>
 
 class UserListLayer : public cocos2d::Layer
 {
 public:
     virtual bool init();
     
-    void addNextUserList(int64_t userNo, int nickNameLen, const char* nickName);
-    void addPrevUserList(int64_t userNo, int nickNameLen, const char* nickName);
-
-    void ClickUserInfo(cocos2d::Ref* pSender);
+    void addUserViewInfo(int64_t userNo, int nickNameLen, const char* nickName);
+    void removeUserViewInfo(int64_t userNo);
+    
+    void clickUserInfo(cocos2d::Ref* pSender);
 
 
 //	void SetUserList(int nickNameCount, NickNameInfo* nickNameInfo);
@@ -26,7 +27,10 @@ public:
 //	void doClick3(cocos2d::Ref* pSender);
 
 //	void ClickUserLabel(cocos2d::Object* pSender, cocos2d::LabelTTF* label);
-    
+    virtual bool onTouchBegan(Touch* touch, Event* _event);
+    virtual void onTouchMoved(Touch* touch, Event* _event);
+    virtual void onTouchCancelled(Touch* touch, Event* _event);
+    virtual void onTouchEnded(Touch* touch, Event *_event);
     
 	CREATE_FUNC(UserListLayer);
 
@@ -37,7 +41,8 @@ public:
     int nextAddUserNumber;
     int downCount;
     
-    UserInfoLayer* userInfoLayerList[MAX_USER_COUNT_IN_CHANNEL + 10];
+    std::vector<UserInfoLayer*> userInfoLayerList;
+//    UserInfoLayer* userInfoLayerList[MAX_USER_COUNT_IN_CHANNEL];
 };
 
 #endif //__USER_LIST_LAYER_H__

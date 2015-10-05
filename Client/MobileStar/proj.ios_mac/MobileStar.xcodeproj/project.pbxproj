@@ -50,6 +50,8 @@
 		521A8EAA19F11F5000D177D7 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 521A8EA819F11F5000D177D7 /* fonts */; };
 		52B47A471A53D09C004E4C60 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52B47A461A53D09B004E4C60 /* Security.framework */; };
 		6F126F871BBD27120019E028 /* ResultScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F126F851BBD27120019E028 /* ResultScene.cpp */; settings = {ASSET_TAGS = (); }; };
+		6F6BEE721BC29202007C097C /* user_view_info.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F6BEE711BC29202007C097C /* user_view_info.png */; settings = {ASSET_TAGS = (); }; };
+		6F7368C21BC2516200137613 /* CustomPopUp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F7368C01BC2516200137613 /* CustomPopUp.cpp */; settings = {ASSET_TAGS = (); }; };
 		6F86D7FF1BB3C8B300B3FFDA /* GameClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F86D7F41BB3C8B300B3FFDA /* GameClient.cpp */; settings = {ASSET_TAGS = (); }; };
 		6F86D8001BB3C8B300B3FFDA /* LobbyScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F86D7F71BB3C8B300B3FFDA /* LobbyScene.cpp */; settings = {ASSET_TAGS = (); }; };
 		6F86D8011BB3C8B300B3FFDA /* LoginScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F86D7F91BB3C8B300B3FFDA /* LoginScene.cpp */; settings = {ASSET_TAGS = (); }; };
@@ -172,7 +174,10 @@
 		52B47A461A53D09B004E4C60 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.1.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		6F126F851BBD27120019E028 /* ResultScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ResultScene.cpp; sourceTree = "<group>"; };
 		6F126F861BBD27120019E028 /* ResultScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResultScene.h; sourceTree = "<group>"; };
+		6F6BEE711BC29202007C097C /* user_view_info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = user_view_info.png; sourceTree = "<group>"; };
 		6F7368BE1BBF5F6200137613 /* AutoTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoTask.h; sourceTree = "<group>"; };
+		6F7368C01BC2516200137613 /* CustomPopUp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CustomPopUp.cpp; sourceTree = "<group>"; };
+		6F7368C11BC2516200137613 /* CustomPopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomPopUp.h; sourceTree = "<group>"; };
 		6F86D7F41BB3C8B300B3FFDA /* GameClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameClient.cpp; sourceTree = "<group>"; };
 		6F86D7F51BB3C8B300B3FFDA /* GameClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameClient.h; sourceTree = "<group>"; };
 		6F86D7F61BB3C8B300B3FFDA /* GameDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameDefines.h; sourceTree = "<group>"; };
@@ -363,6 +368,7 @@
 		46880B7519C43A67006E1F66 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6F6BEE711BC29202007C097C /* user_view_info.png */,
 				6F86D80F1BB3D71800B3FFDA /* back_ground_01.png */,
 				6F86D8101BB3D71800B3FFDA /* btn_makeroom_01.png */,
 				6F86D8111BB3D71800B3FFDA /* china_btn.png */,
@@ -467,6 +473,8 @@
 		6F86D7F31BB3C73E00B3FFDA /* Others */ = {
 			isa = PBXGroup;
 			children = (
+				6F7368C01BC2516200137613 /* CustomPopUp.cpp */,
+				6F7368C11BC2516200137613 /* CustomPopUp.h */,
 				6F126F851BBD27120019E028 /* ResultScene.cpp */,
 				6F126F861BBD27120019E028 /* ResultScene.h */,
 				6F86D80C1BB3D24400B3FFDA /* UserInfoLayer.cpp */,
@@ -815,6 +823,7 @@
 				5087E78517EB970100C73F5D /* Icon-72.png in Resources */,
 				6F86D81C1BB3D71800B3FFDA /* europe_btn.png in Resources */,
 				521A8E6519F0C34300D177D7 /* Default-736h@3x.png in Resources */,
+				6F6BEE721BC29202007C097C /* user_view_info.png in Resources */,
 				521A8EA919F11F5000D177D7 /* fonts in Resources */,
 				50EF62A317ECD613001EB2F8 /* Icon-50.png in Resources */,
 				5087E78017EB970100C73F5D /* Icon-114.png in Resources */,
@@ -873,6 +882,7 @@
 				6F86D7FF1BB3C8B300B3FFDA /* GameClient.cpp in Sources */,
 				7750D3471B9E7CAE00CF2DCB /* Marine.cpp in Sources */,
 				6F86D8031BB3C8B300B3FFDA /* NetworkLayer.cpp in Sources */,
+				6F7368C21BC2516200137613 /* CustomPopUp.cpp in Sources */,
 				772E56FF1BB0600A0079EF4E /* State_Unit.cpp in Sources */,
 				6F86D8021BB3C8B300B3FFDA /* Network.cpp in Sources */,
 				503AE10217EB989F00D1A890 /* RootViewController.mm in Sources */,

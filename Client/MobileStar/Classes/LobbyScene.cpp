@@ -91,7 +91,8 @@ bool LobbyScene::init()
 	menu = Menu::create(tribeChina, tribeEurope, tribeUSA, tribeRandom, quickPlayButton, NULL);
     menu->setAnchorPoint(Vec2::ZERO);
 	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu, 100, TAG_MENU);
+    
+    this->addChild(menu, 100, TAG_MENU);
     
     GameClient::GetInstance().tribe = TRIBE_TYPE_CHINA;
     
@@ -133,7 +134,7 @@ bool LobbyScene::init()
     userListLayer = UserListLayer::create();
     userListLayer->setAnchorPoint(Vec2(0, 0));
     userListLayer->setPosition(Vec2(0, 0));
-    userListLayer->setContentSize(Size(SCREEN_WIDTH / 4, 1000000));
+    userListLayer->setContentSize(Size(SCREEN_WIDTH / 4, SCREEN_HEIGHT * 2));
     
     
     scrollView = ScrollView::create(Size(SCREEN_WIDTH / 4, SCREEN_HEIGHT), userListLayer);    // ¿ßø°º≠ ¡§¿««— container∏¶ ªÁøÎ
@@ -155,8 +156,8 @@ bool LobbyScene::init()
     //	scrollView->setContentOffset(Point(0, -1 * container->getContentSize().height), false);
 
     
-    for(int i = 0; i  < 20; i++)
-    addNextUserList(i, 5, "test1");
+//    for(int i = 0; i  < 20; i++)
+//    addNextUserList(i, 5, "test1");
     
 /*
 	auto moveChannel = MenuItemImage::create(
@@ -236,6 +237,23 @@ bool LobbyScene::init()
 	requestListLayer->SetRequestList();
 
 */
+    
+    
+    
+    
+    
+    EventDispatcher* dispatcher = Director::getInstance()->getEventDispatcher();
+    //터치 위치를 알려주는 리스너. 단일 터치.
+    //바로 만들어쓰는 식별자는 auto를 사용한다.
+    auto positionListener = EventListenerTouchOneByOne::create();
+    //zOrder에 따라 밑에 깔린애도 동작할지 아닐지를 결정한다.
+    positionListener->setSwallowTouches(true);
+    //콜백 함수 대입
+    positionListener->onTouchBegan = CC_CALLBACK_2(LobbyScene::onTouchBegan, this);
+    //디스패처를 이용해 객체와 리스너를 이어준다. 화면 전체를 터치할 수 있게 만들어야 하므로 객체는 this
+    dispatcher->addEventListenerWithSceneGraphPriority(positionListener, this);
+
+    
 	return true;
 }
 
@@ -254,14 +272,14 @@ void LobbyScene::menuCloseCallback(Ref* pSender)
 }
 
 
-void LobbyScene::addNextUserList(int64_t userNo, int nickNameLen, const char* nickName)
+void LobbyScene::addUserInfo(int64_t userNo, int nickNameLen, const char* nickName)
 {
-    userListLayer->addNextUserList(userNo, nickNameLen, nickName);
+    userListLayer->addUserViewInfo(userNo, nickNameLen, nickName);
 }
 
-void LobbyScene::addPrevUserList(int64_t userNo, int nickNameLen, const char* nickName)
+void LobbyScene::removeUserInfo(int64_t userNo)
 {
-
+    userListLayer->removeUserViewInfo(userNo);
 }
 
 
@@ -412,7 +430,33 @@ void LobbyScene::waitToStart()
 
 
 
+bool LobbyScene::onTouchBegan(Touch* touch, Event* _event){
+    printf("onTouchBegan");
 
+    Rect userListRect = Rect(0,0,SCREEN_WIDTH / 4, SCREEN_HEIGHT);
+    Point point = Point(touch->getLocation().x, touch->getLocation().y);
+    if(userListRect.containsPoint(point))
+    {
+        printf("begin");
+        
+        Vec2 vec = this->convertToNodeSpace(Vec2(touch->getLocation().x, touch->getLocation().y));
+        
+        printf("begin %f %f\n", vec.x, vec.y);
+        
+        userListLayer->onTouchBegan(touch, _event);
+    }
+    
+    return true;
+}
+void LobbyScene::onTouchMoved(Touch* touch, Event* _event){
+    
+}
+void LobbyScene::onTouchCancelled(Touch* touch, Event* _event){
+    
+}
+void LobbyScene::onTouchEnded(Touch* touch, Event *_event){
+    printf("end ");
+}
 
 
 

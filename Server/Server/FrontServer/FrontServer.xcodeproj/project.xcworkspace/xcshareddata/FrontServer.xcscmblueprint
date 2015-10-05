@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "6C0971D12ACAD8D56B9B56DB578DDE7737B275BE",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "249872699FC42B75C344AC24DF80CF9DFC954CC8" : 0,
+    "6C0971D12ACAD8D56B9B56DB578DDE7737B275BE" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "F65EA763-16F8-4A5A-9782-7EF59ED4E38E",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "249872699FC42B75C344AC24DF80CF9DFC954CC8" : "MoblieStar",
+    "6C0971D12ACAD8D56B9B56DB578DDE7737B275BE" : "MobileStar\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "FrontServer",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Server\/Server\/FrontServer\/FrontServer.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/kim-yong-chan\/MoblieStar.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "249872699FC42B75C344AC24DF80CF9DFC954CC8"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/kimeyongchan\/MobileStar.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6C0971D12ACAD8D56B9B56DB578DDE7737B275BE"
+    }
+  ]
+}

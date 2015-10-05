@@ -9,89 +9,137 @@ USING_NS_CC;
 
 bool UserListLayer::init()
 {
-	Size size = Director::sharedDirector()->getWinSize();
     if ( !Layer::init() )
     {
         return false;
     }
 	
-//    Size visibleSize = Director::getInstance()->getVisibleSize();
-//    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-//	backgroundImage = Sprite::create("background_01.png");
-//	backgroundImage->setAnchorPoint(ccp(0, 0));
-//	backgroundImage->setPosition(0, 0);
-//	this->addChild(backgroundImage, 0);
-//
-//	closeItem = MenuItemImage::create(
-//                                           "btn_x_01.png",
-//                                           "btn_x_01.png",
-//										   CC_CALLBACK_1(UserListLayer::menuCloseCallback, this));
-//
-//	closeItem->setPosition(550, 1030);
-//
-//    menu = Menu::create(closeItem, NULL);
-//    menu->setPosition(Vec2::ZERO);
-//	this->addChild(menu, 100, TAG_MENU);
 
     userCount = 0;
     nextAddUserNumber = 0;
     downCount = 0;
     
-    for(int i = 0; i < MAX_USER_COUNT_IN_CHANNEL + 10; i++)
+ //   MenuItemImage* bgItem[MAX_USER_COUNT_IN_CHANNEL];
+    
+    for(int i = 0; i < MAX_USER_COUNT_IN_CHANNEL; i++)
     {
-        userInfoLayerList[i] = UserInfoLayer::create();
-        userInfoLayerList[i]->retain();
-        userInfoLayerList[i]->SetUserInfo(INVALID_USER_NO, 0, NULL);
+        UserInfoLayer * userInfoLayer = UserInfoLayer::create();
+        userInfoLayer->retain();
+        userInfoLayer->SetUserInfo(INVALID_USER_NO, 0, NULL);
+        userInfoLayer->setAnchorPoint(Vec2(0, 0));
+        userInfoLayerList.push_back(userInfoLayer);
         
+        
+        
+        
+//        
+//        bgItem[i] = MenuItemImage::create(
+//                                           "user_view_info.png",
+//                                           "user_view_info.png",
+//                                           CC_CALLBACK_1(UserListLayer::clickUserInfo, this));
+//        bgItem[i]->retain();
+//        
+//        bgItem[i]->setPosition(Vec2(getContentSize().width / 2, getContentSize().height - (nextAddUserNumber+1) * (SCREEN_HEIGHT / 10)));
     }
+    
+//    menu = Menu::create(bgItem[0], bgItem[1], bgItem[2], NULL);
+//    menu->setAnchorPoint(Vec2::ZERO);
+//    menu->setPosition(Vec2::ZERO);
+    
+//    this->addChild(menu, 100, TAG_MENU);
+
     
     return true;
 }
 
-
-void UserListLayer::addNextUserList(int64_t userNo, int nickNameLen, const char* nickName)
+void UserListLayer::addUserViewInfo(int64_t userNo, int nickNameLen, const char* nickName)
 {
-    userInfoLayerList[nextAddUserNumber]->SetUserInfo(userNo, nickNameLen, nickName);
-    userInfoLayerList[nextAddUserNumber]->setAnchorPoint(Vec2(0, 1));
+    UserInfoLayer * userInfoLayer = userInfoLayerList.front();
+    userInfoLayerList.erase(userInfoLayerList.begin());
+    userInfoLayer->SetUserInfo(userNo, nickNameLen, nickName);
+//    userInfoLayer->setScale(((float)SCREEN_WIDTH / 4) / SCREEN_WIDTH, ((float)SCREEN_HEIGHT / 10) / SCREEN_HEIGHT);
+    userInfoLayer->setPosition(Vec2(getContentSize().width / 2, getContentSize().height - (nextAddUserNumber) * (SCREEN_HEIGHT / 10)));
     
-    userInfoLayerList[nextAddUserNumber]->setPosition(Vec2(getContentSize().width / 2,  getContentSize().height - (downCount * (SCREEN_HEIGHT / 10))));
-//    MenuItem* item = MenuItem::create(userInfoLayerList[nextAddUserNumber], CC_CALLBACK_1(UserListLayer::ClickUserInfo, this, nextAddUserNumber));
-//    item->setAnchorPoint(ccp(0, 0));
-//    item->setPosition(0, 1000 - i * 100);
+    userInfoLayer->layerPosition = nextAddUserNumber;
+    //    MenuItem* item = MenuItem::create(userInfoLayerList[nextAddUserNumber], CC_CALLBACK_1(UserListLayer::ClickUserInfo, this, nextAddUserNumber));
+    //    item->setAnchorPoint(ccp(0, 0));
+    //    item->setPosition(0, 1000 - i * 100);
     
-//    DebugLog("%s", nickNameInfo[i].nickName);
-//    
-//    menu->addChild(item);
+    //    DebugLog("%s", nickNameInfo[i].nickName);
+    //
+    //    menu->addChild(item);
     
-    this->removeChildByTag(nextAddUserNumber);
+//    this->removeChildByTag(nextAddUserNumber);
     
-    this->addChild(userInfoLayerList[nextAddUserNumber], 1, nextAddUserNumber);
-
+    
+    this->addChild(userInfoLayer, 1, (int)userNo);
+    
     nextAddUserNumber++;
+}
+
+void UserListLayer::removeUserViewInfo(int64_t userNo)
+{
+    std::vector<UserInfoLayer*>::iterator itr = userInfoLayerList.begin();
     
-    if(nextAddUserNumber >= MAX_USER_COUNT_IN_CHANNEL + 10)
+    UserInfoLayer* userInfoLayer = (UserInfoLayer*)getChildByTag((int)userNo);
+    if(userInfoLayer->userNo == userNo)
     {
-        nextAddUserNumber = 0;
+        userInfoLayerList.push_back(userInfoLayer);
+        removeChild(userInfoLayer);
     }
     
-    downCount++;
-}
-
-
-void UserListLayer::addPrevUserList(int64_t userNo, int nickNameLen, const char* nickName)
-{
+    nextAddUserNumber--;
     
+    const Vector<Node*> childVector = getChildren();
+    
+    for(int i = 0; i < nextAddUserNumber; i++)
+    {
+        ((UserInfoLayer*)childVector.at(i))->setPosition(Vec2(getContentSize().width / 2, getContentSize().height - i * (SCREEN_HEIGHT / 10)));
+        ((UserInfoLayer*)childVector.at(i))->layerPosition = i;
+    }
 }
 
 
-
-void UserListLayer::ClickUserInfo(cocos2d::Ref *pSender)
+void UserListLayer::clickUserInfo(cocos2d::Ref *pSender)
 {
     printf("click user Info %d\n", 1);
 }
 
 
 
+bool UserListLayer::onTouchBegan(Touch* touch, Event* _event){
+    
+    Vec2 vec = this->convertToNodeSpace(Vec2(touch->getLocation().x, touch->getLocation().y));
+    
+    printf("begin %f %f\n", vec.x, vec.y);
+    
+    int position = 19 - ((int)(vec.y / (SCREEN_HEIGHT / 10)));
+    
+    if(position >= nextAddUserNumber)
+    {
+        printf("??");
+        return false;
+    }
+    
+    
+    const Vector<Node*> childVector = getChildren();
+    
+    
+    
+    UserInfoLayer* userInfoLayer = ((UserInfoLayer*)childVector.at(position));
+    
+    printf("%lld", userInfoLayer->userNo);
+
+    return true;
+}
+void UserListLayer::onTouchMoved(Touch* touch, Event* _event){
+    
+}
+void UserListLayer::onTouchCancelled(Touch* touch, Event* _event){
+    
+}
+void UserListLayer::onTouchEnded(Touch* touch, Event *_event){
+}
 
 
 

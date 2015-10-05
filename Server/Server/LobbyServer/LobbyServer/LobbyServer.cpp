@@ -187,6 +187,14 @@ void LobbyServer::run()
         return ;
     }
     
+    UserListInChannelTimer* ulict = new UserListInChannelTimer(2, 1000);
+    if(network->AddTimer(ulict) == false)
+    {
+        return ;
+    }
+    
+    
+    
     network->ProcessEvent();
 }
 
