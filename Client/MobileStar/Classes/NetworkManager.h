@@ -36,9 +36,6 @@ private:
     //해당 패킷의 상대방 컴퓨터의 일을 처리한다.
     void CarryOutSecondTask(int _packet);
     
-    //해당 AutoTask를 큐에 쌓는다.
-    void PushAutoTask(AutoTask* autotask);
-    
     //AutoTask의 일들을 처리한다.
     void CarryOutAutoTask(int _packet);
     
@@ -53,6 +50,9 @@ public:
     
     //해당 Message를 DispatchTask에 보낸다.
     void PushBackMessage(Telegram* telegram);
+    
+    //해당 AutoTask를 큐에 쌓는다.
+    void PushAutoTask(AutoTask* autotask);
     
     //DispatchTask에 쌓인 Message를 서버로 보낸 후, Task에 전송한다.
     void DispatchToServer();

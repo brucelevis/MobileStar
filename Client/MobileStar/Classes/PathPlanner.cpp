@@ -69,8 +69,17 @@ bool PathPlanner::CreatePathToPosition(int TargetIndex){
     
     //탐색이 성공이면 참을 반환한다.
     if(!m_Path.empty()){
-        //근원 노드를 제거한다.
+        //두 벡터의 내적이 0보다 작으면 근원 노드를 제거한다.
         m_Path.pop_front();
+        
+        Vec2 CurrentNode = Vec2Normalize(m_pNavGraph->GetNode(m_pOwner->GetTileIndex()).getPosition() - m_pOwner->getPosition());
+        Vec2 FrontNode = Vec2Normalize(m_pNavGraph->GetNode(m_Path.front()).getPosition() - m_pOwner->getPosition());
+        
+        float Dot = CurrentNode.dot(FrontNode);
+
+        if(Dot >= 0)
+            m_Path.push_front(m_pOwner->GetTileIndex());
+    
         return true;
     }
     else

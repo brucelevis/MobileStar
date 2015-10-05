@@ -69,7 +69,7 @@ void GameWorld::onEnter(){
     
     scheduleUpdate();
     
-    schedule(schedule_selector(GameWorld::updateNetwork),1/12.0);
+    schedule(schedule_selector(GameWorld::updateNetwork),1 / (float)NETWORK_FPS);
 }
 
 void GameWorld::update(float eTime){

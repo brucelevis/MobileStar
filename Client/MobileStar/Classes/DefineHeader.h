@@ -8,3 +8,5 @@
 
 #define TILE_WIDTH_NUM 64
 #define TILE_HEIGHT_NUM 128
+
+#define NETWORK_FPS 12
