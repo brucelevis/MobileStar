@@ -218,30 +218,41 @@ void NetworkManager::CarryOutFirstTask(int _packet){
                         auto Units = m_pGameWorld->GetUnits();
                         for(int i=0;i<pTelegramMove->currentSize; i++){
                             
-                            //유닛의 포인터를 얻어온다.
+                            //객체의 포인터들을 얻어온다.
                             auto pUnit = Units[pTelegramMove->subject[i]];
-                            auto PathPlanner = pUnit->GetPathPlanner();
+                            auto pPlanner = pUnit->GetPathPlanner();
+                            auto& Path = pPlanner->GetPath();
                             
                             //만일 현재 위치와 TileIndex의 위치가 같으면 종료한다.
-                            if(PathPlanner->GetPath().empty() &&
+                            if(Path.empty() &&
                                pUnit->GetTileIndex() == pTelegramMove->tileIndex){
                                 pUnit->GetFSM()->ChangeState(State_Idle::Instance());
                                 break;
                             }
                             
                             //만일 유닛이 현재 Path가 남아 있으며 그 목적지와 pTelegramMove->tileIndex가 같으면 종료한다.
-                            if(!PathPlanner->GetPath().empty() &&
-                               PathPlanner->GetDestination() == pTelegramMove->tileIndex)
+                            if(!Path.empty() &&
+                               pPlanner->GetDestination() == pTelegramMove->tileIndex)
                                 break;
                             
+                            int MoveIndex = pTelegramMove->tileIndex;
+                            
                             //길을 생성한다.
-                            pUnit->GetPathPlanner()->CreatePathToPosition(pTelegramMove->tileIndex);
+                            pPlanner->CreatePathToPosition(MoveIndex);
                             
-                            //유닛을 이동시킨다.
-                            pUnit->MoveToPathFront(iPacket);
+                            //현재 이동중이 아니라면 유닛을 이동시킨다. 만약 이동 중일 경우 아무 짓을 하지 않아도 자동으로 다음 작업을 수행한다.
+                            if(pUnit->GetFSM()->CurrentState() != State_Move::Instance()){
+                                //PathPlanner->GetPath().pop_front();
+                                
+                                //유닛을 이동시킨다.
+                                pUnit->MoveToPathFront(iPacket);
+                                
+                                //이동 상태로 전환시킨다.
+                                pUnit->GetFSM()->ChangeState(State_Move::Instance());
+                            }else{
+                            }
                             
-                            //이동 상태로 전환시킨다.
-                            pUnit->GetFSM()->ChangeState(State_Move::Instance());
+                            
                         }
                         
                         delete pTelegramMove;
@@ -319,6 +330,7 @@ void NetworkManager::CarryOutAutoTask(int _packet){
         switch(pTask->messageType){
             case AutoTaskType::Move:
             {
+                printf("autotask\n");
                 auto pMove = (AutoTaskMove*)pTask;
                 //유닛 리스트를 얻어온다.
                 auto Units = m_pGameWorld->GetUnits();

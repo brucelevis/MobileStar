@@ -132,6 +132,7 @@ public:
     void	SetHeading(Vec2 new_heading);
     
     void    SetAutoTaskPacket(int packet){ m_iAutoTaskPacket = packet;}
+    int     GetAutoTaskPacket()const{return m_iAutoTaskPacket;}
     
     StateMachine<Unit>* GetFSM()const{return m_pFSM;}
     

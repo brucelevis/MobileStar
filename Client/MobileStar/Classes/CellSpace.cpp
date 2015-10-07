@@ -100,6 +100,8 @@ int CellSpace<Entity>::PositionToIndex(const Vec2& pos)const{
     
     if( idx > (int)m_Cells.size()-1 ) idx = (int)m_Cells.size() - 1;
     
+    printf("idx : %d\n",idx);
+    
     return idx;
 }
 

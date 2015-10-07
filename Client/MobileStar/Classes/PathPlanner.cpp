@@ -59,6 +59,17 @@ bool PathPlanner::CreatePathToPosition(int TargetIndex){
     if(TargetIndex == -1)
         return false;
     
+    //만약 목적 타일 인덱스가 비어있지 않다면, 그 주변의 유효화된 타일 인덱스를 찾아 이동한다.
+    if(!m_pNavGraph->GetNode(TargetIndex).IsEmpty()){
+        Vec2 pos = m_pNavGraph->GetNode(TargetIndex).getPosition();
+        int Index = m_pOwner->GetGameWorld()->GetMap()->GetClosestValidNodeFromPosition(pos);
+        
+        if(Index == -1)
+            return false;
+        else
+            TargetIndex = Index;
+    }
+    
     //유닛이 가장 가까운 노드와 목표 위치에 가장 가까운 노드 사이의 경로를 찾기위해
     //A* 탐색 클래스의 인스턴스를 생성한다.
     //이 A* 탐색은 유클리디언 직선 휴리스틱을 이용할 것이다.
@@ -69,17 +80,7 @@ bool PathPlanner::CreatePathToPosition(int TargetIndex){
     
     //탐색이 성공이면 참을 반환한다.
     if(!m_Path.empty()){
-        //두 벡터의 내적이 0보다 작으면 근원 노드를 제거한다.
         m_Path.pop_front();
-        
-        Vec2 CurrentNode = Vec2Normalize(m_pNavGraph->GetNode(m_pOwner->GetTileIndex()).getPosition() - m_pOwner->getPosition());
-        Vec2 FrontNode = Vec2Normalize(m_pNavGraph->GetNode(m_Path.front()).getPosition() - m_pOwner->getPosition());
-        
-        float Dot = CurrentNode.dot(FrontNode);
-
-        if(Dot >= 0)
-            m_Path.push_front(m_pOwner->GetTileIndex());
-    
         return true;
     }
     else

@@ -68,6 +68,8 @@ void Unit::update(float eTime){
 bool Unit::MoveToPathFront(int CurrentPacket){
     //해당 유닛의 패스를 가져온다.
     auto& Path = GetPathPlanner()->GetPath();
+    auto pMap = m_pGameWorld->GetMap();
+    auto& Graph = pMap->GetNavGraph();
     
     if(Path.empty()){
         GetFSM()->ChangeState(State_Idle::Instance());
@@ -78,6 +80,21 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     int MoveIndex = Path.front();
     Path.pop_front();
     
+    //MoveIndex의 타일이 비어있는지 확인한다.
+    //비어 있지 않으면 새로 AStar알고리즘을 실행하여 움직인다.
+    //TODO : 나중에 최적화 할 것
+    if(!Graph.GetNode(MoveIndex).IsEmpty()){
+        m_pPathPlanner->CreatePathToPosition(m_pPathPlanner->GetDestination());
+        
+        if(Path.empty()){
+            GetFSM()->ChangeState(State_Idle::Instance());
+            return false;
+        }
+        
+        MoveIndex = Path.front();
+        Path.pop_front();
+    }
+    
     //이동시킨다.
     SetTileIndex(MoveIndex);
     Vec2 PathFrontPosition = m_pGameWorld->GetMap()->GetNavGraph().GetNode(MoveIndex).getPosition();
@@ -85,16 +102,16 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     //Heading 설정
     SetHeading(PathFrontPosition - getPosition());
     
-    //Move 액션 생성 과정 : 앞으로의 거리와 유닛의 이동속도를 고려하여 만든다.
-    float Distance = Vec2Distance(getPosition(), PathFrontPosition);
-    float Duration = Distance / (TILE_HEIGHT_SIZE * GetSpeed());
+    //Move 액션 생성 과정 : 타일 간의 거리와 유닛의 이동속도를 고려하여 만든다.
     
     //다음 AutoTask를 먼저 등록한다.
     //본래 속도보다 TweakPacket 정도 더 빠르게 실행시킨다.
+    
+    float Distance = Vec2Distance(PathFrontPosition, getPosition()) / 64.0f;
+    float Duration = Distance / GetSpeed();
+    
     int TweakPacket = 1;
     int NextPacket = (int)(NETWORK_FPS * Duration) - TweakPacket;
-    
-    printf("Packet : %d\n",NextPacket);
     
     //만일 NextPacket이 0보다 작거나 같다면 다음 타일을 가져온다.
     if(NextPacket <= 0){

@@ -22,7 +22,7 @@ void Thing::update(float eTime){
 
 void Thing::SetTileIndex(int _tileindex){
     //그래프를 얻어온다.
-    auto Graph = m_pGameWorld->GetMap()->GetNavGraph();
+    auto& Graph = m_pGameWorld->GetMap()->GetNavGraph();
     
     //이전 타일 인덱스를 비워 놓는다.
     Graph.GetNode(m_iTileIndex).SetEmpty();

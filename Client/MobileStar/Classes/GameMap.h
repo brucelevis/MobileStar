@@ -28,10 +28,6 @@ private:
     int m_iTileX;
     int m_iTileY;
     
-    //노드의 갯수
-    int m_iNodeX;
-    int m_iNodeY;
-    
     void  PartitionNavGraph();
     
     //미리계산된 그래프 탐색 길 비용
@@ -47,10 +43,14 @@ public:
     //파일에서 맵을 읽어온다.
     bool LoadMap(int tileX,int tileY);
     
+    //두 노드 사이의 비용을 계산한다.
     float   CalculateCostToTravelBetweenNodes(int nd1, int nd2)const;
     
     //해당 노드의 인덱스 좌표를 얻어온다.
     int GetTileIndexFromPosition(const Vec2& position);
+    
+    //해당 위치로부터 가장 가까운 유효화된 노드 인덱스를 구한다.
+    int GetClosestValidNodeFromPosition(Vec2 pos);
     
     //게터 세터 함수
     SparseGraph&                       GetNavGraph()const{return *m_pNavGraph;}
@@ -58,9 +58,6 @@ public:
    
     int                                GetTileX()const{return m_iTileX;}
     int                                GetTileY()const{return m_iTileY;}
-    
-    int                                GetNodeX()const{return m_iNodeX;}
-    int                                GetNodeY()const{return m_iNodeY;}
     float                              GetCellSpaceNeighborhoodRange()const{return m_fCellSpaceNeighborhoodRange;}
     
 };

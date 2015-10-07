@@ -25,13 +25,17 @@ GameWorld::GameWorld(){
     //맵 생성
     m_pMap = new GameMap();
     //m_pMap->LoadMap(TILE_WIDTH_NUM * TILE_SIZE / NODE_SIZE, TILE_HEIGHT_NUM * TILE_SIZE / NODE_SIZE);
-    m_pMap->LoadMap(10,5);
+    m_pMap->LoadMap(30,20);
     m_pCameraLayer->addChild(m_pMap);
     
     //마린 생성
-    auto pMarine = new Marine(this,5);
+    auto pMarine = new Marine(this,129);
     m_pCameraLayer->addChild(pMarine);
     m_Units[pMarine->GetID()] = pMarine;
+    
+    auto pMarine1 = new Marine(this,135);
+    m_pCameraLayer->addChild(pMarine1);
+    m_Units[pMarine1->GetID()] = pMarine1;
     
     //카메라 설정 : 맵 크기 (64*256, 64*256)
     CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
@@ -48,6 +52,7 @@ GameWorld::GameWorld(){
 //        
 //    }
 
+    CameraMgr->SetMovePos(Vec2(0,500));
 }
 
 GameWorld::~GameWorld(){
