@@ -37,9 +37,9 @@ public:
     void frontSessionOut(ConnectInfo* connectInfo);
     
     void frontHandleFirstConnectRes(ConnectInfo* connectInfo, const char* body, const int bodySize);
-    void frontHandleEnterClientReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
-    void frontHandleEnterClientOk(const ConnectInfo* connectInfo, const char* body, int bodySize);
-    void frontHandleEnterClientOut(const ConnectInfo* connectInfo, const char* body, int bodySize);
+    void frontHandleEnterClientReq(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void frontHandleEnterClientOk(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void frontHandleEnterClientOut(ConnectInfo* connectInfo, const char* body, int bodySize);
 
     
 //    void frontHandleMoveChannelReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
@@ -53,9 +53,9 @@ public:
     void gameSessionOut(ConnectInfo* connectInfo);
     
     void gameHandleFirstConnectReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
-    void gameHandleEnterRoomRes(const ConnectInfo* connectInfo, const char* body, int bodySize);
-    void gameHandleFinishGameReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
-    void gameHandleMovingClientDisconnect(const ConnectInfo* connectInfo, const char* body, int bodySize);
+    void gameHandleEnterRoomRes(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void gameHandleFinishGameReq(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void gameHandleMovingClientDisconnect(ConnectInfo* connectInfo, const char* body, int bodySize);
     
     
     ////////////////////////////////////////
@@ -67,14 +67,14 @@ public:
     void clientSessionOut(ConnectInfo* connectInfo);
     
     void clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
-    void clientHandleGetChannelListReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
-    void clientHandleMoveChannelReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
-    void clientHandleGetUserListReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
-    void clientHandleGetUserInfoReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
-    void clientHandleRequestGameReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
-    void clientHandleRequestGameCancelReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
-    void clientHandleResponceGameYesReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
-    void clientHandleResponceGameNoReq(const ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleGetChannelListReq(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void clientHandleMoveChannelReq(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void clientHandleGetUserListReq(ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleGetUserInfoReq(ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleRequestGameReq(ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleRequestGameCancelReq(ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleResponceGameYesReq(ConnectInfo* connectInfo, const char* body, int bodySize);//
+    void clientHandleResponceGameNoReq(ConnectInfo* connectInfo, const char* body, int bodySize);//
     
     void clientHandleGetRoomListReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
     void clientHandleCreateRoomReq(ConnectInfo* connectInfo, const char* body, const int bodySize);

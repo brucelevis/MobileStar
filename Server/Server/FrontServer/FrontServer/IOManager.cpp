@@ -453,9 +453,16 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
     
     ClientFrontPacket::FirstConnectResPacket sendPacket;
     
+    sendPacket.userInfo.userNo = userInfo.userNo;
+    sendPacket.userInfo.nickNameLen = userInfo.nickNameLen;
+    memcpy(sendPacket.userInfo.nickName, userInfo.nickName, userInfo.nickNameLen);
+    
     char* pSendBuffer = sendBuffer;
     memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
     pSendBuffer += sizeof(sendPacket.cmd);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo, sizeof(sendPacket.userInfo));
+    pSendBuffer += sizeof(sendPacket.userInfo);
     
     FrontServer::getInstance()->network->sendPacket(connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
 }

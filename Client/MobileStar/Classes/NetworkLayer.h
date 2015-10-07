@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include "Network.h"
 
-static const char* IP_ADDRESS = "1.234.65.217";
+static const char* IP_ADDRESS = "127.0.0.1";
 
 enum SERVER_MODULE
 {

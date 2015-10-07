@@ -224,6 +224,12 @@ void NetworkHandler::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     
     ///////////////////TODO. draw waitting bar for user
     
+    ClientFrontPacket::FirstConnectResPacket packet;
+    memcpy(&packet.userInfo, data, sizeof(packet.userInfo));
+    
+    printf("%lld", packet.userInfo.userNo);
+    
+    GameClient::GetInstance().userInfo->userNo = packet.userInfo.userNo;
     
     ///////////////////send enter lobby req
 
@@ -804,7 +810,7 @@ void NetworkHandler::lobbyHandleQuickPlayRes(ConnectInfo* connectInfo, const cha
 
 void NetworkHandler::gameHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-    //printf("NetworkHandler::gameHandleFirstConnectRes");
+    printf("NetworkHandler::gameHandleFirstConnectRes");
     
     ClientLobbyPacket::StartGameOkPacket packet;
     
@@ -814,7 +820,7 @@ void NetworkHandler::gameHandleFirstConnectRes(ConnectInfo* connectInfo, const c
 
 void NetworkHandler::gameHandleStartGameNotify(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-    //printf("NetworkHandler::gameHandleStartGameNotify");
+    printf("NetworkHandler::gameHandleStartGameNotify");
 
     Scene* scene = GameWorld::createScene();
     
@@ -825,7 +831,7 @@ void NetworkHandler::gameHandleStartGameNotify(ConnectInfo* connectInfo, const c
 
 void NetworkHandler::gameHandleClientNotify(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-    //printf("NetworkHandler::gameHandleClientNotify");
+//    printf("NetworkHandler::gameHandleClientNotify");
     
     NetMgr->FetchFromServer(dataSize,data);
 }
@@ -833,7 +839,7 @@ void NetworkHandler::gameHandleClientNotify(ConnectInfo* connectInfo, const char
 
 void NetworkHandler::gameHandleFinishGameRes(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-    //printf("NetworkHandler::gameHandleFinishGameRes");
+    printf("NetworkHandler::gameHandleFinishGameRes");
 
     ClientGamePacket::FinishGameResPacket packet;
     
