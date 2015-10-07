@@ -10,6 +10,7 @@
 
 #include "GameDefines.h"
 #include "BasicPacket.h"
+#include "CustomPopUp.h"
 #include <string>
 #include <vector>
 
@@ -35,6 +36,8 @@ public:
 	}
 
 public:
+    CustomPopUp* popUp;
+    
     SessionId_t sessionId;
 	UserInfo* userInfo;
 	int currentScene;

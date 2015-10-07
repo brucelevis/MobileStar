@@ -69,6 +69,10 @@ void NetworkHandler::Receive(ConnectInfo* connectInfo, const char* data, int dat
                 lobbyHandleFirstConnectRes(connectInfo, pData, pDataSize);
                 break;
                 
+            case ClientLobbyPacket::CHANNEL_INFO_NOTIFY:
+                lobbyHandleChannelInfoNotify(connectInfo, pData, pDataSize);
+                break;
+                
             case ClientLobbyPacket::FIRST_CONNECT_OK:
                 lobbyHandleFirstConnectOk(connectInfo, pData, pDataSize);
                 break;
@@ -80,6 +84,44 @@ void NetworkHandler::Receive(ConnectInfo* connectInfo, const char* data, int dat
             case ClientLobbyPacket::MOVE_CHANNEL_RES:
                 lobbyHandleMoveChannelRes(connectInfo, pData, pDataSize);
                 break;
+                
+                
+            case ClientLobbyPacket::GET_USER_INFO_RES:
+                lobbyHandleGetUserInfoRes(connectInfo, pData, pDataSize);
+                break;
+                
+                
+            case ClientLobbyPacket::ENTER_USER_IN_CHANNEL_NOTIFY:
+                lobbyHandleEnterUserInChannelNotify(connectInfo, pData, pDataSize);
+                break;
+                
+                
+            case ClientLobbyPacket::LEAVE_USER_IN_CHANNEL_NOTIFY:
+                lobbyHandleLeaveUserInChannelNotify(connectInfo, pData, pDataSize);
+                break;
+                
+                
+            case ClientLobbyPacket::REQUEST_GAME_RES:
+                lobbyHandleRequestGameRes(connectInfo, pData, pDataSize);
+                break;
+                
+                
+            case ClientLobbyPacket::REQUEST_GAME_NOTIFY:
+                lobbyHandleRequestGameNotify(connectInfo, pData, pDataSize);
+                break;
+                
+                
+            case ClientLobbyPacket::REQUEST_GAME_CANCEL_RES:
+                lobbyHandleRequestGameCancelRes(connectInfo, pData, pDataSize);
+                break;
+                
+                
+            case ClientLobbyPacket::RESPONSE_GAME_NO_NOTIFY:
+                lobbyHandleResponseGameNoNotify(connectInfo, pData, pDataSize);
+                break;
+                
+                
+                
                 
             case ClientLobbyPacket::GET_ROOM_LIST_RES:
                 lobbyHandleGetRoomListRes(connectInfo, pData, pDataSize);
@@ -231,26 +273,26 @@ void NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const 
         return;
     }
     
-    const char* pData = data;
-    
-    memcpy(&packet.channelNo, pData, sizeof(packet.channelNo));
-    pData += sizeof(packet.channelNo);
-    
-    memcpy(&packet.channelNameLen, pData, sizeof(packet.channelNameLen));
-    pData += sizeof(packet.channelNameLen);
-    
-    memcpy(packet.channelName, pData, packet.channelNameLen);
-    pData += packet.channelNameLen;
-    
-    if(pData - data != dataSize)
-    {
-        printf("dataSize = %d, - data = %d", dataSize, (int)(pData - data));
-        return ;
-    }
-    
-    printf("%d %d %s\n", packet.channelNo, packet.channelNameLen, packet.channelName);
-    
-    ///////////////////send create room req
+//    const char* pData = data;
+//    
+//    memcpy(&packet.channelNo, pData, sizeof(packet.channelNo));
+//    pData += sizeof(packet.channelNo);
+//    
+//    memcpy(&packet.channelNameLen, pData, sizeof(packet.channelNameLen));
+//    pData += sizeof(packet.channelNameLen);
+//    
+//    memcpy(packet.channelName, pData, packet.channelNameLen);
+//    pData += packet.channelNameLen;
+//    
+//    if(pData - data != dataSize)
+//    {
+//        printf("dataSize = %d, - data = %d", dataSize, (int)(pData - data));
+//        return ;
+//    }
+//    
+//    printf("%d %d %s\n", packet.channelNo, packet.channelNameLen, packet.channelName);
+//    
+
     
     int currentScene = GameClient::GetInstance().currentScene;
     
@@ -266,11 +308,6 @@ void NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     
         network->disconnectWithServer(SERVER_MODULE_GAME_SERVER);
     }
-    
-    Scene* scene = LobbyScene::createScene();
-    
-    ((NetworkLayer*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER)))->AddThisToScene(scene);
-    Director::getInstance()->replaceScene(scene);
 
 //    NetworkLayer* networkLyr = (NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
 //    
@@ -279,6 +316,68 @@ void NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const 
 //    auto scene = LobbyScene::createScene();
 //    ((NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER))->AddThisToScene(scene);
     
+}
+
+
+void NetworkHandler::lobbyHandleChannelInfoNotify(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    ClientLobbyPacket::ChannelInfoNotifyPacket packet;
+    memset(&packet, 0, sizeof(packet));
+    if (dataSize > sizeof(packet))
+    {
+        printf("small");
+        return;
+    }
+    
+    const char* pData = data;
+    
+    memcpy(&packet.channelNo, pData, sizeof(packet.channelNo));
+    pData += sizeof(packet.channelNo);
+    
+    memcpy(&packet.channelNameLen, pData, sizeof(packet.channelNameLen));
+    pData += sizeof(packet.channelNameLen);
+    
+    memcpy(packet.channelName, pData, packet.channelNameLen);
+    pData += packet.channelNameLen;
+    
+    memcpy(&packet.userCount, pData, sizeof(packet.userCount));
+    pData += sizeof(packet.userCount);
+    
+    for(int i = 0; i < packet.userCount; i++)
+    {
+        memcpy(&packet.userViewInfoList[i].userNo, pData, sizeof(packet.userViewInfoList[i].userNo));
+        pData += sizeof(packet.userViewInfoList[i].userNo);
+        
+        memcpy(&packet.userViewInfoList[i].nickNameInfo.nickNameLen, pData, sizeof(packet.userViewInfoList[i].nickNameInfo.nickNameLen));
+        pData += sizeof(packet.userViewInfoList[i].nickNameInfo.nickNameLen);
+        
+        memcpy(packet.userViewInfoList[i].nickNameInfo.nickName, pData, packet.userViewInfoList[i].nickNameInfo.nickNameLen);
+        pData += packet.userViewInfoList[i].nickNameInfo.nickNameLen;
+    }
+    
+    
+    if(pData - data != dataSize)
+    {
+        printf("dataSize = %d, - data = %d", dataSize, (int)(pData - data));
+        return ;
+    }
+    
+    printf("%d %d %s\n", packet.channelNo, packet.channelNameLen, packet.channelName);
+    
+    Scene* scene = LobbyScene::createScene();
+    
+    ((NetworkLayer*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER)))->AddThisToScene(scene);
+    Director::getInstance()->replaceScene(scene);
+
+    if(((LobbyScene*)(scene->getChildByTag(TAG_LOBBY_SCENE))) == NULL)
+    {
+        CCLOG("??");
+    }
+    
+    for(int i = 0; i < packet.userCount; i++)
+    {
+        ((LobbyScene*)(scene->getChildByTag(TAG_LOBBY_SCENE)))->addUserInfo(packet.userViewInfoList[i].userNo, packet.userViewInfoList[i].nickNameInfo.nickNameLen, packet.userViewInfoList[i].nickNameInfo.nickName);
+    }
 }
 
 void NetworkHandler::lobbyHandleFirstConnectOk(ConnectInfo* connectInfo, const char* data, int dataSize)
@@ -378,6 +477,89 @@ void NetworkHandler::lobbyHandleMoveChannelRes(ConnectInfo* connectInfo, const c
     
  //   ((LobbyScene*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE))->MoveChannel(channelInfo.channelNo, channelInfo.channelName);
 }
+
+
+
+void NetworkHandler::lobbyHandleGetUserInfoRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    
+}
+
+
+void NetworkHandler::lobbyHandleEnterUserInChannelNotify(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    ClientLobbyPacket::EnterUserInChannelNotifyPacket packet;
+    if (dataSize > sizeof(packet))
+    {
+        log("small");
+        return;
+    }
+    
+    const char* pData = data;
+    
+    memcpy(&packet.userViewInfo.userNo, pData, sizeof(packet.userViewInfo.userNo));
+    pData += sizeof(packet.userViewInfo.userNo);
+    
+    memcpy(&packet.userViewInfo.nickNameInfo.nickNameLen, pData, sizeof(packet.userViewInfo.nickNameInfo.nickNameLen));
+    pData += sizeof(packet.userViewInfo.nickNameInfo.nickNameLen);
+    
+    memcpy(packet.userViewInfo.nickNameInfo.nickName, pData, packet.userViewInfo.nickNameInfo.nickNameLen);
+    pData += packet.userViewInfo.nickNameInfo.nickNameLen;
+    
+    
+    ((LobbyScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE)))->addUserInfo(packet.userViewInfo.userNo, packet.userViewInfo.nickNameInfo.nickNameLen, packet.userViewInfo.nickNameInfo.nickName);
+}
+
+
+void NetworkHandler::lobbyHandleLeaveUserInChannelNotify(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    ClientLobbyPacket::LeaveUserInChannelNotifyPacket packet;
+    if (dataSize > sizeof(packet))
+    {
+        CCLOG("small");
+        return;
+    }
+    
+    const char* pData = data;
+    
+    memcpy(&packet.userNo, pData, sizeof(packet.userNo));
+    pData += sizeof(packet.userNo);
+    
+    
+    ((LobbyScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE)))->removeUserInfo(packet.userNo);
+}
+
+
+void NetworkHandler::lobbyHandleRequestGameRes(ConnectInfo* connectInfo, const char* pData, int pDataSize)
+{
+    
+}
+
+
+void NetworkHandler::lobbyHandleRequestGameNotify(ConnectInfo* connectInfo, const char* pData, int pDataSize)
+{
+    
+}
+
+
+void NetworkHandler::lobbyHandleRequestGameCancelRes(ConnectInfo* connectInfo, const char* pData, int pDataSize)
+{
+    
+}
+
+
+void NetworkHandler::lobbyHandleResponseGameNoNotify(ConnectInfo* connectInfo, const char* pData, int pDataSize)
+{
+    
+}
+
+
+
+
+
+
+
+
 
 
 void NetworkHandler::lobbyHandleGetRoomListRes(ConnectInfo* connectInfo, const char* data, int dataSize)
@@ -770,6 +952,62 @@ void NetworkHandler::lobbySendMoveChannelReq(int channelNo)
     
     network->sendPacket(SERVER_MODULE_LOBBY_SERVER, sendBuffer, sizeof(packet));
 }
+
+
+void NetworkHandler::lobbySendGetUserInfoReq(int64_t userNo)
+{
+    ClientLobbyPacket::GetUserInfoReqPacket packet;
+    packet.userNo = userNo;
+    
+    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, (char*)&packet, sizeof(packet));
+}
+
+
+void NetworkHandler::lobbySendRequestGameReq(int64_t userNo)
+{
+    ClientLobbyPacket::RequestGameReqPacket packet;
+    packet.userNo = userNo;
+    
+    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, (char*)&packet, sizeof(packet));
+    
+}
+
+
+void NetworkHandler::lobbySendRequestGameCancelReq()
+{
+    ClientLobbyPacket::RequestGameCancelReqPacket packet;
+    
+    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, (char*)&packet, sizeof(packet));
+
+}
+
+
+void NetworkHandler::lobbySendResponseGameYesReq(int64_t userNo)
+{
+    ClientLobbyPacket::ResponseGameYesReqPacket packet;
+    packet.userNo = userNo;
+    
+    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, (char*)&packet, sizeof(packet));
+
+}
+
+
+void NetworkHandler::lobbySendResponseGameNoReq(int64_t userNo)
+{
+    ClientLobbyPacket::ResponseGameNoReqPacket packet;
+    packet.userNo = userNo;
+    
+    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, (char*)&packet, sizeof(packet));
+}
+
+
+
+
+
+
+
+
+
 
 void NetworkHandler::lobbySendGetRoomListReq()
 {

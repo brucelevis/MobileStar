@@ -18,6 +18,19 @@ public:
 
 };
 
+
+class UserListInChannelTimer : public Timer
+{
+public:
+    UserListInChannelTimer(int timerNo, int interval);
+    
+public:
+    virtual void ProcessTimerStart() {};
+    virtual void ProcessTimerInterval();
+    virtual void ProcessTimerFinish() {};
+    
+};
+
 #endif //__TIMER_H__
 
 

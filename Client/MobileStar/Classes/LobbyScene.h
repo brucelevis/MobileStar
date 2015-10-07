@@ -30,8 +30,8 @@ public:
 	virtual bool init();
 
 	void menuCloseCallback(cocos2d::Ref* pSender);
-    void addNextUserList(int64_t userNo, int nickNameLen, const char* nickName);
-    void addPrevUserList(int64_t userNo, int nickNameLen, const char* nickName);
+    void addUserInfo(int64_t userNo, int nickNameLen, const char* nickName);
+    void removeUserInfo(int64_t userNo);
 
     void clickChina(cocos2d::Ref* pSender);
     void clickEurope(cocos2d::Ref* pSender);
@@ -42,7 +42,10 @@ public:
     
     void waitToStart();
 
-    
+    virtual bool onTouchBegan(Touch* touch, Event* _event);
+    virtual void onTouchMoved(Touch* touch, Event* _event);
+    virtual void onTouchCancelled(Touch* touch, Event* _event);
+    virtual void onTouchEnded(Touch* touch, Event *_event);
 //    void GetChannelList(cocos2d::Object* pSender);
 //	void GetUserList(cocos2d::Object* pSender);
 //	void GetFriendList(cocos2d::Object* pSender);

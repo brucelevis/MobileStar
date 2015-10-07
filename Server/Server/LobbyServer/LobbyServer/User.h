@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "BasicPacket.h"
+#include <vector>
 
 class ConnectInfo;
 
@@ -70,6 +71,12 @@ public:
     void* getLocationObject() { return locationObject; }
     void setLoctionObject(int8_t _userLocation, void* _locationObject) { userLocation = _userLocation; locationObject = _locationObject; }
 
+    void setRequestGameUserNo(int64_t _userNo) { requestGameUserNo = _userNo; }
+    int64_t getRequestGameUserNo() { return requestGameUserNo; }
+    
+    void addResponseGameUserNo(int64_t _userNo) { responseGameUserNoVector.push_back(_userNo); }
+    void removeResponseGameUserNo(int64_t _userNo);
+    
 	~User();
 
 public:
@@ -87,6 +94,10 @@ private:
 
     int8_t userLocation;
     void* locationObject;
+    
+    int64_t requestGameUserNo;
+    std::vector<int64_t> responseGameUserNoVector;
+    std::vector<int64_t>::iterator rguvItr;
 };
 
 

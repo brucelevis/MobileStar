@@ -62,6 +62,7 @@ bool GameClient::Initialize()
 	currentScene = LOGIN_SCENE_NOW;
 	channelNo = -1;
 
+    popUp = new CustomPopUp();
 	return true;
 }
 

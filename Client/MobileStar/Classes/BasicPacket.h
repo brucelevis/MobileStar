@@ -23,7 +23,7 @@ static const int MAX_CHANNEL_COUNT = 10;
 static const int MAX_ROOM_COUNT = 30;
 static const int MAX_MEMO_LEN = 100;
 static const int MAX_FRIEND_COUNT = 30;
-static const int MAX_USER_COUNT_IN_CHANNEL = 50;
+static const int MAX_USER_COUNT_IN_CHANNEL = 200;
 static const int MAX_REQUEST_INFO_COUNT = 10;
 
 static const int MAX_ROOM_SLOT_COUNT = 2;
@@ -105,6 +105,11 @@ struct NickNameInfoWithOnline
     NickNameInfo nickNameInfo;
 };
 
+struct UserViewInfo
+{
+    int64_t userNo;
+    NickNameInfo nickNameInfo;
+};
 
 struct RequestInfo
 {
@@ -143,7 +148,6 @@ struct GameUserInfo
     int64_t userNo;
     int8_t tribe;
 };
-
 
 struct Packet
 {

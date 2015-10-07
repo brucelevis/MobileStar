@@ -7,6 +7,7 @@
 #include "ClientLobbyPacket.h"
 #include "GameLobbyPacket.h"
 #include "ServerInfo.h"
+#include "Channel.h"
 
 
 Room::Room()
@@ -33,7 +34,16 @@ bool Room::initialize(RoomInfo* _roomInfo, User* _user, int _mapType)
     masterIndex = 0;
     roomState = ROOM_STATE_STAND_BY;
     
+    if(_user->getUserLocation() == USER_LOCATION_CHANNEL)
+    {
+        Channel* channel = (Channel*)(_user->getLocationObject());
+        channel->removeUser(_user);
+    }
     _user->setRoomNo(roomInfo.roomNo);
+    
+    _user->setLoctionObject(USER_LOCATION_ROOM, this);
+    
+    _user->setChannelNo(INVALID_CHANNEL_NO);
     
     return true;
 }
@@ -85,14 +95,18 @@ int Room::joinUserInRoom(User* user)
             roomSlotList[i].user = user;
             userCount++;
             user->setRoomNo(roomInfo.roomNo);
+            if(user->getUserLocation() == USER_LOCATION_CHANNEL)
+            {
+                Channel* channel = (Channel*)(user->getLocationObject());
+                channel->removeUser(user);
+            }
             
+            user->setChannelNo(INVALID_CHANNEL_NO);
+       
             user->setLoctionObject(USER_LOCATION_ROOM, (void*)this);
             return SUCCESS;
         }
     }
-    
-    
-
     
     return -1;
 }
@@ -445,6 +459,7 @@ Room* RoomManager::createRoom(RoomInfo* roomInfo, User* user, int mapType)
         ErrorLog("??");
         return NULL;
     }
+    
     
     roomList.push_back(room);
     

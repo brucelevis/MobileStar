@@ -32,6 +32,37 @@ public:
 		MOVE_CHANNEL_RES,
 		MOVE_CHANNEL_FAIL,
         
+        GET_USER_LIST_REQ,
+        GET_USER_LIST_RES,
+        GET_USER_LIST_FAIL,
+        
+        GET_USER_INFO_REQ,
+        GET_USER_INFO_RES,
+        GET_USER_INFO_FAIL,
+        
+        CHANNEL_INFO_NOTIFY,
+        ENTER_USER_IN_CHANNEL_NOTIFY,
+        
+        LEAVE_USER_IN_CHANNEL_NOTIFY,
+        
+        REQUEST_GAME_REQ,
+        REQUEST_GAME_RES,
+        REQUEST_GAME_NOTIFY,
+        REQUEST_GAME_FAIL,
+        
+        REQUEST_GAME_CANCEL_REQ,
+        REQUEST_GAME_CANCEL_RES,
+        REQUEST_GAME_CANCEL_FAIL,
+        
+        RESPONSE_GAME_YES_REQ,
+        RESPONSE_GAME_YES_RES,
+        RESPONSE_GAME_YES_FAIL,
+
+        RESPONSE_GAME_NO_REQ,
+        RESPONSE_GAME_NO_RES,
+        RESPONSE_GAME_NO_NOTIFY,
+        RESPONSE_GAME_NO_FAIL,
+        
         GET_ROOM_LIST_REQ,
         GET_ROOM_LIST_RES,
         GET_ROOM_LIST_FAIL,
@@ -79,14 +110,6 @@ public:
         QUICK_PLAY_NOTIFY,
         QUICK_PLAY_OK,
 
-		GET_USER_LIST_REQ,
-		GET_USER_LIST_RES,
-		GET_USER_LIST_FAIL,
-
-		GET_USER_INFO_REQ,
-		GET_USER_INFO_RES,
-		GET_USER_INFO_FAIL,
-
 		GET_FRIEND_LIST_REQ,
 		GET_FRIEND_LIST_RES,
 		GET_FRIEND_LIST_FAIL,
@@ -133,12 +156,7 @@ public:
     struct FirstConnectResPacket : public Packet
 	{
         FirstConnectResPacket() { cmd = FIRST_CONNECT_RES; }
-        
-		int16_t channelNo;
-        int8_t channelNameLen;
-		char channelName[MAX_CHANNEL_NAME_LEN];
-	//	int16_t requestInfoCount;
-	//	RequestInfo requestInfoList[MAX_REQUEST_INFO_COUNT];
+
 	};
     
     struct FirstConnectOkPacket : public Packet
@@ -180,6 +198,135 @@ public:
         
         ChannelInfo channelInfo;
     };
+
+    struct GetUserListReqPacket : public Packet
+    {
+        GetUserListReqPacket() { cmd = GET_USER_LIST_REQ; }
+        
+    };
+    
+    struct GetUserListResPacket : public Packet
+    {
+        GetUserListResPacket() { cmd = GET_USER_LIST_RES; }
+        
+        uint8_t userCount;
+        UserViewInfo userViewInfoList[MAX_USER_COUNT_IN_CHANNEL];
+    };
+
+    struct GetUserInfoReqPacket : public Packet
+    {
+        GetUserInfoReqPacket() { cmd = GET_USER_INFO_REQ; }
+        
+        int64_t userNo;
+    };
+
+    struct GetUserInfoResPacket : public Packet
+    {
+        GetUserInfoResPacket() { cmd = GET_USER_INFO_RES; }
+        
+        UserInfo userInfo;
+    };
+    
+    struct ChannelInfoNotifyPacket : public Packet
+    {
+        ChannelInfoNotifyPacket() { cmd = CHANNEL_INFO_NOTIFY; }
+        
+        int16_t channelNo;
+        int8_t channelNameLen;
+        char channelName[MAX_CHANNEL_NAME_LEN];
+        
+        uint8_t userCount;
+        UserViewInfo userViewInfoList[MAX_USER_COUNT_IN_CHANNEL];
+    };
+    
+    
+    struct EnterUserInChannelNotifyPacket : public Packet
+    {
+        EnterUserInChannelNotifyPacket() { cmd = ENTER_USER_IN_CHANNEL_NOTIFY; }
+    
+        UserViewInfo userViewInfo;
+    };
+
+    struct LeaveUserInChannelNotifyPacket : public Packet
+    {
+        LeaveUserInChannelNotifyPacket() { cmd = LEAVE_USER_IN_CHANNEL_NOTIFY; }
+        
+        int64_t userNo;
+    };
+    
+    
+    struct RequestGameReqPacket : public Packet
+    {
+        RequestGameReqPacket() { cmd = REQUEST_GAME_REQ; }
+        
+        int64_t userNo;
+    };
+    
+    struct RequestGameResPacket : public Packet
+    {
+        RequestGameResPacket() { cmd = REQUEST_GAME_RES; }
+        
+        
+    };
+    
+    struct RequestGameNotifyPacket : public Packet
+    {
+        RequestGameNotifyPacket() { cmd = REQUEST_GAME_NOTIFY; }
+        
+        int64_t userNo;
+    };
+    
+    
+    struct RequestGameCancelReqPacket : public Packet
+    {
+        RequestGameCancelReqPacket() { cmd = REQUEST_GAME_CANCEL_REQ; }
+        
+    };
+    
+    struct RequestGameCancelResPacket : public Packet
+    {
+        RequestGameCancelResPacket() { cmd = REQUEST_GAME_CANCEL_RES; }
+        
+    };
+    
+    struct ResponseGameYesReqPacket : public Packet
+    {
+        ResponseGameYesReqPacket() { cmd = RESPONSE_GAME_YES_REQ; }
+        
+        int64_t userNo;
+    };
+   
+    
+    struct ResponseGameYesResPacket : public Packet //
+    {
+        ResponseGameYesResPacket() { cmd = RESPONSE_GAME_YES_RES; }
+        
+    };
+    
+    
+    struct ResponseGameNoReqPacket : public Packet
+    {
+        ResponseGameNoReqPacket() { cmd = RESPONSE_GAME_NO_REQ; }
+        
+        int64_t userNo;
+    };
+    
+    
+    struct ResponseGameNoResPacket : public Packet //
+    {
+        ResponseGameNoResPacket() { cmd = RESPONSE_GAME_NO_RES; }
+        
+    };
+    
+    struct ResponseGameNoNotifyPacket : public Packet
+    {
+        ResponseGameNoNotifyPacket() { cmd = RESPONSE_GAME_NO_NOTIFY; }
+        
+    };
+    
+
+    
+    
     
     struct GetRoomListReqPacket : public Packet
     {
