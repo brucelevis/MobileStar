@@ -292,7 +292,7 @@ void IOManager::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const char*
 }
 
 
-void IOManager::lobbyHandleEnterRoomReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::lobbyHandleEnterRoomReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     GameLobbyPacket::EnterRoomReqPacket packet;
     
@@ -337,7 +337,7 @@ void IOManager::lobbyHandleEnterRoomReq(const ConnectInfo* connectInfo, const ch
     GameServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
 }
 
-void IOManager::lobbyHandleStartGameYes(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::lobbyHandleStartGameYes(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     GameLobbyPacket::StartGameYesPacket packet;
     
@@ -372,7 +372,7 @@ void IOManager::lobbyHandleStartGameYes(const ConnectInfo* connectInfo, const ch
 }
 
 
-void IOManager::lobbyHandleStartGameNo(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::lobbyHandleStartGameNo(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     GameLobbyPacket::StartGameNoPacket packet;
     
@@ -403,7 +403,7 @@ void IOManager::lobbyHandleStartGameNo(const ConnectInfo* connectInfo, const cha
 }
 
 
-void IOManager::lobbyHandleFinishGameRes(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::lobbyHandleFinishGameRes(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     GameLobbyPacket::FinishGameResPacket packet;
     

@@ -47,12 +47,12 @@ public:
     void lobbySessionOut(ConnectInfo* connectInfo);
     
     void lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const char* body, const int bodySize);
-    void lobbyHandleEnterRoomReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
+    void lobbyHandleEnterRoomReq(ConnectInfo* connectInfo, const char* body, int bodySize);
     
-    void lobbyHandleStartGameYes(const ConnectInfo* connectInfo, const char* body, int bodySize);
-    void lobbyHandleStartGameNo(const ConnectInfo* connectInfo, const char* body, int bodySize);
+    void lobbyHandleStartGameYes(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void lobbyHandleStartGameNo(ConnectInfo* connectInfo, const char* body, int bodySize);
     
-    void lobbyHandleFinishGameRes(const ConnectInfo* connectInfo, const char* body, int bodySize);
+    void lobbyHandleFinishGameRes(ConnectInfo* connectInfo, const char* body, int bodySize);
     
     ////////////////////////////////////////
     ////////////////////////////////////////
