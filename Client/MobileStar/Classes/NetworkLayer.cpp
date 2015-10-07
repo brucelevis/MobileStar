@@ -224,6 +224,12 @@ void NetworkHandler::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     
     ///////////////////TODO. draw waitting bar for user
     
+    ClientFrontPacket::FirstConnectResPacket packet;
+    memcpy(&packet.userInfo, data, sizeof(packet.userInfo));
+    
+    printf("%lld", packet.userInfo.userNo);
+    
+    GameClient::GetInstance().userInfo->userNo = packet.userInfo.userNo;
     
     ///////////////////send enter lobby req
 

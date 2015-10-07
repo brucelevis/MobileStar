@@ -166,7 +166,7 @@ public:
 	void ProcessEvent();
     
 #if THREAD_TYPE == SINGLE_THREAD
-    void sendPacket(const ConnectInfo* connectInfo, const char* data, int dataSize);
+    void sendPacket(ConnectInfo* connectInfo, const char* data, int dataSize);
 #else
     void sendPacket(int threadId, const ConnectInfo* connectInfo, const char* data, int dataSize);
     void finishProcessing(int threadId, const ConnectInfo* connectInfo);
@@ -175,7 +175,7 @@ public:
 #endif
 
 private:
-    void sendData(const ConnectInfo* connectInfo, const char* data, int dataSize);
+    void sendData(ConnectInfo* connectInfo, const char* data, int dataSize);
 
 	int CreateTCPServerSocket(const char* ip, unsigned short port);
     int CreateTCPClientSocket(const char* ip, unsigned short port);

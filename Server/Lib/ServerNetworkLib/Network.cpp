@@ -208,6 +208,9 @@ Network::~Network()
 
 bool Network::Initialize(const NetworkInfo* _networkInfoList, int _networkInfoCount, int _workerThreadCount, WorkerThread** _workerThreadArray)
 {
+    signal(SIGPIPE, SIG_IGN);
+    
+    
 #if OS_PLATFORM == PLATFORM_LINUX
     
     eventFd = epoll_create(EVENT_BUFFER_SIZE);
@@ -645,6 +648,15 @@ void Network::ProcessEvent()
                             perror("calling fcntl");
                         }
                         
+                        // LINGER 구조체의 값 설정
+                        struct linger ling = {0,};
+                        ling.l_onoff = 1;   // LINGER 옵션 사용 여부
+                        ling.l_linger = 0;  // LINGER Timeout 설정
+                        
+                        // LINGER 옵션을 Socket에 적용
+                        setsockopt(clntFd, SOL_SOCKET, SO_LINGER, (char*)&ling, sizeof(ling));
+
+                        
                         
 #if OS_PLATFORM == PLATFORM_LINUX
                         
@@ -891,109 +903,11 @@ void Network::ProcessEvent()
                 }
                 else if (readCnt == 0)
                 {
-                    
-                    
-#if OS_PLATFORM == PLATFORM_LINUX
-                    
-                    epoll_ctl(eventFd, EPOLL_CTL_DEL, clntFd, event);
-
-#elif OS_PLATFORM == PLATFORM_MAC
-                    
-                    EV_SET(&connectEvent, clntFd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-                    
-                    
-                    if (kevent(eventFd, &connectEvent, 1, NULL, 0, NULL) == -1)
-                    {
-                        ErrorLog("kevent init error");
-                    }
-                    
-#endif
-                    
-                    
-#if THREAD_TYPE == SINGLE_THREAD
-                    workerThreadArray[0]->disconnected(connectInfo);
-                    
-                    int j;
-                    for(j = 0; j < listenSocketCount; j++)
-                    {
-                        if(listenerInfoVector.at(j)->serverModule == connectInfo->serverModule)
-                        {
-                            if(listenerInfoVector.at(j)->connectInfoMap.erase( connectInfo->fd ) != 1)
-                            {
-                                ErrorLog("session erase fail");
-                            }
-                            connectInfoPool.destroy(connectInfo);
-                            
-                            break;
-                        }
-                    }
-                    
-                    if(j == listenSocketCount) ErrorLog("not found connectInfo");
-#else
-                    connectInfo->flags |= FLAG_DISCONNECTED;
-                    
-                    if((connectInfo->flags & FLAG_PROCESSING) != 0)
-                    {
-
-                    }
-                    else
-                    {
-                        sendDataToWorkerThread(RECEIVE_TYPE_DISCONNECT, connectInfo);
-                    }
-#endif
+                    disconnectWithSocket(connectInfo);
                 }
                 else
                 {
-                    
-                    
-#if OS_PLATFORM == PLATFORM_LINUX
-                    
-                    epoll_ctl(eventFd, EPOLL_CTL_DEL, clntFd, event);
-                    
-#elif OS_PLATFORM == PLATFORM_MAC
-                    
-                    EV_SET(&connectEvent, clntFd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-                    
-                    
-                    if (kevent(eventFd, &connectEvent, 1, NULL, 0, NULL) == -1)
-                    {
-                        ErrorLog("kevent init error");
-                    }
-
-#endif
-                    
-                    
-#if THREAD_TYPE == SINGLE_THREAD
-                    workerThreadArray[0]->disconnected(connectInfo);
-                    
-                    int j;
-                    for(j = 0; j < listenSocketCount; j++)
-                    {
-                        if(listenerInfoVector.at(j)->serverModule == connectInfo->serverModule)
-                        {
-                            if(listenerInfoVector.at(j)->connectInfoMap.erase( connectInfo->fd ) != 1)
-                            {
-                                ErrorLog("session erase fail");
-                            }
-                            connectInfoPool.destroy(connectInfo);
-                            
-                            break;
-                        }
-                    }
-                    
-                    if(j == listenSocketCount) ErrorLog("not found connectInfo");
-#else
-                    connectInfo->flags |= FLAG_DISCONNECTED;
-                    
-                    if((connectInfo->flags & FLAG_PROCESSING) != 0)
-                    {
-                        
-                    }
-                    else
-                    {
-                        sendDataToWorkerThread(RECEIVE_TYPE_DISCONNECT, connectInfo);
-                    }
-#endif
+                    disconnectWithSocket(connectInfo);
                 }
             }
         }
@@ -1078,39 +992,56 @@ void Network::sendDataToWorkerThread(int receiveType, ConnectInfo* const _connec
 
 #endif
 
-void Network::sendData(const ConnectInfo* connectInfo, const char* data, int dataSize)
+void Network::sendData(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
+    const char* pData = data;
+    int pDataSize = dataSize;
+    while(true)
+    {
 #if OS_PLATFORM == PLATFORM_LINUX
-    ssize_t sendCnt = send(connectInfo->fd, (void*)data, dataSize, MSG_NOSIGNAL);
+        ssize_t sendCnt = send(connectInfo->fd, (void*)pData, pDataSize, MSG_NOSIGNAL);
 #elif OS_PLATFORM == PLATFORM_MAC
-    ssize_t sendCnt = send(connectInfo->fd, (void*)data, dataSize, SO_NOSIGPIPE);
+        ssize_t sendCnt = send(connectInfo->fd, (void*)pData, pDataSize, SO_NOSIGPIPE);
 #endif
-    
-    if(sendCnt == dataSize)
-    {
         
-    }
-    else if(sendCnt < dataSize)
-    {
-        
-    }
-    else if(sendCnt < 0)
-    {
-        if(errno == EPIPE)
+        if(sendCnt == pDataSize)
         {
-            DebugLog("epipe");
-            close(connectInfo->fd);
+            return ;
         }
-        else
+        else if(sendCnt < pDataSize)
         {
-            ErrorLog("%d, %d %d %d", connectInfo->fd, connectInfo->flags, sendCnt, errno);
-            close(connectInfo->fd);
+            pData += sendCnt;
+            pDataSize -= sendCnt;
+            continue;
+        }
+        else if(sendCnt < 0)
+        {
+            DebugLog("ERRNO = %d", errno);
+            
+            if(errno == EPIPE)
+            {
+                disconnectWithSocket(connectInfo);
+            }
+            else if(errno == EAGAIN)
+            {
+                continue;
+            }
+            else if(errno == ECONNRESET)
+            {
+                disconnectWithSocket(connectInfo);
+            }
+            else
+            {
+                disconnectWithSocket(connectInfo);
+            }
+            
+            return ;
         }
     }
 }
 
 #if THREAD_TYPE == SINGLE_THREAD
-void Network::sendPacket(const ConnectInfo* connectInfo, const char* data, int dataSize)
+void Network::sendPacket(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
     DataHeader dataHeader;
     dataHeader.dataType = DATA_TYPE_REQ;
@@ -1300,14 +1231,14 @@ int Network::CreateTCPClientSocket(const char* ip, unsigned short port)
                 
 void Network::disconnectWithSocket(ConnectInfo* connectInfo)
 {
-    
+    int fd = connectInfo->fd;
 #if OS_PLATFORM == PLATFORM_LINUX
     
-    epoll_ctl(eventFd, EPOLL_CTL_DEL, clntFd, event);
+    epoll_ctl(eventFd, EPOLL_CTL_DEL, fd, event);
     
 #elif OS_PLATFORM == PLATFORM_MAC
     
-    EV_SET(&connectEvent, clntFd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+    EV_SET(&connectEvent, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
     
     
     if (kevent(eventFd, &connectEvent, 1, NULL, 0, NULL) == -1)
@@ -1317,6 +1248,7 @@ void Network::disconnectWithSocket(ConnectInfo* connectInfo)
     
 #endif
     
+    close(fd);
     
 #if THREAD_TYPE == SINGLE_THREAD
     workerThreadArray[0]->disconnected(connectInfo);

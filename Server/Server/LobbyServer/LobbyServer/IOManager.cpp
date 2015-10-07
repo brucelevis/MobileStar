@@ -235,7 +235,7 @@ void IOManager::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const char*
 }
 
 
-void IOManager::frontHandleEnterClientReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::frontHandleEnterClientReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     LobbyFrontPacket::EnterClientReqPacket packet;
     
@@ -273,7 +273,7 @@ void IOManager::frontHandleEnterClientReq(const ConnectInfo* connectInfo, const 
 
 
 
-void IOManager::frontHandleEnterClientOk(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::frontHandleEnterClientOk(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     LobbyFrontPacket::EnterClientOkPacket packet;
     
@@ -303,7 +303,7 @@ void IOManager::frontHandleEnterClientOk(const ConnectInfo* connectInfo, const c
 }
 
 
-void IOManager::frontHandleEnterClientOut(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::frontHandleEnterClientOut(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     LobbyFrontPacket::EnterClientOutPacket packet;
     
@@ -419,7 +419,7 @@ void IOManager::gameHandleFirstConnectReq(ConnectInfo* connectInfo, const char* 
 }
 
 
-void IOManager::gameHandleEnterRoomRes(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::gameHandleEnterRoomRes(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     DebugLog("game enter room res");
     
@@ -494,7 +494,7 @@ void IOManager::gameHandleEnterRoomRes(const ConnectInfo* connectInfo, const cha
 }
 
 
-void IOManager::gameHandleFinishGameReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::gameHandleFinishGameReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     GameLobbyPacket::FinishGameReqPacket packet;
     
@@ -521,7 +521,7 @@ void IOManager::gameHandleFinishGameReq(const ConnectInfo* connectInfo, const ch
 }
 
 
-void IOManager::gameHandleMovingClientDisconnect(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::gameHandleMovingClientDisconnect(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     GameLobbyPacket::MovingClientDisconnectPacket packet;
     
@@ -841,7 +841,7 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
 
 
 
-void IOManager::clientHandleGetChannelListReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::clientHandleGetChannelListReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     DebugLog("IOManager::clientHandleGetChannelListReq");
     
@@ -893,7 +893,7 @@ void IOManager::clientHandleGetChannelListReq(const ConnectInfo* connectInfo, co
     
 }
 
-void IOManager::clientHandleMoveChannelReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::clientHandleMoveChannelReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     DebugLog("ClientReceiveHandler::HandleMoveChannelReq");
     
@@ -997,7 +997,7 @@ void IOManager::clientHandleMoveChannelReq(const ConnectInfo* connectInfo, const
     LobbyServer::getInstance()->network->sendPacket(connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
 }
 
-void IOManager::clientHandleGetUserListReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::clientHandleGetUserListReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     User* user = (User*)connectInfo->userData;
     
@@ -1057,7 +1057,7 @@ void IOManager::clientHandleGetUserListReq(const ConnectInfo* connectInfo, const
     LobbyServer::getInstance()->network->sendPacket(connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
 }
 
-void IOManager::clientHandleGetUserInfoReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::clientHandleGetUserInfoReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     ClientLobbyPacket::GetUserInfoReqPacket packet;
     memcpy(&packet.userNo, body, sizeof(packet.userNo));
@@ -1076,7 +1076,7 @@ void IOManager::clientHandleGetUserInfoReq(const ConnectInfo* connectInfo, const
     LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
 }
 
-void IOManager::clientHandleRequestGameReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::clientHandleRequestGameReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     User* user = (User*)connectInfo->userData;
     
@@ -1111,7 +1111,7 @@ void IOManager::clientHandleRequestGameReq(const ConnectInfo* connectInfo, const
 }
 
 
-void IOManager::clientHandleRequestGameCancelReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::clientHandleRequestGameCancelReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     User* user = (User*)connectInfo->userData;
     
@@ -1135,7 +1135,7 @@ void IOManager::clientHandleRequestGameCancelReq(const ConnectInfo* connectInfo,
 }
 
 
-void IOManager::clientHandleResponceGameYesReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::clientHandleResponceGameYesReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     User* user = (User*)connectInfo->userData;
     
@@ -1190,7 +1190,7 @@ void IOManager::clientHandleResponceGameYesReq(const ConnectInfo* connectInfo, c
     room->startGame();
 }
 
-void IOManager::clientHandleResponceGameNoReq(const ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::clientHandleResponceGameNoReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     User* user = (User*)connectInfo->userData;
     

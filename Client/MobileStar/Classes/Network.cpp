@@ -336,7 +336,7 @@ bool Network::sendData(int fd, const char* data, int dataSize)
     while(send(fd, data, dataSize, NULL) < 0)
     {
         printf("??");
-        testNum++;
+        exit(0);
     }
     
     return true;
