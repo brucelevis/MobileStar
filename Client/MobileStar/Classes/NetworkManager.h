@@ -28,7 +28,10 @@ private:
     std::list<Telegram*> DispatchTask;
     
     //내가 무슨 컴퓨터인지 ? A?B? [ 0 : A, 1 : B ]
-    int m_iKindOfComputer;
+    int m_iPlayerFlag;
+    
+    //네트워크 메시지 업데이트 처리 횟수
+    int m_iCntCarryOutMessages;
     
     //해당 패킷의 내 컴퓨터의 일을 처리한다.
     void CarryOutFirstTask(int _packet);
@@ -46,7 +49,7 @@ public:
     static NetworkManager* Instance();
 public:
     //A 컴퓨터 B 컴퓨터를 정해주기.
-    void SetupWhatComputer();
+    void SetupWhatPlayerFlag();
     
     //해당 Message를 DispatchTask에 보낸다.
     void PushBackMessage(Telegram* telegram);
@@ -66,11 +69,9 @@ public:
     //GameWorld를 설정한다.
     void SetGameWorld(GameWorld* pGame){m_pGameWorld = pGame;}
     
-    //A 컴퓨터로 설정하기
-    void SetAComputer(){m_iKindOfComputer = 0;}
+    //해당 컴퓨터가 A 컴퓨터인지, B 컴퓨터인지 플레이어 번호를 얻어온다.
+    int GetPlayerFlag(){ return m_iPlayerFlag; }
     
-    //B 컴퓨터로 설정하기
-    void SetBComputer(){m_iKindOfComputer = 1;}
-    
-    int GetWhatComputer(){ return m_iKindOfComputer; }
+    //네트워크 메시지 업데이트 처리 횟수
+    int GetCntCarryOutMessages()const{return m_iCntCarryOutMessages;}
 };

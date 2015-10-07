@@ -2,8 +2,8 @@
 #include "GameWorld.h"
 #include "State_Unit.h"
 
-Unit::Unit(GameWorld* pGame, int tileIndex, float hp, float mp, float speed, float attackSpeed, float dmg, float armor)
-: Thing(pGame, Object_Type::Unit,tileIndex)
+Unit::Unit(GameWorld* pGame, int playerFlag, int tileIndex, float hp, float mp, float speed, float attackSpeed, float dmg, float armor)
+: Thing(pGame, Object_Type::Unit, playerFlag,tileIndex)
 , m_Status(Status::Alive)
 , m_fSpeed(speed)
 , m_fAttackSpeed(attackSpeed)

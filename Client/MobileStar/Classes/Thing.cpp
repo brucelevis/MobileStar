@@ -3,11 +3,12 @@
 #include "GameMap.h"
 #include "SparseGraph.h"
 
-Thing::Thing(GameWorld* pGame, Object_Type type, int tileIndex)
+Thing::Thing(GameWorld* pGame, Object_Type type, int playerFlag, int tileIndex)
  :m_pGameWorld(pGame)
  , m_ObjectType(type)
  , m_iID(IDMgr->GetNextThingID())
  , m_iTileIndex(tileIndex)
+ , m_iPlayerFlag(playerFlag)
  ,m_bErase(false)
 {
     //Thing의 위치를 설정한다.

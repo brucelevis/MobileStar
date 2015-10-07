@@ -5,6 +5,7 @@
 #include "GameWorld.h"
 #include "State_Unit.h"
 #include "PathPlanner.h"
+#include "GameClient.h"
 
 #define COCOS2D_DEBUG 1
 
@@ -12,7 +13,8 @@ NetworkManager::NetworkManager()
 {
     FirstTaskPacket = 3;
     SecondTaskPacket = 3;
-    m_iKindOfComputer = -1;
+    m_iPlayerFlag = -1;
+    m_iCntCarryOutMessages = 0;
     
     //초기화시 각 Task에 0번, 1번, 2번 더미 패킷을 한개씩 넣어놓는다.
     for(int i=0;i<3;i++){
@@ -32,9 +34,17 @@ NetworkManager* NetworkManager::Instance(){
     static NetworkManager instance;
     return &instance;
 }
-void NetworkManager::SetupWhatComputer(){
+void NetworkManager::SetupWhatPlayerFlag(){
+    int UserNo = GameClient::GetInstance().userInfo->userNo;
     
+    //플레이어 A인가?
+    if(GameClient::GetInstance().gameUserInfo[1].userNo == UserNo){
+        m_iPlayerFlag = 0;
+    }else{
+        m_iPlayerFlag = 1;
+    }
     
+    printf("Computer : %d\n",m_iPlayerFlag);
 }
 //DispatchTask에 쌓인 Message를 서버로 보낸 후, Task에 전송한다.
 void NetworkManager::DispatchToServer(){
@@ -172,7 +182,8 @@ void NetworkManager::PushAutoTask(AutoTask* autotask){
 
 //Task에 쌓인 메시지들을 모두 수행한다.
 void NetworkManager::CarryOutMessages(){
-    printf("packet  %d   :   %d\n",FirstTaskPacket,SecondTaskPacket);
+    m_iCntCarryOutMessages++;
+    
     //상대방에게 날아온 메시지가 비어있다면, 또는 두 컴퓨터의 패킷 차이가 5이상 차이가 난다면
     if(SecondTask.empty() || abs(FirstTaskPacket - SecondTaskPacket) >= 5){
         //통신이 두절
@@ -188,7 +199,7 @@ void NetworkManager::CarryOutMessages(){
         CarryOutAutoTask(CurrentPacket);
         
         //내가 A 컴퓨터이면 내 일을 먼저 처리한다.
-        if(m_iKindOfComputer == 0){
+        if(m_iPlayerFlag == 0){
             CarryOutFirstTask(CurrentPacket);
             CarryOutSecondTask(CurrentPacket);
         }else{  //B 컴퓨터이면 상대방 일을 먼저 처리한다.
@@ -281,7 +292,6 @@ void NetworkManager::CarryOutSecondTask(int _packet){
                 switch(pTelegram->messageType){
                     case TelegramType::Move:
                     {
-                        printf("Move 요청이 왔다.\n");
                         auto pTelegramMove = (TelegramMove*)pTelegram;
                         
                         //유닛을 이동시킨다.

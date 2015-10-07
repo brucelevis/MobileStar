@@ -1,6 +1,5 @@
 #include "GameWorld.h"
 #include "AStarAlgorithm.h"
-#include "GameClient.h"
 
 Scene* GameWorld::createScene()
 {
@@ -13,7 +12,9 @@ Scene* GameWorld::createScene()
     return scene;
 }
 
-GameWorld::GameWorld(){
+GameWorld::GameWorld()
+: m_fStartFrame(0)
+{
     //카메라 레이어 초기화
     m_pCameraLayer = Layer::create();
     addChild(m_pCameraLayer, 0);
@@ -29,11 +30,12 @@ GameWorld::GameWorld(){
     m_pCameraLayer->addChild(m_pMap);
     
     //마린 생성
-    auto pMarine = new Marine(this,129);
+    auto pMarine = new Marine(this,0,129);
+    pMarine->setColor(Color3B(255,0,0));
     m_pCameraLayer->addChild(pMarine);
     m_Units[pMarine->GetID()] = pMarine;
     
-    auto pMarine1 = new Marine(this,135);
+    auto pMarine1 = new Marine(this,1,135);
     m_pCameraLayer->addChild(pMarine1);
     m_Units[pMarine1->GetID()] = pMarine1;
     
@@ -43,16 +45,8 @@ GameWorld::GameWorld(){
     
     //네트워크 매니저 초기화
     NetMgr->SetGameWorld(this);
-    int UserNo = GameClient::GetInstance().userInfo->userNo;
-    
-    //플레이어 A인가?
-    if(GameClient::GetInstance().gameUserInfo[0].userNo == UserNo){
-        NetMgr->SetAComputer();
-    }else{
-        NetMgr->SetBComputer();
-    }
-    
-    printf("This is %d Computer\n",NetMgr->GetWhatComputer());
+        
+    printf("This is %d Computer\n",NetMgr->GetPlayerFlag());
 
     CameraMgr->SetMovePos(Vec2(0,500));
 }
@@ -76,20 +70,27 @@ void GameWorld::onEnter(){
     
     scheduleUpdate();
     
-    schedule(schedule_selector(GameWorld::updateNetwork),1 / (float)NETWORK_FPS);
+    //schedule(schedule_selector(GameWorld::updateNetwork),1 / (float)NETWORK_FPS);
 }
 
 void GameWorld::update(float eTime){
+    //게임 시작 초 계산
+    m_fStartFrame += eTime;
+    
     //카메라 업데이트
     CameraMgr->Update(eTime);
     m_pCameraLayer->setPosition(-CameraMgr->GetPos());
+    
+    //업데이트 네트워크
+    int CntUpdateNetwork = (int)(m_fStartFrame * NETWORK_FPS) - NetMgr->GetCntCarryOutMessages();
+    while(CntUpdateNetwork-- > 0){
+        updateNetwork(eTime);
+    }
     
     //유닛 업데이트
     for(auto pUnit : m_Units){
         pUnit.second->update(eTime);
     }
-    
-    //
 }
 
 //1초에 4번 실행된다.
