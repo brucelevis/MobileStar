@@ -13,6 +13,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -138,6 +139,18 @@ int Network::connectWithServer(int serverModule, const char* ip, unsigned short 
     if (status == -1){
         perror("calling fcntl");
     }
+    
+    // Nagle 알고리즘 비활성화
+    int option = 1;
+    setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (void*)&option, sizeof(option));
+    
+    // LINGER 구조체의 값 설정
+    struct linger ling = {0,};
+    ling.l_onoff = 1;   // LINGER 옵션 사용 여부
+    ling.l_linger = 1;  // LINGER Timeout 설정
+    
+    // LINGER 옵션을 Socket에 적용
+    setsockopt(sock, SOL_SOCKET, SO_LINGER, (char*)&ling, sizeof(ling));
 
     return fdArray[i].fd;
 }
