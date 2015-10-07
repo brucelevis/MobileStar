@@ -47,10 +47,12 @@ GameWorld::GameWorld(){
     
     //플레이어 A인가?
     if(GameClient::GetInstance().gameUserInfo[0].userNo == UserNo){
-        //0번째다.Net
+        NetMgr->SetAComputer();
     }else{
-        
+        NetMgr->SetBComputer();
     }
+    
+    printf("This is %d Computer\n",NetMgr->GetWhatComputer());
 
     CameraMgr->SetMovePos(Vec2(0,500));
 }
