@@ -62,7 +62,7 @@ protected:
     /*-----------------------------------------------------------------------------------*/
 
 public:
-	Unit(GameWorld* pGame, int tileIndex, float hp, float mp, float speed, float attackSpeed, float dmg, float armor);
+	Unit(GameWorld* pGame, int playerFlag, int tileIndex, float hp, float mp, float speed, float attackSpeed, float dmg, float armor);
 	~Unit();
 
 	void update(float eTime);

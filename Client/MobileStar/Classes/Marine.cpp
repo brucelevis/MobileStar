@@ -2,8 +2,8 @@
 #include "GameWorld.h"
 
 
-Marine::Marine(GameWorld* pGame, int tileIndex)
- : Unit(pGame,tileIndex,100,0,1.5,1,6,1)
+Marine::Marine(GameWorld* pGame, int playerFlag, int tileIndex)
+ : Unit(pGame,playerFlag, tileIndex,100,0,1.5,1,6,1)
 {
 	m_pSprite = Sprite::create("Texture/Player.png");
 	addChild(m_pSprite);

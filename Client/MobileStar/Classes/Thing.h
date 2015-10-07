@@ -21,6 +21,9 @@ protected:
     
     //Thing의 고유 아이디
     int m_iID;
+    
+    //Thing의 팀 소속
+    int m_iPlayerFlag;
 
     //해당 Thing이 서있는 타일의 인덱스
     int m_iTileIndex;
@@ -28,7 +31,7 @@ protected:
 	//해당 유닛을 지워야 하나?
 	bool m_bErase;
 public:
-	Thing(GameWorld* pGame, Object_Type type, int tileIndex);
+	Thing(GameWorld* pGame, Object_Type type, int playerFlag, int tileIndex);
 	virtual ~Thing();
 
 	void update(float eTime);
@@ -52,6 +55,8 @@ public:
 	bool IsErase()const{ return m_bErase; }
     
     int GetID()const{return m_iID;}
+    
+    int GetPlayerFlag()const{return m_iPlayerFlag;}
 
 	/*							타입 관련 함수							*/
 	void SetObjectType(Object_Type type){ m_ObjectType = type; }

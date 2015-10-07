@@ -17,9 +17,11 @@ private:
     //유닛들
     std::map<int,Unit*> m_Units;
     
+    //게임 맵
     GameMap* m_pMap;
     
-    Sprite* m_pTile[30][30];
+    //게임이 시작된 초
+    float m_fStartFrame;
 public:
     static cocos2d::Scene* createScene();
     
