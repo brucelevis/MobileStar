@@ -23,7 +23,6 @@ bool State_Idle::TouchBegan(Unit* unit, Touch* touch, Event* _event){
     int TileIndex = unit->GetGameWorld()->GetMap()->GetTileIndexFromPosition(MovePos);
     
     auto tel = new TelegramMove(TileIndex);
-    printf("index: %d\n",TileIndex);
     tel->PushBackUnitCode(unit->GetID());
     NetMgr->PushBackMessage(tel);
     
@@ -60,7 +59,6 @@ bool State_Move::TouchBegan(Unit* unit, Touch* touch, Event* _event){
     
     auto tel = new TelegramMove(TileIndex);
     tel->PushBackUnitCode(unit->GetID());
-    printf("index: %d\n",TileIndex);
     NetMgr->PushBackMessage(tel);
     return true;
 }

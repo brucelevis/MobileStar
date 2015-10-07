@@ -43,14 +43,14 @@ GameWorld::GameWorld(){
     
     //네트워크 매니저 초기화
     NetMgr->SetGameWorld(this);
-//    int UserNo = GameClient::GetInstance().userInfo->userNo;
-//    
-//    //플레이어 A인가?
-//    if(GameClient::GetInstance().gameUserInfo[0].userNo == UserNo){
-//        //0번째다.Net
-//    }else{
-//        
-//    }
+    int UserNo = GameClient::GetInstance().userInfo->userNo;
+    
+    //플레이어 A인가?
+    if(GameClient::GetInstance().gameUserInfo[0].userNo == UserNo){
+        //0번째다.Net
+    }else{
+        
+    }
 
     CameraMgr->SetMovePos(Vec2(0,500));
 }

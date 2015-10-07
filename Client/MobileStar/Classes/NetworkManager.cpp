@@ -87,14 +87,14 @@ void NetworkManager::DispatchToServer(){
         }
         
         //서버로 buffer를 보낸다.
-//        NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-//        layer->handler->gameSendClientNotify(nextBuffer,buffer);
+        NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+        layer->handler->gameSendClientNotify(nextBuffer,buffer);
         
-        FetchFromServer(nextBuffer, buffer);
+//        FetchFromServer(nextBuffer, buffer);
     }else{
-        //NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-        //layer->handler->gameSendClientNotify(0,buffer);
-        FetchFromServer(0, buffer);
+        NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+        layer->handler->gameSendClientNotify(0,buffer);
+//        FetchFromServer(0, buffer);
         
         //빈 메시지를 보낸다.
         FirstTask.push_back(TelegramWithPacket(FirstTaskPacket,NULL));
@@ -242,16 +242,12 @@ void NetworkManager::CarryOutFirstTask(int _packet){
                             
                             //현재 이동중이 아니라면 유닛을 이동시킨다. 만약 이동 중일 경우 아무 짓을 하지 않아도 자동으로 다음 작업을 수행한다.
                             if(pUnit->GetFSM()->CurrentState() != State_Move::Instance()){
-                                //PathPlanner->GetPath().pop_front();
-                                
                                 //유닛을 이동시킨다.
                                 pUnit->MoveToPathFront(iPacket);
                                 
                                 //이동 상태로 전환시킨다.
                                 pUnit->GetFSM()->ChangeState(State_Move::Instance());
-                            }else{
                             }
-                            
                             
                         }
                         
@@ -278,6 +274,8 @@ void NetworkManager::CarryOutSecondTask(int _packet){
     {
         if(_packet == SecondTask.front().packet){
             Telegram* pTelegram = SecondTask.front().tel;
+            int iPacket = SecondTask.front().packet;
+            
             if(pTelegram != NULL){
                 
                 switch(pTelegram->messageType){
@@ -286,14 +284,44 @@ void NetworkManager::CarryOutSecondTask(int _packet){
                         auto pTelegramMove = (TelegramMove*)pTelegram;
                         
                         //유닛을 이동시킨다.
-//                        auto Units = m_pGameWorld->GetUnits();
-//                        auto pUnit = Units.begin()->second;
-//                        pUnit->GetPathPlanner()->CreatePathToPosition(pTelegramMove->tileIndex);
-//                        pUnit->GetFSM()->ChangeState(State_Move::Instance());
+                        auto Units = m_pGameWorld->GetUnits();
+                        for(int i=0;i<pTelegramMove->currentSize; i++){
+                            
+                            //객체의 포인터들을 얻어온다.
+                            auto pUnit = Units[pTelegramMove->subject[i]];
+                            auto pPlanner = pUnit->GetPathPlanner();
+                            auto& Path = pPlanner->GetPath();
+                            
+                            //만일 현재 위치와 TileIndex의 위치가 같으면 종료한다.
+                            if(Path.empty() &&
+                               pUnit->GetTileIndex() == pTelegramMove->tileIndex){
+                                pUnit->GetFSM()->ChangeState(State_Idle::Instance());
+                                break;
+                            }
+                            
+                            //만일 유닛이 현재 Path가 남아 있으며 그 목적지와 pTelegramMove->tileIndex가 같으면 종료한다.
+                            if(!Path.empty() &&
+                               pPlanner->GetDestination() == pTelegramMove->tileIndex)
+                                break;
+                            
+                            int MoveIndex = pTelegramMove->tileIndex;
+                            
+                            //길을 생성한다.
+                            pPlanner->CreatePathToPosition(MoveIndex);
+                            
+                            //현재 이동중이 아니라면 유닛을 이동시킨다. 만약 이동 중일 경우 아무 짓을 하지 않아도 자동으로 다음 작업을 수행한다.
+                            if(pUnit->GetFSM()->CurrentState() != State_Move::Instance()){
+                                //유닛을 이동시킨다.
+                                pUnit->MoveToPathFront(iPacket);
+                                
+                                //이동 상태로 전환시킨다.
+                                pUnit->GetFSM()->ChangeState(State_Move::Instance());
+                            }
+                        }
                         
                         delete pTelegramMove;
                     }
-                        break;
+                    break;
                 }
                 
                 SecondTask.pop_front();
@@ -330,7 +358,6 @@ void NetworkManager::CarryOutAutoTask(int _packet){
         switch(pTask->messageType){
             case AutoTaskType::Move:
             {
-                printf("autotask\n");
                 auto pMove = (AutoTaskMove*)pTask;
                 //유닛 리스트를 얻어온다.
                 auto Units = m_pGameWorld->GetUnits();
