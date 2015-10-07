@@ -22,7 +22,7 @@ NetworkManager::NetworkManager()
     
     
     //Temp
-    m_iKindOfComputer = 0;
+    //m_iKindOfComputer = 0;
     
 }
 NetworkManager::~NetworkManager(){
@@ -106,8 +106,6 @@ void NetworkManager::DispatchToServer(){
 
 //서버에서 상대방 클라이언트의 Message를 받은 후, Task에 전송한다.
 void NetworkManager::FetchFromServer(int length, const char* str){
-
-
     int nextBuffer = 0;
     if(length > 0){
         while(nextBuffer < length){
@@ -174,9 +172,11 @@ void NetworkManager::PushAutoTask(AutoTask* autotask){
 
 //Task에 쌓인 메시지들을 모두 수행한다.
 void NetworkManager::CarryOutMessages(){
-    //상대방에게 날아온 메시지가 비어있다면
-    if(SecondTask.empty()){
+    printf("packet  %d   :   %d\n",FirstTaskPacket,SecondTaskPacket);
+    //상대방에게 날아온 메시지가 비어있다면, 또는 두 컴퓨터의 패킷 차이가 5이상 차이가 난다면
+    if(SecondTask.empty() || abs(FirstTaskPacket - SecondTaskPacket) >= 5){
         //통신이 두절
+        printf("통신 두절");
         return ;
     }
     //현재 처리하는 패킷이 통신하는 패킷 번호보다 3보다 작거나 같을 때까지 모두 처리한다.
@@ -281,6 +281,7 @@ void NetworkManager::CarryOutSecondTask(int _packet){
                 switch(pTelegram->messageType){
                     case TelegramType::Move:
                     {
+                        printf("Move 요청이 왔다.\n");
                         auto pTelegramMove = (TelegramMove*)pTelegram;
                         
                         //유닛을 이동시킨다.

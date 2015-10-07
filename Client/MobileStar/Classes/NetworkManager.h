@@ -71,4 +71,6 @@ public:
     
     //B 컴퓨터로 설정하기
     void SetBComputer(){m_iKindOfComputer = 1;}
+    
+    int GetWhatComputer(){ return m_iKindOfComputer; }
 };
