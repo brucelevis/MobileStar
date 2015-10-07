@@ -1086,7 +1086,15 @@ void Network::sendData(const ConnectInfo* connectInfo, const char* data, int dat
     ssize_t sendCnt = send(connectInfo->fd, (void*)data, dataSize, SO_NOSIGPIPE);
 #endif
     
-    if(sendCnt < 0)
+    if(sendCnt == dataSize)
+    {
+        
+    }
+    else if(sendCnt < dataSize)
+    {
+        
+    }
+    else if(sendCnt < 0)
     {
         if(errno == EPIPE)
         {
@@ -1287,4 +1295,59 @@ int Network::CreateTCPClientSocket(const char* ip, unsigned short port)
     }
     
     return sock;
+}
+
+                
+void Network::disconnectWithSocket(ConnectInfo* connectInfo)
+{
+    
+#if OS_PLATFORM == PLATFORM_LINUX
+    
+    epoll_ctl(eventFd, EPOLL_CTL_DEL, clntFd, event);
+    
+#elif OS_PLATFORM == PLATFORM_MAC
+    
+    EV_SET(&connectEvent, clntFd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+    
+    
+    if (kevent(eventFd, &connectEvent, 1, NULL, 0, NULL) == -1)
+    {
+        ErrorLog("kevent init error");
+    }
+    
+#endif
+    
+    
+#if THREAD_TYPE == SINGLE_THREAD
+    workerThreadArray[0]->disconnected(connectInfo);
+    
+    int j;
+    for(j = 0; j < listenSocketCount; j++)
+    {
+        if(listenerInfoVector.at(j)->serverModule == connectInfo->serverModule)
+        {
+            if(listenerInfoVector.at(j)->connectInfoMap.erase( connectInfo->fd ) != 1)
+            {
+                ErrorLog("session erase fail");
+            }
+            connectInfoPool.destroy(connectInfo);
+            
+            break;
+        }
+    }
+    
+    if(j == listenSocketCount) ErrorLog("not found connectInfo");
+#else
+    connectInfo->flags |= FLAG_DISCONNECTED;
+    
+    if((connectInfo->flags & FLAG_PROCESSING) != 0)
+    {
+        
+    }
+    else
+    {
+        sendDataToWorkerThread(RECEIVE_TYPE_DISCONNECT, connectInfo);
+    }
+#endif
+    
 }

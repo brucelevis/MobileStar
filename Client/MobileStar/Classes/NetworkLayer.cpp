@@ -825,7 +825,7 @@ void NetworkHandler::gameHandleStartGameNotify(ConnectInfo* connectInfo, const c
 
 void NetworkHandler::gameHandleClientNotify(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-    printf("NetworkHandler::gameHandleClientNotify");
+//    printf("NetworkHandler::gameHandleClientNotify");
     
     NetMgr->FetchFromServer(dataSize,data);
 }

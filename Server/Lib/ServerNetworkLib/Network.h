@@ -182,6 +182,8 @@ private:
     bool AddServerTypeNetworkInfo(const NetworkInfo* _networkInfo);
     bool AddClientTypeNetworkInfo(const NetworkInfo* _networkInfo);
     
+    void disconnectWithSocket(ConnectInfo* connectInfo);
+    
     void initThreadPipe(ThreadPipe* threadPipe);
     
     long getCustomCurrentTime();
