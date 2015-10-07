@@ -39,12 +39,17 @@ GameWorld::GameWorld()
     m_pCameraLayer->addChild(pMarine1);
     m_Units[pMarine1->GetID()] = pMarine1;
     
+//    for(int i=0;i<50;i++){
+//        auto pMa = new Marine(this, 1, )
+//    }
+    
     //카메라 설정 : 맵 크기 (64*256, 64*256)
     CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
     CameraMgr->SetMovePos(0,100);
     
     //네트워크 매니저 초기화
     NetMgr->SetGameWorld(this);
+    NetMgr->SetupWhatPlayerFlag();
         
     printf("This is %d Computer\n",NetMgr->GetPlayerFlag());
 

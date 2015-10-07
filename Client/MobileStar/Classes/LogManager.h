@@ -14,4 +14,6 @@ public:
     void Log(char *str, ...);
     
     static LogManager* Instance();
+    
+    void SetLog(bool log){m_bDebug = log;}
 };

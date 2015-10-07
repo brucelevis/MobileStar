@@ -44,7 +44,7 @@ void NetworkManager::SetupWhatPlayerFlag(){
         m_iPlayerFlag = 1;
     }
     
-    printf("Computer : %d\n",m_iPlayerFlag);
+    printf("[0] : %lld, [1] : %lld, userNo : %d",GameClient::GetInstance().gameUserInfo[0].userNo,GameClient::GetInstance().gameUserInfo[1].userNo,UserNo);
 }
 //DispatchTask에 쌓인 Message를 서버로 보낸 후, Task에 전송한다.
 void NetworkManager::DispatchToServer(){

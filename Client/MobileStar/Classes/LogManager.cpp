@@ -14,6 +14,8 @@ LogManager::~LogManager(){
 }
 
 void LogManager::Log(char *str, ...){
+    if(!m_bDebug) return;
+    
     char szOutStr[ 1024 ];
     va_list argptr;
     va_start( argptr, str );
