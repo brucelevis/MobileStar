@@ -28,10 +28,13 @@ void Graph_SearchAStar::Search()
              !EdgeItr.end();
              pE = EdgeItr.next())
         {
+            //만약 노드의 상태가 Empty가 아니면 넘긴다.
+            if(!m_pGraph->GetNode(pE->GetTo()).IsEmpty()) continue;
+            
             //이 노드에서 목표(H)까지의 휴리스틱 비용을 계산한다.
             float HCost = Calculate(m_pGraph, m_iTarget, pE->GetTo());
             
-            //근원 (G)dptj 이 노드까지의 실제 비용을 계산한다.
+            //근원 (G)에서 이 노드까지의 실제 비용을 계산한다.
             float GCost = m_GCosts[NextClosestNode] + pE->GetCost();
             
             //노드가 변방에 추가되지 않았다면, 추가하고 G와 F비용을 갱신한다.

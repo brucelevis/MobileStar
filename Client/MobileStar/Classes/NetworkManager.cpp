@@ -217,47 +217,42 @@ void NetworkManager::CarryOutFirstTask(int _packet){
                         //유닛을 이동시킨다.
                         auto Units = m_pGameWorld->GetUnits();
                         for(int i=0;i<pTelegramMove->currentSize; i++){
+                            
+                            //객체의 포인터들을 얻어온다.
                             auto pUnit = Units[pTelegramMove->subject[i]];
+                            auto pPlanner = pUnit->GetPathPlanner();
+                            auto& Path = pPlanner->GetPath();
                             
                             //만일 현재 위치와 TileIndex의 위치가 같으면 종료한다.
-                            if(pUnit->GetTileIndex() == pTelegramMove->tileIndex){
+                            if(Path.empty() &&
+                               pUnit->GetTileIndex() == pTelegramMove->tileIndex){
                                 pUnit->GetFSM()->ChangeState(State_Idle::Instance());
                                 break;
                             }
                             
-                            //Unit의 길을 찾는다.
-                            pUnit->GetPathPlanner()->CreatePathToPosition(pTelegramMove->tileIndex);
-                            
-                            //플래너의 Path를 가져온다.
-                            std::list<int>& Path = pUnit->GetPathPlanner()->GetPath();
-                            
-                            //만약 Path가 비었다면 Idle 상태로 전환한다.
-                            if(Path.empty()){
-                                pUnit->GetFSM()->ChangeState(State_Idle::Instance());
+                            //만일 유닛이 현재 Path가 남아 있으며 그 목적지와 pTelegramMove->tileIndex가 같으면 종료한다.
+                            if(!Path.empty() &&
+                               pPlanner->GetDestination() == pTelegramMove->tileIndex)
                                 break;
+                            
+                            int MoveIndex = pTelegramMove->tileIndex;
+                            
+                            //길을 생성한다.
+                            pPlanner->CreatePathToPosition(MoveIndex);
+                            
+                            //현재 이동중이 아니라면 유닛을 이동시킨다. 만약 이동 중일 경우 아무 짓을 하지 않아도 자동으로 다음 작업을 수행한다.
+                            if(pUnit->GetFSM()->CurrentState() != State_Move::Instance()){
+                                //PathPlanner->GetPath().pop_front();
+                                
+                                //유닛을 이동시킨다.
+                                pUnit->MoveToPathFront(iPacket);
+                                
+                                //이동 상태로 전환시킨다.
+                                pUnit->GetFSM()->ChangeState(State_Move::Instance());
+                            }else{
                             }
                             
-                            //Path의 front로 이동한다.
-                            int MoveIndex = Path.front();
-                            Path.pop_front();
                             
-                            //AutoTask에 다음 Path.front를 넣는다.
-                            PushAutoTask(new AutoTaskMove(iPacket+11,pTelegramMove->subject[i]));
-                            pUnit->SetAutoTaskPacket(iPacket+11);
-                            
-                            //이동시킨다.
-                            pUnit->SetTileIndex(MoveIndex);
-                            Vec2 PathFrontPosition = pUnit->GetGameWorld()->GetMap()->GetNavGraph().GetNode(MoveIndex).getPosition();
-                            
-                            auto move = MoveTo::create(1.1f,PathFrontPosition);
-                            
-                            //액션을 실행한다.
-                            pUnit->stopAllActions();
-                            pUnit->runAction(move);
-                            
-                            //이동 상태로 전환시킨다.
-                            pUnit->GetFSM()->ChangeState(State_Move::Instance());
-
                         }
                         
                         delete pTelegramMove;
@@ -315,7 +310,16 @@ void NetworkManager::CarryOutSecondTask(int _packet){
 
 //AutoTask의 일들을 처리한다.
 void NetworkManager::CarryOutAutoTask(int _packet){
-
+    if(AutoTaskQueue.empty())
+        return;
+    
+    //만약 AutoTaskQueue의 top 패킷이 현재 패킷보다 느리다면 그냥 지워버린다. (그런 현상은 원래 발생해선 안된다!)
+    while(AutoTaskQueue.top()->packet < _packet){
+        auto pTask = AutoTaskQueue.top();
+        AutoTaskQueue.pop();
+        delete pTask;
+    }
+    
     while(!AutoTaskQueue.empty() &&
           AutoTaskQueue.top()->packet == _packet){
         
@@ -326,6 +330,7 @@ void NetworkManager::CarryOutAutoTask(int _packet){
         switch(pTask->messageType){
             case AutoTaskType::Move:
             {
+                printf("autotask\n");
                 auto pMove = (AutoTaskMove*)pTask;
                 //유닛 리스트를 얻어온다.
                 auto Units = m_pGameWorld->GetUnits();
@@ -333,36 +338,12 @@ void NetworkManager::CarryOutAutoTask(int _packet){
                 //해당 유닛의 포인터를 가져온다.
                 auto pUnit = Units[pMove->unitID];
                 
-                //만약 해당 유닛의 AutoTaskPacket과 동기화 되어 있지 않다면 실행시키지 않는다.
+                //만약 유닛의 AutoTaskPacket과 동기화 되어 있지 않다면 실행시키지 않는다.
                 if(!pUnit->IsValidAutoTask(pMove->packet))
                     break;
                 
-                //해당 유닛의 패스를 가져온다.
-                auto& Path = pUnit->GetPathPlanner()->GetPath();
-                
-                if(Path.empty()){
-                    pUnit->GetFSM()->ChangeState(State_Idle::Instance());
-                    break;
-                }
-                
-                //움직일 다음 칸 인덱스를 가져온다.
-                int MoveIndex = Path.front();
-                Path.pop_front();
-                
-                //다음 AutoTask를 등록한다.
-                PushAutoTask(new AutoTaskMove(pMove->packet+11,pMove->unitID));
-                pUnit->SetAutoTaskPacket(pMove->packet+11);
-                
-                //이동시킨다.
-                pUnit->SetTileIndex(MoveIndex);
-                Vec2 PathFrontPosition = pUnit->GetGameWorld()->GetMap()->GetNavGraph().GetNode(MoveIndex).getPosition();
-                
-                auto move = MoveTo::create(1.1f,PathFrontPosition);
-                
-                //액션을 실행한다.
-                pUnit->stopAllActions();
-                pUnit->runAction(move);
-                
+                //해당 유닛을 이동시킨다.
+                pUnit->MoveToPathFront(pMove->packet);
             }
                 break;
         }

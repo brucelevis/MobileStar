@@ -7,8 +7,6 @@ GameMap::GameMap()
 , m_pCellSpace(NULL)
 , m_iTileX(0)
 , m_iTileY(0)
-, m_iNodeX(0)
-, m_iNodeY(0)
 , m_fCellSpaceNeighborhoodRange(1024)
 {
     
@@ -43,8 +41,6 @@ bool GameMap::LoadMap(int tileX,int tileY)
     
     m_iTileX = tileX;
     m_iTileY = tileY;
-    m_iNodeX = tileX;
-    m_iNodeY = tileY;
     
     //타일 생성
     for(int i=0;i<m_iTileY;i++){
@@ -57,15 +53,15 @@ bool GameMap::LoadMap(int tileX,int tileY)
     }
     
     //노드 생성
-    for(int i=0;i<m_iNodeY;i++){
-        for(int j=0;j<m_iNodeX;j++){
+    for(int i=0;i<m_iTileY;i++){
+        for(int j=0;j<m_iTileX;j++){
             NavGraphNode node;
             node.setPosition(Vec2((j-i) * TILE_WIDTH_SIZE / 2,(j+i) * TILE_HEIGHT_SIZE / 2));
             m_pNavGraph->AddNode(node);
         }
     }
     
-    m_pNavGraph->AddAllEdgeFromPresentNode( m_iNodeX, m_iNodeY);
+    m_pNavGraph->AddAllEdgeFromPresentNode( m_iTileX, m_iTileY);
     
     PartitionNavGraph();
     
@@ -95,6 +91,40 @@ int GameMap::GetTileIndexFromPosition(const Vec2& position){
         return -1;
     else
         return Index;
+}
+
+//해당 위치로부터 가장 가까운 유효화된 노드 인덱스를 구한다.
+int GameMap::GetClosestValidNodeFromPosition(Vec2 pos){
+    double ClosestSoFar = MathMgr->MaxDouble;
+    int    ClosestNode  = -1;
+    
+    //셀 이웃 탐색 Range를 얻어온다.
+    const float range = GetCellSpaceNeighborhoodRange();
+    
+    //셀 공간에서 이웃들을 계산한다.
+    GetCellSpace()->CalculateNeighbors(pos, range);
+    
+    //이웃들을 순회하면서 가까운 노드를 찾는다.
+    for (NavGraphNode* pN = GetCellSpace()->begin();
+         !GetCellSpace()->end();
+         pN = GetCellSpace()->next())
+    //SparseGraph::NodeIterator NodeItr(*m_pNavGraph);
+    //for (NavGraphNode* pN=NodeItr.begin();!NodeItr.end();pN=NodeItr.next())
+    {
+        if(!pN->IsEmpty()) continue;
+        
+        float dist = Vec2DistanceSq(pos, pN->getPosition());
+        
+        //가장 가까운 거리와 노드 인덱스를 저장해둔다.
+        if (dist < ClosestSoFar)
+        {
+            ClosestSoFar = dist;
+            ClosestNode  = pN->GetIndex();
+        }
+        
+    }
+    
+    return ClosestNode;
 }
 
 //공간을 분할한다.

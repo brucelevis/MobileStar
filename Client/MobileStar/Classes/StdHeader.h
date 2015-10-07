@@ -9,7 +9,7 @@
 
 USING_NS_CC;
 
-//충돌함수
+//충돌함수 : 이미지의 앵커포인트가 중심에 있어야 한다.
 inline bool IsOverlaped(Vec2 pos, Sprite* sprite){
 	Vec2 spritePos = sprite->getPosition();
 	Size spriteSize = sprite->getContentSize();

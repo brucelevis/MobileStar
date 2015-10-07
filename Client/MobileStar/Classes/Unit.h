@@ -75,6 +75,9 @@ public:
     
 	/*								유틸리티 함수								*/
     
+    //현재 Path.front에 저장되어 있는 타일 인덱스로 이동한다. 만약 Path가 비어있으면 false를 반환한다.
+    bool MoveToPathFront(int CurrentPacket);
+    
     //AutoTaskMove의 packet 값이 유효한지?
     bool IsValidAutoTask(int packet){ return m_iAutoTaskPacket == packet; }
 
@@ -128,7 +131,8 @@ public:
 	Vec2	GetHeading()const{ return m_vHeading; }
     void	SetHeading(Vec2 new_heading);
     
-    void    SetAutoTaskPacket(int packet){m_iAutoTaskPacket = packet;}
+    void    SetAutoTaskPacket(int packet){ m_iAutoTaskPacket = packet;}
+    int     GetAutoTaskPacket()const{return m_iAutoTaskPacket;}
     
     StateMachine<Unit>* GetFSM()const{return m_pFSM;}
     
