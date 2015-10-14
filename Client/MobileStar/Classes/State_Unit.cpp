@@ -19,7 +19,6 @@ void State_Idle::End(Unit* unit){
 }
 bool State_Idle::TouchBegan(Unit* unit, Touch* touch, Event* _event){
     //터치하였을 때, 네트워크 메시지를 보낸다.
-    printf("Idle 터치");
     //만약 나의 플레이어가 아니었을 경우, 하지 않는다.
     if(unit->GetPlayerFlag() != NetMgr->GetPlayerFlag())
         return true;
@@ -60,7 +59,6 @@ void State_Move::End(Unit* unit){
 }
 bool State_Move::TouchBegan(Unit* unit, Touch* touch, Event* _event){
     //터치하였을 때, 네트워크 메시지를 보낸다.
-    printf("Move 터치");
     //만약 나의 플레이어가 아니었을 경우, 하지 않는다.
     if(unit->GetPlayerFlag() != NetMgr->GetPlayerFlag())
         return true;

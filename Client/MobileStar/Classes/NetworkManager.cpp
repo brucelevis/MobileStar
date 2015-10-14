@@ -322,7 +322,7 @@ void NetworkManager::CarryOutSecondTask(int _packet){
                             if(pUnit->GetFSM()->CurrentState() != State_Move::Instance()){
                                 //유닛을 이동시킨다.
                                 pUnit->MoveToPathFront(iPacket);
-                                
+                                printf("이동");
                                 //이동 상태로 전환시킨다.
                                 pUnit->GetFSM()->ChangeState(State_Move::Instance());
                             }
