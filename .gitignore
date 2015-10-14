@@ -13,4 +13,4 @@ Client/MobileStar/proj.android/gen/*
 Client/MobileStar/proj.android/libs/*
 Client/MobileStar/proj.android/assets/*
 Client/MobileStar/proj.android/res/*
-Client/MobileStar/proj.android/project.properties
+Client/MobileStar/proj.android/local.properties.txt
