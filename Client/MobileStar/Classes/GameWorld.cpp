@@ -15,6 +15,9 @@ Scene* GameWorld::createScene()
 GameWorld::GameWorld()
 : m_fStartFrame(0)
 {
+    //로그 찍을 것인가?
+    LogMgr->SetLog(true);
+    
     //카메라 레이어 초기화
     m_pCameraLayer = Layer::create();
     addChild(m_pCameraLayer, 0);
@@ -30,18 +33,56 @@ GameWorld::GameWorld()
     m_pCameraLayer->addChild(m_pMap);
     
     //마린 생성
-    auto pMarine = new Marine(this,0,129);
-    pMarine->setColor(Color3B(255,0,0));
-    m_pCameraLayer->addChild(pMarine);
-    m_Units[pMarine->GetID()] = pMarine;
+    {
+        auto pMarine = new Marine(this,0,134);
+        pMarine->setColor(Color3B(255,0,0));
+        pMarine->setCascadeColorEnabled(pMarine);
+        m_pCameraLayer->addChild(pMarine);
+        m_Units[pMarine->GetID()] = pMarine;
+    }
     
-    auto pMarine1 = new Marine(this,1,135);
-    m_pCameraLayer->addChild(pMarine1);
-    m_Units[pMarine1->GetID()] = pMarine1;
     
-//    for(int i=0;i<50;i++){
-//        auto pMa = new Marine(this, 1, )
-//    }
+    {
+        auto pMarine = new Marine(this,1,105);
+        m_pCameraLayer->addChild(pMarine);
+        m_Units[pMarine->GetID()] = pMarine;
+    }
+    {
+        auto pMarine = new Marine(this,1,135);
+        m_pCameraLayer->addChild(pMarine);
+        m_Units[pMarine->GetID()] = pMarine;
+    }
+    {
+        auto pMarine = new Marine(this,1,164);
+        m_pCameraLayer->addChild(pMarine);
+        m_Units[pMarine->GetID()] = pMarine;
+    }
+    {
+        auto pMarine = new Marine(this,1,165);
+        m_pCameraLayer->addChild(pMarine);
+        m_Units[pMarine->GetID()] = pMarine;
+    }
+    {
+        auto pMarine = new Marine(this,1,163);
+        m_pCameraLayer->addChild(pMarine);
+        m_Units[pMarine->GetID()] = pMarine;
+    }
+    {
+        auto pMarine = new Marine(this,1,133);
+        m_pCameraLayer->addChild(pMarine);
+        m_Units[pMarine->GetID()] = pMarine;
+    }
+    {
+        auto pMarine = new Marine(this,1,103);
+        m_pCameraLayer->addChild(pMarine);
+        m_Units[pMarine->GetID()] = pMarine;
+    }
+    {
+        auto pMarine = new Marine(this,1,104);
+        m_pCameraLayer->addChild(pMarine);
+        m_Units[pMarine->GetID()] = pMarine;
+    }
+    
     
     //카메라 설정 : 맵 크기 (64*256, 64*256)
     CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
@@ -50,10 +91,16 @@ GameWorld::GameWorld()
     //네트워크 매니저 초기화
     NetMgr->SetGameWorld(this);
     NetMgr->SetupWhatPlayerFlag();
-        
-    printf("This is %d Computer\n",NetMgr->GetPlayerFlag());
+    
+    LogMgr->Log("This is %d Computer",NetMgr->GetPlayerFlag());
 
     CameraMgr->SetMovePos(Vec2(0,500));
+    
+    //디버그용
+    m_pDebugLabel = Label::createWithTTF("","fonts/arial.ttf",24);
+    m_pDebugLabel->setAnchorPoint(Vec2(0,0));
+    m_pDebugLabel->setPosition(0,120);
+    addChild(m_pDebugLabel);
 }
 
 GameWorld::~GameWorld(){
@@ -105,6 +152,13 @@ void GameWorld::updateNetwork(float eTime){
     
     //Task에 쌓인 메시지를 처리한다.
     NetMgr->CarryOutMessages();
+    
+    //디버그용
+    char buf[256];
+    sprintf(buf,"FirstPacket %d, SecondPacket %d\nFirstTaskSize %d, SecondTaskSize %d",
+            NetMgr->GetFirstTaskPacket(),NetMgr->GetSecondTaskPacket(),
+            NetMgr->GetFirstTaskSize(),NetMgr->GetSecondTaskSize());
+    m_pDebugLabel->setString(buf);
 }
 bool GameWorld::TouchBegan(Touch* touch, Event* _event){
     for(auto pUnit : m_Units){

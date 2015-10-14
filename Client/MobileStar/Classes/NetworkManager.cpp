@@ -7,7 +7,7 @@
 #include "PathPlanner.h"
 #include "GameClient.h"
 
-#define COCOS2D_DEBUG 1
+USING_NS_CC;
 
 NetworkManager::NetworkManager()
 {
@@ -21,10 +21,6 @@ NetworkManager::NetworkManager()
         FirstTask.push_back(TelegramWithPacket(i,NULL));
         SecondTask.push_back(TelegramWithPacket(i,NULL));
     }
-    
-    
-    //Temp
-    //m_iKindOfComputer = 0;
     
 }
 NetworkManager::~NetworkManager(){
@@ -44,7 +40,7 @@ void NetworkManager::SetupWhatPlayerFlag(){
         m_iPlayerFlag = 1;
     }
     
-    printf("[0] : %lld, [1] : %lld, userNo : %d",GameClient::GetInstance().gameUserInfo[0].userNo,GameClient::GetInstance().gameUserInfo[1].userNo,UserNo);
+    LogMgr->Log("[0] : %lld, [1] : %lld, userNo : %d",GameClient::GetInstance().gameUserInfo[0].userNo,GameClient::GetInstance().gameUserInfo[1].userNo,UserNo);
 }
 //DispatchTask에 쌓인 Message를 서버로 보낸 후, Task에 전송한다.
 void NetworkManager::DispatchToServer(){
@@ -184,10 +180,10 @@ void NetworkManager::PushAutoTask(AutoTask* autotask){
 void NetworkManager::CarryOutMessages(){
     m_iCntCarryOutMessages++;
     
-    //상대방에게 날아온 메시지가 비어있다면, 또는 두 컴퓨터의 패킷 차이가 5이상 차이가 난다면
-    if(SecondTask.empty() || abs(FirstTaskPacket - SecondTaskPacket) >= 5){
+    //상대방에게 날아온 메시지가 비어있다면, 또는 두 컴퓨터의 패킷 차이가 3이상 차이가 난다면
+    if(SecondTask.empty() || abs(FirstTaskPacket - SecondTaskPacket) >= 3){
         //통신이 두절
-        printf("통신 두절");
+        LogMgr->Log("통신 두절");
         return ;
     }
     //현재 처리하는 패킷이 통신하는 패킷 번호보다 3보다 작거나 같을 때까지 모두 처리한다.
@@ -248,16 +244,18 @@ void NetworkManager::CarryOutFirstTask(int _packet){
                             
                             int MoveIndex = pTelegramMove->tileIndex;
                             
+                            
+                            
                             //길을 생성한다.
                             pPlanner->CreatePathToPosition(MoveIndex);
                             
                             //현재 이동중이 아니라면 유닛을 이동시킨다. 만약 이동 중일 경우 아무 짓을 하지 않아도 자동으로 다음 작업을 수행한다.
                             if(pUnit->GetFSM()->CurrentState() != State_Move::Instance()){
-                                //유닛을 이동시킨다.
-                                pUnit->MoveToPathFront(iPacket);
-                                
                                 //이동 상태로 전환시킨다.
                                 pUnit->GetFSM()->ChangeState(State_Move::Instance());
+                                
+                                //유닛을 이동시킨다.
+                                pUnit->MoveToPathFront(iPacket);
                             }
                             
                         }

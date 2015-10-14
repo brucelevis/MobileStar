@@ -71,8 +71,11 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     auto pMap = m_pGameWorld->GetMap();
     auto& Graph = pMap->GetNavGraph();
     
+    LogMgr->Log("Path Size : %d",Path.size());
+    
     if(Path.empty()){
-        GetFSM()->ChangeState(State_Idle::Instance());
+        printf("취소");
+        m_pFSM->ChangeState(State_Idle::Instance());
         return false;
     }
     
@@ -96,7 +99,9 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     }
     
     //이동시킨다.
+    int PrevIndex = GetTileIndex();
     SetTileIndex(MoveIndex);
+    Vec2 MyPosition = m_pGameWorld->GetMap()->GetNavGraph().GetNode(PrevIndex).getPosition();
     Vec2 PathFrontPosition = m_pGameWorld->GetMap()->GetNavGraph().GetNode(MoveIndex).getPosition();
     
     //Heading 설정
@@ -107,7 +112,7 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     //다음 AutoTask를 먼저 등록한다.
     //본래 속도보다 TweakPacket 정도 더 빠르게 실행시킨다.
     
-    float Distance = Vec2Distance(PathFrontPosition, getPosition()) / 64.0f;
+    float Distance = Vec2Distance(PathFrontPosition, MyPosition) / 64.0f;
     float Duration = Distance / GetSpeed();
     
     int TweakPacket = 1;

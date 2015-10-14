@@ -22,6 +22,9 @@ private:
     
     //게임이 시작된 초
     float m_fStartFrame;
+    
+    //디버그용
+    Label* m_pDebugLabel;
 public:
     static cocos2d::Scene* createScene();
     

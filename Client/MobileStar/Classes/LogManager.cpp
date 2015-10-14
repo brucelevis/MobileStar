@@ -13,13 +13,13 @@ LogManager::LogManager()
 LogManager::~LogManager(){
 }
 
-void LogManager::Log(char *str, ...){
+void LogManager::Log(std::string str, ...){
     if(!m_bDebug) return;
     
     char szOutStr[ 1024 ];
     va_list argptr;
-    va_start( argptr, str );
-    vsprintf( szOutStr , str, argptr );
+    va_start( argptr, str.c_str() );
+    vsprintf( szOutStr , str.c_str(), argptr );
     va_end( argptr );
-    printf("%s",szOutStr);
+    printf("%s\n",szOutStr);
 }

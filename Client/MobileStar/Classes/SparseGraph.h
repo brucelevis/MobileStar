@@ -33,9 +33,14 @@ private:
     //모든 엣지를 순환한 후 무효화되어있는 노드를 포함하고 있는 엣지를 제거한다.
     void  CullInvalidEdges();
     
+    //타일의 갯수
+    int m_iTileX;
+    int m_iTileY;
+
+    
 public:
     
-    SparseGraph() : m_iNextNodeIndex(0){}
+    SparseGraph(int tileX, int tileY) : m_iNextNodeIndex(0), m_iTileX(tileX), m_iTileY(tileY) {}
     
     //노드를 반환한다.
     NavGraphNode&  GetNode(int idx);
@@ -44,7 +49,10 @@ public:
     GraphEdge& GetEdge(int from, int to);
     
     //모든 노드가 존재하는 시점에서, 해당 함수를 실행하면 노드 8방향으로 엣지를 잇는다.
-    void AddAllEdgeFromPresentNode(int cellX,int cellY);
+    void AddAllEdgeFromPresentNode();
+    
+    //해당 노드로부터 8방향으로 엣지를 업데이트한다.
+    void UpdateEdgeFromNode(int nodeIndex);
     
     //다음으로 비어있는 노드 인덱스를 반환한다.
     int   GetNextFreeNodeIndex()const{ return m_iNextNodeIndex; }

@@ -35,7 +35,7 @@ bool GameMap::LoadMap(int tileX,int tileY)
 {
     Clear();
     
-    m_pNavGraph = new SparseGraph();
+    m_pNavGraph = new SparseGraph(tileX, tileY);
     
     //맵을 임시로 생성한다.
     
@@ -61,7 +61,7 @@ bool GameMap::LoadMap(int tileX,int tileY)
         }
     }
     
-    m_pNavGraph->AddAllEdgeFromPresentNode( m_iTileX, m_iTileY);
+    m_pNavGraph->AddAllEdgeFromPresentNode();
     
     PartitionNavGraph();
     

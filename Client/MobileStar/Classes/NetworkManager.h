@@ -74,4 +74,13 @@ public:
     
     //네트워크 메시지 업데이트 처리 횟수
     int GetCntCarryOutMessages()const{return m_iCntCarryOutMessages;}
+    
+    //게터 세터
+    int GetFirstTaskPacket()const{return FirstTaskPacket;}
+    
+    int GetSecondTaskPacket()const{return SecondTaskPacket;}
+    
+    int GetFirstTaskSize()const{return (int)FirstTask.size();}
+    
+    int GetSecondTaskSize()const{return (int)SecondTask.size();}
 };

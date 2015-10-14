@@ -7,7 +7,8 @@ Marine::Marine(GameWorld* pGame, int playerFlag, int tileIndex)
 {
 	m_pSprite = Sprite::create("Texture/Player.png");
 	addChild(m_pSprite);
-
+    
+    SetTileIndex(tileIndex);
 }
 Marine::~Marine(){
 }

@@ -30,6 +30,10 @@ void Thing::SetTileIndex(int _tileindex){
     
     //다음 타일 인덱스를 채운다.
     Graph.GetNode(_tileindex).SetDynamic();
+    
+    //두 타일 인덱스의 엣지를 업데이트 시켜준다.
+    Graph.UpdateEdgeFromNode(m_iTileIndex);
+    Graph.UpdateEdgeFromNode(_tileindex);
 
     m_iTileIndex = _tileindex;
 }

@@ -1,6 +1,8 @@
 #pragma once
 #include <stdio.h>
 #include <stdarg.h>
+#include <string>
+
 #define LogMgr LogManager::Instance()
 
 class LogManager{
@@ -11,7 +13,7 @@ public:
     LogManager();
     ~LogManager();
     
-    void Log(char *str, ...);
+    void Log(std::string str, ...);
     
     static LogManager* Instance();
     
