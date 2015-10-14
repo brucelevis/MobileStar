@@ -1,6 +1,5 @@
 *.txt
 Client/MobileStar/cocos2d/*
-Client/MobileStar/proj.android/*
 Client/MobileStar/proj.android-studio/*
 Client/MobileStar/proj.linux/*
 Client/MobileStar/proj.win8.1-universal/*
@@ -8,4 +7,9 @@ Client/MobileStar/proj.win10/*
 Client/MobileStar/proj.win32/*
 Client/MobileStar/bin/*
 Client/MobileStar/out/*
-
+Client/MobileStar/proj.android/obj/*
+Client/MobileStar/proj.android/bin/*
+Client/MobileStar/proj.android/gen/*
+Client/MobileStar/proj.android/libs/*
+Client/MobileStar/proj.android/assets/*
+Client/MobileStar/proj.android/res/*
