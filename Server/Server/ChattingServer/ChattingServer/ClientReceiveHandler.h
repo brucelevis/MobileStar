@@ -11,11 +11,11 @@ public:
 	~ClientReceiveHandler();
 	bool initialize();
 
-	void receiveData(const ConnectInfo* connectInfo, const commandType_t cmd, const char* body, const int bodySize);
-	void sessionIn(const ConnectInfo* connectInfo);
-    void sessionOut(const ConnectInfo* connectInfo);
+	void receiveData(ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize);
+	void sessionIn(ConnectInfo* connectInfo);
+    void sessionOut(ConnectInfo* connectInfo);
 
-//	void handleFirstConnectReq(const ConnectInfo* connectInfo, const char* body, const int bodySize);
+	void handleFirstConnectReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
 //	void handleChattingReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
 //	void handleGetChannelListReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
 //	void handleMoveChannelReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
@@ -27,6 +27,7 @@ public:
 
 private:
 	char m_sendBuffer[5000];
+    int testName;
 };
 
 #endif //__CLIENT_RECEIVE_HANDLER_H__

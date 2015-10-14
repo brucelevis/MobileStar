@@ -5,6 +5,7 @@
 #include "Network.h"
 
 static const char* IP_ADDRESS = "1.234.65.217";
+static const unsigned short PORT = 10400;
 
 enum SERVER_MODULE
 {
@@ -34,6 +35,7 @@ public:
     void lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleChannelInfoNotify(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleFirstConnectOk(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void lobbyHandleFirstConnectOut(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleGetChannelListRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleMoveChannelRes(ConnectInfo* connectInfo, const char* pData, int pDataSize);
     
@@ -60,9 +62,7 @@ public:
     void lobbyHandleLeaveRoomNotify(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleStartGameNotify(ConnectInfo* connectInfo, const char* data, int dataSize);
     void lobbyHandleQuickPlayRes(ConnectInfo* connectInfo, const char* data, int dataSize);
-    
-    ////chatting
-    
+
     ////game
     
     void gameHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize);
@@ -70,6 +70,11 @@ public:
     void gameHandleClientNotify(ConnectInfo* connectInfo, const char* data, int dataSize);
     void gameHandleFinishGameRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     
+    ////chatting
+    
+    void chattingHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void chattingHandleMoveLocationRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void chattingHandleSendChattingNotify(ConnectInfo* connectInfo, const char* data, int dataSize);
     
     
     ///////////////////// SEND
@@ -107,8 +112,11 @@ public:
     void gameSendFinishGameReq();
     void gameSendMoveLobbyOk();
     
+    void chattingSendFirstConnectReq();
+    void chattingSendMoveLocationReq(int32_t loNo);
+    void chattingSendSendChattingReq(const char* chatting, uint8_t chattingLen);
     
-
+    
 public:
     
     Network* network;

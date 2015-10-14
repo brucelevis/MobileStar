@@ -11,7 +11,7 @@ class GameSendHandler
 		~GameSendHandler();
 		bool initialize();
 
-		void sendFailPacket(const ConnectInfo* connectInfo, commandType_t cmd, int32_t failReason);
+		void sendFailPacket(const ConnectInfo* connectInfo, command_t cmd, int32_t failReason);
 
 	private:
 		char m_sendBuffer[5000];

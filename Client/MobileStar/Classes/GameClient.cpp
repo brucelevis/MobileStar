@@ -59,10 +59,13 @@ bool GameClient::Initialize()
 	userInfo = new UserInfo();
 	memset(userInfo, 0, sizeof(UserInfo));
 
-	currentScene = LOGIN_SCENE_NOW;
+	currentScene = NO_SCENE_NOW;
 	channelNo = -1;
 
     popUp = new CustomPopUp();
+    
+    isConnectedWithChattingServer = false;
+    isConnectedWithLobbyServer = false;
 	return true;
 }
 

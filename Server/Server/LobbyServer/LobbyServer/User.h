@@ -74,9 +74,6 @@ public:
     void setRequestGameUserNo(int64_t _userNo) { requestGameUserNo = _userNo; }
     int64_t getRequestGameUserNo() { return requestGameUserNo; }
     
-    void addResponseGameUserNo(int64_t _userNo) { responseGameUserNoVector.push_back(_userNo); }
-    void removeResponseGameUserNo(int64_t _userNo);
-    
 	~User();
 
 public:
@@ -96,8 +93,6 @@ private:
     void* locationObject;
     
     int64_t requestGameUserNo;
-    std::vector<int64_t> responseGameUserNoVector;
-    std::vector<int64_t>::iterator rguvItr;
 };
 
 
@@ -121,10 +116,6 @@ public:
     
     bool removeUser(User* _user);
 	bool removeUserByUserNo(int64_t userNo);
-
-    
-    
-
 
 	~UserManager();
 

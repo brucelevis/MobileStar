@@ -7,6 +7,6 @@
 }
 
 @property(nonatomic, readonly) RootViewController* viewController;
-
+//- (int) doSomethingWith:(void *) aParameter;
 @end
 

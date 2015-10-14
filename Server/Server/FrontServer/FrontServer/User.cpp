@@ -16,6 +16,7 @@ bool User::initialize(SessionId_t* _sid, UserInfo* _userInfo)
 	roomNo = INVALID_ROOM_NO;
 	channelNo = INVALID_CHANNEL_NO;
     userState = USER_STATE_LOGIN;
+    lobbyNo = -1;
 	return true;
 }
 
@@ -72,6 +73,8 @@ int UserManager::addConnectedUser(SessionId_t* sessionId, ConnectInfo* connectIn
                 delete user;
                 return ALREADY_EXIST_USER;
             }
+            
+            user->setUserState(USER_STATE_LOGIN);
             
             return SUCCESS;
         }

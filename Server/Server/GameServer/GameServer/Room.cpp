@@ -495,7 +495,7 @@ int RoomManager::destroyRoom(int32_t roomNo)
 //    
 //    if (room->readyUserInRoom(user) == false)
 //    {
-//        return -1;
+//        return -1; chatting
 //    }
 //    
 //    return SUCCESS;

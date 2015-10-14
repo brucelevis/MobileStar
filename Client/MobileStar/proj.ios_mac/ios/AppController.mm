@@ -145,5 +145,4 @@ static AppDelegate s_sharedApplication;
     [super dealloc];
 }
 
-
 @end

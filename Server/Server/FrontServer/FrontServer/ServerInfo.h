@@ -27,6 +27,7 @@ struct ChattingServerInfo
 
 struct LobbyServerInfo
 {
+    int lobbyNo;
     ConnectInfo* connectInfo;
     
     char gameIp[MAX_IP_ADDRESS_LEN];
@@ -52,7 +53,10 @@ public:
     //bool AddChattingServer(char* _clientIp, uint16_t clientPort);
     
     ChattingServerInfo* getChattingServerInfo() { return chattingServerInfo; }
-    LobbyServerInfo* getLobbyServerInfo() { return lobbyServerInfoList[0]; }
+    LobbyServerInfo* getRandomLobbyServerInfo() { return lobbyServerInfoList[0]; }
+    LobbyServerInfo* getLobbyServerInfo(int lobbyNo);
+    
+    int getLobbyCount() { return (int)lobbyServerInfoList.size(); }
     
 
 	~ServerInfoManager();
@@ -62,6 +66,7 @@ private:
     std::vector<LobbyServerInfo*> lobbyServerInfoList;
     std::vector<GameServerInfo*> gameServerInfoList;
     
+    int lobbyNoCreator;
 };
 
 #endif //__SERVER_INFO_H__

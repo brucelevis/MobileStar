@@ -6,22 +6,12 @@
 #include "BasicPacket.h"
 #include <map>
 
-class FrontReceiveHandler;
-class FrontSendHandler;
-class LobbyReceiveHandler;
-class LobbySendHandler;
-class GameReceiveHandler;
-class GameSendHandler;
-class ChattingReceiveHandler;
-class ChattingSendHandler;
-class ClientReceiveHandler;
-class ClientSendHandler;
-
 class Room;
+
 class IOManager : public WorkerThread
 {
 public:
-    IOManager(FrontSendHandler* _frontSendHandler, LobbySendHandler* _lobbySendHandler, GameSendHandler* _gameSendHandler, ChattingSendHandler* _chattingSendHandler, ClientSendHandler* _clientSendHandler, FrontReceiveHandler* _frontReceiveHandler, LobbyReceiveHandler* _lobbyReceiveHandler, GameReceiveHandler* _gameReceiveHandler, ChattingReceiveHandler* _chattingReceiveHandler, ClientReceiveHandler* _clientReceiveHandler);
+    IOManager();
     ~IOManager();
 
     ////////////virtual method///////////////
@@ -45,6 +35,16 @@ public:
 //    void frontHandleMoveChannelReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
 //    void frontHandleGetRoomListReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
     
+    //////////////////////////////////////// lobby recv
+    
+    void lobbyReceiveData(ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize);
+    void lobbySessionIn(ConnectInfo* connectInfo);
+    void lobbySessionOut(ConnectInfo* connectInfo);
+    
+    void lobbyHandleFirstConnectReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
+    
+    
+    
     
     //////////////////////////////////////// game recv
     
@@ -58,7 +58,17 @@ public:
     void gameHandleMovingClientDisconnect(ConnectInfo* connectInfo, const char* body, int bodySize);
     
     
-    ////////////////////////////////////////
+    //////////////////////////////////////// chatting recv
+    
+    void chattingReceiveData(ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize);
+    void chattingSessionIn(ConnectInfo* connectInfo);
+    void chattingSessionOut(ConnectInfo* connectInfo);
+    
+    void chattingHandleFirstConnectRes(ConnectInfo* connectInfo, const char* body, const int bodySize);
+    void chattingHandleEnterClientRes(ConnectInfo* connectInfo, const char* body, int bodySize);
+    
+    
+    
     ////////////////////////////////////////
     
     
@@ -95,23 +105,8 @@ public:
     
     
 public:
-    FrontSendHandler* frontSendHandler;
-    LobbySendHandler* lobbySendHandler;
-    GameSendHandler* gameSendHandler;
-    ChattingSendHandler* chattingSendHandler;
-    ClientSendHandler* clientSendHandler;
-    
-    FrontReceiveHandler* frontReceiveHandler;
-    LobbyReceiveHandler* lobbyReceiveHandler;
-    GameReceiveHandler* gameReceiveHandler;
-    ChattingReceiveHandler* chattingReceiveHandler;
-    ClientReceiveHandler* clientReceiveHandler;
-    
-    
     char sendBuffer[5000];
     
-    
-    int testNameInt;
 };
 
 #endif // __I_O_MANAGER_H__

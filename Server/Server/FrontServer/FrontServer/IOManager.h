@@ -6,22 +6,10 @@
 #include "BasicPacket.h"
 #include <map>
 
-class FrontReceiveHandler;
-class FrontSendHandler;
-class LobbyReceiveHandler;
-class LobbySendHandler;
-class GameReceiveHandler;
-class GameSendHandler;
-class ChattingReceiveHandler;
-class ChattingSendHandler;
-class ClientReceiveHandler;
-class ClientSendHandler;
-
-
 class IOManager : public WorkerThread
 {
 public:
-    IOManager(FrontSendHandler* _frontSendHandler, LobbySendHandler* _lobbySendHandler, GameSendHandler* _gameSendHandler, ChattingSendHandler* _chattingSendHandler, ClientSendHandler* _clientSendHandler, FrontReceiveHandler* _frontReceiveHandler, LobbyReceiveHandler* _lobbyReceiveHandler, GameReceiveHandler* _gameReceiveHandler, ChattingReceiveHandler* _chattingReceiveHandler, ClientReceiveHandler* _clientReceiveHandler);
+    IOManager();
     ~IOManager();
 
     ////////////virtual method///////////////
@@ -64,11 +52,11 @@ public:
     void gameHandleFirstConnectReq(ConnectInfo* connectInfo, const char* data, int dataSize);
     
     ////////////////////////recv chating
-    void chatingSessionIn(ConnectInfo* connectInfo);
-    void chatingSessionOut(ConnectInfo* connectInfo);
-    void chatingReceiveData(ConnectInfo* connectInfo, command_t cmd, const char* data, int dataSize);
+    void chattingSessionIn(ConnectInfo* connectInfo);
+    void chattingSessionOut(ConnectInfo* connectInfo);
+    void chattingReceiveData(ConnectInfo* connectInfo, command_t cmd, const char* data, int dataSize);
     
-    void chatingHandleFirstConnectReq(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void chattingHandleFirstConnectReq(ConnectInfo* connectInfo, const char* data, int dataSize);
     
     
     
@@ -83,21 +71,8 @@ public:
     
     
 public:
-    FrontSendHandler* frontSendHandler;
-    LobbySendHandler* lobbySendHandler;
-    GameSendHandler* gameSendHandler;
-    ChattingSendHandler* chattingSendHandler;
-    ClientSendHandler* clientSendHandler;
-    
-    FrontReceiveHandler* frontReceiveHandler;
-    LobbyReceiveHandler* lobbyReceiveHandler;
-    GameReceiveHandler* gameReceiveHandler;
-    ChattingReceiveHandler* chattingReceiveHandler;
-    ClientReceiveHandler* clientReceiveHandler;
     
     char sendBuffer[5000];
-    
-    
     
     int createUserNo;
 };

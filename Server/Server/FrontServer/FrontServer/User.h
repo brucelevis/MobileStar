@@ -53,6 +53,9 @@ public:
     void setSid(SessionId_t _sid) { sid = _sid; }
 
 	UserInfo* getUserInfo() { return &userInfo; }
+    
+    int getLobbyNo() { return lobbyNo; }
+    void setLobbyNo(int _lobbyNo) { lobbyNo = _lobbyNo; }
 
 	~User();
 
@@ -68,7 +71,7 @@ private:
 	int16_t channelNo;
 	int16_t roomNo;
     int8_t userState;
-
+    int lobbyNo;
 };
 
 

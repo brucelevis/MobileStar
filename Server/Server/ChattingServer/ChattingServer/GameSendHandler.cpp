@@ -17,7 +17,7 @@ bool GameSendHandler::initialize()
 	return true;
 }
 
-void GameSendHandler::sendFailPacket(const ConnectInfo* connectInfo, commandType_t cmd, int32_t failReason)
+void GameSendHandler::sendFailPacket(const ConnectInfo* connectInfo, command_t cmd, int32_t failReason)
 {
 //	GameLobbyPacket::FailPacket packet;
 //	memset(&packet, 0, sizeof(packet));

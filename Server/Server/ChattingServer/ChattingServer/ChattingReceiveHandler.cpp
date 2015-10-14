@@ -147,11 +147,11 @@ void ClientReceiveHandler::HandleChattingReq(Session* const session, const char*
 		return;
 	}
 
-	char nickName[BasicPacket::MAX_NICK_NAME_LEN + 1] = { 0, };
+	char nickName[MAX_NICK_NAME_LEN + 1] = { 0, };
 	memcpy(nickName, user->GetNickName(), user->GetNickNameLen());
 
 	int8_t chattingLen = packet.chattingLen;
-	char chatting[BasicPacket::MAX_CHATTING_LEN + 1] = { 0, };
+	char chatting[MAX_CHATTING_LEN + 1] = { 0, };
 	memcpy(chatting, packet.chatting, chattingLen);
 
 	Channel* channel = LobbyServer::GetInstance().channelMgr->GetChannelByChannelNo(user->GetChannelNo());
@@ -337,7 +337,7 @@ void ClientReceiveHandler::HandleGetUserInfoReq(const ConnectInfo* connectInfo, 
 	memset(&nickNameInfo, 0, sizeof(NickNameInfo));
 
 	nickNameInfo.nickNameLen = packet.nickNameInfo.nickNameLen;
-	memcpy(nickNameInfo.nickName, packet.nickNameInfo.nickName, BasicPacket::MAX_NICK_NAME_LEN);
+	memcpy(nickNameInfo.nickName, packet.nickNameInfo.nickName, MAX_NICK_NAME_LEN);
 
 	DebugLog("nickName %s %s %d %d", nickNameInfo.nickName, packet.nickNameInfo.nickName, nickNameInfo.nickNameLen, packet.nickNameInfo.nickNameLen);
 

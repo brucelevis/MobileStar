@@ -30,6 +30,7 @@
 		6F2DF0351BA2DCD6002A5D43 /* ChattingReceiveHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0311BA2DCD6002A5D43 /* ChattingReceiveHandler.cpp */; };
 		6F2DF0361BA2DCD6002A5D43 /* ChattingSendHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0331BA2DCD6002A5D43 /* ChattingSendHandler.cpp */; };
 		6F3BFD161BAE90D800C9027F /* Room.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F3BFD141BAE90D800C9027F /* Room.cpp */; };
+		6FD8FCA01BCCEC5C0029BD4A /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 6FD8FC9F1BCCEC5C0029BD4A /* Makefile */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -107,6 +108,7 @@
 		6F3BFD141BAE90D800C9027F /* Room.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Room.cpp; sourceTree = "<group>"; };
 		6F3BFD151BAE90D800C9027F /* Room.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Room.h; sourceTree = "<group>"; };
 		6F85554D1BAD795E0030AC6A /* GameFrontPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameFrontPacket.h; path = ../Packet/GameFrontPacket.h; sourceTree = "<group>"; };
+		6FD8FC9F1BCCEC5C0029BD4A /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -143,6 +145,7 @@
 		6F2DEF601BA0DC50002A5D43 /* GameServer */ = {
 			isa = PBXGroup;
 			children = (
+				6FD8FC9F1BCCEC5C0029BD4A /* Makefile */,
 				6F1899DE1BBBDE550000590F /* ServerInfo.cpp */,
 				6F1899DF1BBBDE550000590F /* ServerInfo.h */,
 				6F3BFD141BAE90D800C9027F /* Room.cpp */,
@@ -277,6 +280,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FD8FCA01BCCEC5C0029BD4A /* Makefile in Sources */,
 				6F2DEFF01BA2AD42002A5D43 /* User.cpp in Sources */,
 				6F2DEFBB1BA2ACC1002A5D43 /* tinyxml2.cpp in Sources */,
 				6F2DEFB51BA2ACB1002A5D43 /* Log.cpp in Sources */,

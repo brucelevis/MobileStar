@@ -5,17 +5,6 @@
 #include "FrontDefine.h"
 #include "FrontServer.h"
 
-#include "FrontReceiveHandler.h"
-#include "FrontSendHandler.h"
-#include "LobbyReceiveHandler.h"
-#include "LobbySendHandler.h"
-#include "GameReceiveHandler.h"
-#include "GameSendHandler.h"
-#include "ChattingReceiveHandler.h"
-#include "ChattingSendHandler.h"
-#include "ClientReceiveHandler.h"
-#include "ClientSendHandler.h"
-
 #include "ClientFrontPacket.h"
 #include "LobbyFrontPacket.h"
 #include "GameFrontPacket.h"
@@ -23,37 +12,15 @@
 #include "ServerInfo.h"
 
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
-
-IOManager::IOManager(FrontSendHandler* _frontSendHandler, LobbySendHandler* _lobbySendHandler, GameSendHandler* _gameSendHandler, ChattingSendHandler* _chattingSendHandler, ClientSendHandler* _clientSendHandler, FrontReceiveHandler* _frontReceiveHandler, LobbyReceiveHandler* _lobbyReceiveHandler, GameReceiveHandler* _gameReceiveHandler, ChattingReceiveHandler* _chattingReceiveHandler, ClientReceiveHandler* _clientReceiveHandler)
+IOManager::IOManager()
 {
-    frontReceiveHandler = _frontReceiveHandler;
-    frontSendHandler = _frontSendHandler;
-    lobbyReceiveHandler = _lobbyReceiveHandler;
-    lobbySendHandler = _lobbySendHandler;
-    gameReceiveHandler = _gameReceiveHandler;
-    gameSendHandler = _gameSendHandler;
-    chattingReceiveHandler = _chattingReceiveHandler;
-    chattingSendHandler = _chattingSendHandler;
-    clientReceiveHandler = _clientReceiveHandler;
-    clientSendHandler = _clientSendHandler;
-    
     createUserNo = 1;
 }
 
 
 IOManager::~IOManager()
 {
-    delete frontReceiveHandler;
-    delete frontSendHandler;
-    delete lobbyReceiveHandler;
-    delete lobbySendHandler;
-    delete gameReceiveHandler;
-    delete gameSendHandler;
-    delete clientReceiveHandler;
-    delete clientSendHandler;
+
 }
 
 void IOManager::connected(ConnectInfo* connectInfo)
@@ -62,12 +29,6 @@ void IOManager::connected(ConnectInfo* connectInfo)
     
     switch (connectInfo->serverModule)
     {
-        case SERVER_MODULE_LOGIN_SERVER:
-            loginSessionIn(connectInfo);
-            break;
-        case SERVER_MODULE_FRONT_SERVER:
-            frontReceiveHandler->sessionIn(connectInfo);
-            break;
         case SERVER_MODULE_LOBBY_SERVER:
             lobbySessionIn(connectInfo);
             break;
@@ -75,7 +36,7 @@ void IOManager::connected(ConnectInfo* connectInfo)
             gameSessionIn(connectInfo);
             break;
         case SERVER_MODULE_CHATTING_SERVER:
-            chattingReceiveHandler->sessionIn(connectInfo);
+            chattingSessionIn(connectInfo);
             break;
         case SERVER_MODULE_CLIENT:
             clientSessionIn(connectInfo);
@@ -100,12 +61,6 @@ void IOManager::disconnected(ConnectInfo* connectInfo)
 
     switch (connectInfo->serverModule)
     {
-        case SERVER_MODULE_LOGIN_SERVER:
-            loginSessionOut(connectInfo);
-            break;
-        case SERVER_MODULE_FRONT_SERVER:
-            frontReceiveHandler->sessionOut(connectInfo);
-            break;
         case SERVER_MODULE_LOBBY_SERVER:
             lobbySessionOut(connectInfo);
             break;
@@ -113,7 +68,7 @@ void IOManager::disconnected(ConnectInfo* connectInfo)
             gameSessionOut(connectInfo);
             break;
         case SERVER_MODULE_CHATTING_SERVER:
-            chattingReceiveHandler->sessionOut(connectInfo);
+            chattingSessionOut(connectInfo);
             break;
         case SERVER_MODULE_CLIENT:
             clientSessionOut(connectInfo);
@@ -133,97 +88,46 @@ void IOManager::disconnected(ConnectInfo* connectInfo)
 
 void IOManager::receiveData(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-    DebugLog("reciveData");
-    
-    if(connectInfo->serverModule == SERVER_MODULE_LOGIN_SERVER)
-    {
-        loginReceiveData(connectInfo, data, dataSize);
-        return;
-    }
-    
     if (dataSize < sizeof(command_t))
     {
         ErrorLog("dataSize too smail - %d", dataSize);
-        //sessionOut
         return ;
     }
     
     const char* pData = data;
+    int pDataSize = dataSize;
     
     command_t cmd;
     memcpy(&cmd, data, sizeof(command_t));
     pData += sizeof(command_t);
+    pDataSize -= sizeof(command_t);
     
     switch (connectInfo->serverModule)
     {
-        case SERVER_MODULE_FRONT_SERVER:
-            frontReceiveHandler->receiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
-            break;
         case SERVER_MODULE_LOBBY_SERVER:
-            lobbyReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
+            lobbyReceiveData(connectInfo, cmd, pData, pDataSize);
             break;
         case SERVER_MODULE_GAME_SERVER:
-            gameReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
+            gameReceiveData(connectInfo, cmd, pData, pDataSize);
             break;
         case SERVER_MODULE_CHATTING_SERVER:
-            chattingReceiveHandler->receiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
+            chattingReceiveData(connectInfo, cmd, pData, pDataSize);
             break;
         case SERVER_MODULE_CLIENT:
-            clientReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
+            clientReceiveData(connectInfo, cmd, pData, pDataSize);
             break;
             
         default:
             ErrorLog("invalid server module - %d", connectInfo->serverModule);
-            //sessionOut
             break;
     }
 }
-
-
-
-
-void IOManager::loginSessionIn(ConnectInfo* connectInfo)
-{
-    DebugLog("loginSessionIn");
-}
-
-
-
-void IOManager::loginSessionOut(ConnectInfo* connectInfo)
-{
-    DebugLog("loginSessionOut");
-
-}
-
-
-
-
-void IOManager::loginReceiveData(ConnectInfo* connectInfo, const char* data, int dataSize)
-{
-    DebugLog("loginReceiveData");
-    
-    DebugLog("data %d", dataSize);
-
-    std::string dataString(data, dataSize);
-    std::stringstream jsonString;
-    jsonString << dataString;
-    
-    boost::property_tree::ptree pt;
-    boost::property_tree::read_json(jsonString, pt);
-    
-    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt)
-    {
-        std::cout << v.second.data() << std::endl;
-    }
-}
-
-
 
 ///////////////////////////lobby recv
 
 void IOManager::lobbySessionIn(ConnectInfo* connectInfo)
 {
-    
+    DebugLog("lobby server session in");
 }
 
 
@@ -270,11 +174,7 @@ void IOManager::lobbyHandleFirstConnectReq(ConnectInfo* connectInfo, const char*
     memcpy(&packet.clientPort, pData, sizeof(packet.clientPort));
     pData += sizeof(packet.clientPort);
     
-    
-    
-    //memcpy(&packet + sizeof(command_t), data, dataSize);
-    
-    DebugLog("%d %d", packet.gamePort, packet.clientPort);
+    DebugLog("packet.gameIp = %s, packet.gamePort = %d, packet.clientIp = %s packet.clientPort = %d", packet.gameIp, packet.gamePort, packet.clientIp, packet.clientPort);
     
     if(FrontServer::getInstance()->serverInfoMgr->addLobbyServer(connectInfo, packet.gameIp, packet.gamePort, packet.clientIp, packet.clientPort) == false)
     {
@@ -286,6 +186,7 @@ void IOManager::lobbyHandleFirstConnectReq(ConnectInfo* connectInfo, const char*
     //////////////////send response packet
     
     LobbyFrontPacket::FirstConnectResPacket sendPacket;
+
 //    memcpy(sendPacket.chattingIp, FrontServer::getInstance()->serverInfoMgr->getChattingServerInfo()->lobbyIp, MAX_IP_ADDRESS_LEN);
 //    sendPacket.chattingPort = FrontServer::getInstance()->serverInfoMgr->getChattingServerInfo()->lobbyPort;
     
@@ -301,16 +202,26 @@ void IOManager::lobbyHandleEnterClientRes(ConnectInfo* connectInfo, const char* 
     
     User* user = FrontServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
     
-    if(user == NULL)
+    if(user == NULL) // 유저가 req 보낸 이후에 바로 연결을 끊어버릴 경우
     {
-        ErrorLog("??");
+        DebugLog("user out - userNo", packet.userNo);
+        
+        LobbyFrontPacket::EnterClientOutPacket sendPacket;
+        
+        sendPacket.userNo = packet.userNo;
+        
+        DebugLog("%d", user->getUserNo());
+        FrontServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+        
         return ;
     }
     
+    LobbyServerInfo* lobbyServerInfo = (LobbyServerInfo*)connectInfo->userData;
+    
     ClientFrontPacket::EnterLobbyResPacket sendPacket;
     
-    memcpy(sendPacket.ip, FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo()->clientIp, sizeof(sendPacket).ip);
-    sendPacket.port = FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo()->clientPort;
+    memcpy(sendPacket.ip, lobbyServerInfo->clientIp, MAX_IP_ADDRESS_LEN);
+    sendPacket.port = lobbyServerInfo->clientPort;
     
     FrontServer::getInstance()->network->sendPacket(user->getConnectInfo(), (char*)&sendPacket, sizeof(sendPacket));    
 }
@@ -320,13 +231,13 @@ void IOManager::lobbyHandleEnterClientRes(ConnectInfo* connectInfo, const char* 
 
 void IOManager::gameSessionIn(ConnectInfo* connectInfo)
 {
-    
+    DebugLog("gameSessionIn");
 }
 
 
 void IOManager::gameSessionOut(ConnectInfo* connectInfo)
 {
-    
+    DebugLog("gameSessionOut");
 }
 
 
@@ -347,20 +258,50 @@ void IOManager::gameReceiveData(ConnectInfo* connectInfo, command_t cmd, const c
 
 void IOManager::gameHandleFirstConnectReq(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-    GameFrontPacket::FirstConnectReqPacket packet;
-    
-    
     GameFrontPacket::FirstConnectResPacket sendPacket;
-
     
+    int lobbyCount = FrontServer::getInstance()->serverInfoMgr->getLobbyCount();
     
-    memcpy(sendPacket.lobbyIp, FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo()->gameIp, MAX_IP_ADDRESS_LEN);
-    sendPacket.lobbyPort = FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo()->gamePort;
+    if(lobbyCount != 1)
+    {
+        ErrorLog("lobbyCount - %d", lobbyCount);
+        return ;
+    }
+    
+    for(int i = 0; i < lobbyCount; i++)
+    {
+        memcpy(sendPacket.lobbyIp, FrontServer::getInstance()->serverInfoMgr->getRandomLobbyServerInfo()->gameIp, MAX_IP_ADDRESS_LEN);
+        sendPacket.lobbyPort = FrontServer::getInstance()->serverInfoMgr->getRandomLobbyServerInfo()->gamePort;
+    }
     
     FrontServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
 }
 
 
+////////////////////////chatting recv
+
+void IOManager::chattingSessionIn(ConnectInfo* connectInfo)
+{
+    
+}
+
+
+void IOManager::chattingSessionOut(ConnectInfo* connectInfo)
+{
+    
+}
+
+
+void IOManager::chattingReceiveData(ConnectInfo* connectInfo, command_t cmd, const char* data, int dataSize)
+{
+    
+}
+
+
+void IOManager::chattingHandleFirstConnectReq(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    
+}
 
 
 
@@ -388,15 +329,17 @@ void IOManager::clientSessionOut(ConnectInfo* connectInfo)
             
             sendPacket.userNo = user->getUserNo();
             
-            FrontServer::getInstance()->network->sendPacket(FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo()->connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+            int lobbyNo = user->getLobbyNo();
+            
+            LobbyServerInfo* lobbyServerInfo = FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo(lobbyNo);
+            
+            FrontServer::getInstance()->network->sendPacket(lobbyServerInfo->connectInfo, (char*)&sendPacket, sizeof(sendPacket));
         }
         
-        ErrorLog("??");
         FrontServer::getInstance()->userMgr->removeUser(user);
+        
+        connectInfo->userData = NULL;
     }
-    
-    connectInfo->userData = NULL;
-    
 }
 
 
@@ -424,6 +367,7 @@ void IOManager::clientReceiveData(ConnectInfo* connectInfo, command_t cmd, const
 
 void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
+    DebugLog("clientHandleFirstConnectReq");
     ClientFrontPacket::FirstConnectReqPacket packet;
     
     const char* pData = data;
@@ -435,8 +379,10 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
     
     UserInfo userInfo;
     userInfo.userNo = createUserNo++;
-    userInfo.nickNameLen = 5;
+    memset(userInfo.nickName, 0, MAX_NICK_NAME_LEN);
     sprintf(userInfo.nickName, "%s%d", "test", createUserNo);
+    userInfo.nickNameLen = strlen(userInfo.nickName);
+    
     
     FrontServer::getInstance()->userMgr->addUnconnectedUser(&userInfo, &packet.sessionId);
     
@@ -456,8 +402,11 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
     sendPacket.userInfo.userNo = userInfo.userNo;
     sendPacket.userInfo.nickNameLen = userInfo.nickNameLen;
     memcpy(sendPacket.userInfo.nickName, userInfo.nickName, userInfo.nickNameLen);
+    memcpy(&sendPacket.userInfo, &userInfo, sizeof(userInfo));
+    
     
     char* pSendBuffer = sendBuffer;
+    
     memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
     pSendBuffer += sizeof(sendPacket.cmd);
     
@@ -470,12 +419,20 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
 
 void IOManager::clientHandleEnterLobbyReq(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
+    DebugLog("clientHandleEnterLobbyReq");
+    
     User* user = (User*)connectInfo->userData;
+    
+    if(user->getUserState() == USER_STATE_MOVING_LOBBY)
+    {
+        ErrorLog("already moving");
+        return ;
+    }
     
     user->setUserState(USER_STATE_MOVING_LOBBY);
     
     
-    LobbyServerInfo* lobbyServerInfo = FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo();
+    LobbyServerInfo* lobbyServerInfo = FrontServer::getInstance()->serverInfoMgr->getRandomLobbyServerInfo();
     
     
     ///////////// send req to lobby
@@ -490,13 +447,15 @@ void IOManager::clientHandleEnterLobbyReq(ConnectInfo* connectInfo, const char* 
     //////////////TODO. all userInfo copy
     
     FrontServer::getInstance()->network->sendPacket(lobbyServerInfo->connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+    
+    user->setLobbyNo(lobbyServerInfo->lobbyNo);
 }
 
 void IOManager::clientHandleEnterLobbyOk(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
     User* user = (User*)connectInfo->userData;
     
-    LobbyServerInfo* lobbyServerInfo = FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo();
+    LobbyServerInfo* lobbyServerInfo = FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo(user->getLobbyNo());
     
     
     ///////////// send req to lobby
@@ -505,7 +464,6 @@ void IOManager::clientHandleEnterLobbyOk(ConnectInfo* connectInfo, const char* d
     
     sendPacket.userNo = user->getUserNo();
     
-    DebugLog("%d", user->getUserNo());
     FrontServer::getInstance()->network->sendPacket(lobbyServerInfo->connectInfo, (char*)&sendPacket, sizeof(sendPacket));
     
     

@@ -55,7 +55,7 @@ void UserInfoLayer::SetUserInfo(int64_t _userNo, int _nickNameLen, const char* _
     userNo = _userNo;
     nickName = std::string(_nickName, _nickNameLen);
     
-    auto nickNameLabel = Label::create(nickName, "Arial", 24);
+    auto nickNameLabel = Label::create(nickName, "fonts/arial.ttf", 48);
     nickNameLabel->setAnchorPoint(Vec2(0.5, 1));
     
     this->removeChildByTag(394);

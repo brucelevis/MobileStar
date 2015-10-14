@@ -19,6 +19,15 @@
       <disconnect_count>0</disconnect_count>
   </Row>
   <Row>
+      <server_module>chatting_server</server_module>
+      <server_type>client</server_type>
+      <name>chatting_server</name>
+      <ip>127.0.0.1</ip>
+      <port>20130</port>
+      <ping_interval>0</ping_interval>
+      <disconnect_count>0</disconnect_count>
+  </Row>
+  <Row>
       <server_module>client</server_module>
       <server_type>server</server_type>
       <name>client</name>

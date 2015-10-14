@@ -5,6 +5,15 @@
 #include "UserListLayer.h"
 #include "GameClient.h"
 #include "DefineHeader.h"
+#include "MenuButtonLayer.h"
+#include "MyInfoLayer.h"
+#include "LobbyGameLayer.h"
+#include "LobbyChannelLayer.h"
+#include "LobbyFriendLayer.h"
+#include "LobbyClanLayer.h"
+#include "LobbyRankingLayer.h"
+#include "LobbyBoardLayer.h"
+
 
 USING_NS_CC;
 
@@ -29,18 +38,77 @@ bool LobbyScene::init()
 	{
 		return false;
 	}
-
+    
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-	auto closeItem = MenuItemImage::create(
-		"CloseNormal.png",
-		"CloseSelected.png",
-		CC_CALLBACK_1(LobbyScene::menuCloseCallback, this));
-
-	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width / 2,
-		origin.y + closeItem->getContentSize().height / 2));
-
+    
+    
+    myInfoLayer = MyInfoLayer::create();
+    myInfoLayer->retain();
+    
+    myInfoLayer->setAnchorPoint(Vec2(0, 0));
+    myInfoLayer->setPosition(Vec2(0, MY_INFO_LAYER_Y));
+    
+    addChild(myInfoLayer, 0, TAG_MY_INFO_LAYER);
+    
+    
+    menuButtonLayer = MenuButtonLayer::create();
+    menuButtonLayer->retain();
+    
+    menuButtonLayer->setAnchorPoint(Vec2(0,0));
+    menuButtonLayer->setPosition(Vec2(0,0));
+    
+    addChild(menuButtonLayer, 0, TAG_MENU_BUTTON_LAYER);
+    
+    
+    lobbyGameLayer = LobbyGameLayer::create();
+    lobbyGameLayer->retain();
+    
+    lobbyGameLayer->setAnchorPoint(Vec2(0, 0));
+    lobbyGameLayer->setPosition(Vec2(0, LOBBY_LAYER_Y));
+    
+    lobbyChannelLayer = LobbyChannelLayer::create();
+    lobbyChannelLayer->retain();
+    
+    lobbyChannelLayer->setAnchorPoint(Vec2(0, 0));
+    lobbyChannelLayer->setPosition(Vec2(0, LOBBY_LAYER_Y));
+    
+    lobbyFriendLayer = LobbyFriendLayer::create();
+    lobbyFriendLayer->retain();
+    
+    lobbyFriendLayer->setAnchorPoint(Vec2(0, 0));
+    lobbyFriendLayer->setPosition(Vec2(0, LOBBY_LAYER_Y));
+    
+    lobbyClanLayer = LobbyClanLayer::create();
+    lobbyClanLayer->retain();
+    
+    lobbyClanLayer->setAnchorPoint(Vec2(0, 0));
+    lobbyClanLayer->setPosition(Vec2(0, LOBBY_LAYER_Y));
+    
+    lobbyRankingLayer = LobbyRankingLayer::create();
+    lobbyRankingLayer->retain();
+    
+    lobbyRankingLayer->setAnchorPoint(Vec2(0, 0));
+    lobbyRankingLayer->setPosition(Vec2(0, LOBBY_LAYER_Y));
+    
+    lobbyBoardLayer = LobbyBoardLayer::create();
+    lobbyBoardLayer->retain();
+    
+    lobbyBoardLayer->setAnchorPoint(Vec2(0, 0));
+    lobbyBoardLayer->setPosition(Vec2(0, LOBBY_LAYER_Y));
+    
+    
+    
+    
+    
+    
+    addChild(lobbyGameLayer, 1, TAG_LOBBY_GAME_LAYER);
+    
+    currentLayer = CURRENT_LAYER_GAME;
+    GameClient::GetInstance().currentScene = LOBBY_SCENE_NOW;
+    
+    
+    
 //	Size editboxSize = CCSizeMake(500, 70);
 //	textBox = EditBox::create(editboxSize, Scale9Sprite::create("typefield_01.png"));
 //	textBox->setAnchorPoint(ccp(0, 0));
@@ -54,111 +122,33 @@ bool LobbyScene::init()
 //	textBox->setDelegate(this);
 //	this->addChild(textBox);
 
-    tribeChina = MenuItemImage::create(
-                                            "china_btn.png",
-                                            "china_btn.png",
-                                            CC_CALLBACK_1(LobbyScene::clickChina, this));
-    
-    tribeEurope = MenuItemImage::create(
-                                            "europe_btn.png",
-                                            "europe_btn.png",
-                                            CC_CALLBACK_1(LobbyScene::clickEurope, this));
-    
-    tribeUSA = MenuItemImage::create(
-                                          "usa_btn.png",
-                                          "usa_btn.png",
-                                          CC_CALLBACK_1(LobbyScene::clickUSA, this));
-    
-    tribeRandom = MenuItemImage::create(
-                                          "random_btn.png",
-                                          "random_btn.png",
-                                          CC_CALLBACK_1(LobbyScene::clickRandom, this));
-    
-    
-    
-    quickPlayButton = MenuItemImage::create(
-		"quick_play_btn.png",
-		"quick_play_btn.png",
-		CC_CALLBACK_1(LobbyScene::clickQuickPlay, this));
 
-    tribeChina->setPosition((SCREEN_WIDTH / 4) + (3 * (SCREEN_WIDTH / 32)), (2 * SCREEN_HEIGHT / 3) + (3 * SCREEN_HEIGHT / 12));
-    tribeEurope->setPosition((SCREEN_WIDTH / 4) + 3 * (3 * (SCREEN_WIDTH / 32)), (2 * SCREEN_HEIGHT / 3) + (3 * (SCREEN_HEIGHT / 12)));
-    tribeUSA->setPosition((SCREEN_WIDTH / 4) + (3 * (SCREEN_WIDTH / 32)), (2 * SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 12));
-    tribeRandom->setPosition((SCREEN_WIDTH / 4) + 3 * (3 * (SCREEN_WIDTH / 32)), (2 * SCREEN_HEIGHT / 3) + (SCREEN_HEIGHT / 12));
-    
-    quickPlayButton->setPosition((SCREEN_WIDTH / 4) + 6 * (3 * (SCREEN_WIDTH / 32)), (2 * SCREEN_HEIGHT / 3) + (2 * SCREEN_HEIGHT / 12));
+//    menuLayer = Layer::create();
+//	menuLayer->setContentSize(Size(SCREEN_WIDTH / 4, SCREEN_HEIGHT));
+//	menuLayer->setAnchorPoint(Vec2(0, 0));
+//	menuLayer->setPosition(0, 0);
+//    auto menuLayerbackGroundSprite = Sprite::create("back_ground_01.png");
+//    menuLayerbackGroundSprite->setAnchorPoint(Vec2(0, 0));
+//    menuLayerbackGroundSprite->setPosition(0, 0);
+//    menuLayerbackGroundSprite->setScale((SCREEN_WIDTH / 4) / menuLayerbackGroundSprite->getContentSize().width, SCREEN_HEIGHT / menuLayerbackGroundSprite->getContentSize().height);
+//    menuLayer->addChild(menuLayerbackGroundSprite, 0);
+//    this->addChild(menuLayer, 100201);
+//    
+//    userListLayer = UserListLayer::create();
+//    userListLayer->setAnchorPoint(Vec2(0, 0));
+//    userListLayer->setPosition(Vec2(0, 0));
+//    userListLayer->setContentSize(Size(SCREEN_WIDTH / 4, SCREEN_HEIGHT * 2));
+//    
+//    
+//    scrollView = ScrollView::create(Size(SCREEN_WIDTH / 4, SCREEN_HEIGHT), userListLayer);
+//    scrollView->retain();
+//    scrollView->setBounceable(false);
+//    scrollView->setDirection(ScrollView::Direction::VERTICAL);
+//    scrollView->setAnchorPoint(Vec2(0, 0));
+//    scrollView->setPosition(0, 0);
+//    menuLayer->addChild(scrollView, 1);
+//    scrollView->setContentOffset(Vec2(0, (-1 * userListLayer->getContentSize().height)), false);
 
-	menu = Menu::create(tribeChina, tribeEurope, tribeUSA, tribeRandom, quickPlayButton, NULL);
-    menu->setAnchorPoint(Vec2::ZERO);
-	menu->setPosition(Vec2::ZERO);
-    
-    this->addChild(menu, 100, TAG_MENU);
-    
-    GameClient::GetInstance().tribe = TRIBE_TYPE_CHINA;
-    
-    auto choose = Sprite::create("choose_tribe.png");
-    choose->setAnchorPoint(Vec2::ZERO);
-    
-    tribeChina->addChild(choose, 0, 123);
-    
-    
-    
-	menuLayer = Layer::create();
-	menuLayer->setContentSize(Size(SCREEN_WIDTH / 4, SCREEN_HEIGHT));
-	menuLayer->setAnchorPoint(Vec2(0, 0));
-	menuLayer->setPosition(0, 0);
-    auto menuLayerbackGroundSprite = Sprite::create("back_ground_01.png");
-    menuLayerbackGroundSprite->setAnchorPoint(Vec2(0, 0));
-    menuLayerbackGroundSprite->setPosition(0, 0);
-    menuLayerbackGroundSprite->setScale((SCREEN_WIDTH / 4) / menuLayerbackGroundSprite->getContentSize().width, SCREEN_HEIGHT / menuLayerbackGroundSprite->getContentSize().height);
-    menuLayer->addChild(menuLayerbackGroundSprite, 0);
-    this->addChild(menuLayer, 100201);
-
-    // Setup scroll container
-    scrollContainer = Layer::create();
-    /*
-     char menuName[20];
-     for (int i = 0; i < MAX_CHATTING_COUNT; i++)
-     {
-     snprintf(menuName, sizeof(menuName), "ITEM %d", i);
-     Node* menuLabel = CCLabelTTF::create(menuName, "Arial", 24);
-     Size menuSize = menuLabel->getContentSize();
-     
-     MenuItem* menuItem = MenuItemLabel::create(menuLabel);
-     menuItem->setTag(BASE_TAG + i);
-     menuItem->setPosition(ccp(0, i * 100));
-     
-     scrollContainer->addChild(menuItem);
-     }*/
-    
-    userListLayer = UserListLayer::create();
-    userListLayer->setAnchorPoint(Vec2(0, 0));
-    userListLayer->setPosition(Vec2(0, 0));
-    userListLayer->setContentSize(Size(SCREEN_WIDTH / 4, SCREEN_HEIGHT * 2));
-    
-    
-    scrollView = ScrollView::create(Size(SCREEN_WIDTH / 4, SCREEN_HEIGHT), userListLayer);    // ¿ßø°º≠ ¡§¿««— container∏¶ ªÁøÎ
-    scrollView->retain();
-    scrollView->setBounceable(false);        // »≠∏È¿« ≥°±Ó¡ˆ Ω∫≈©∑—«ﬂ¿ª ∂ß ∆®±Ë ø©∫Œ∏¶ º≥¡§, ±‚∫ª∞™¿∫ True.
-    scrollView->setDirection(ScrollView::Direction::VERTICAL);    // Scroll µ«¥¬ πÊ«‚¿ª º≥¡§ (Vertical/Horizontal)
-    scrollView->setAnchorPoint(Vec2(0, 0));
-    scrollView->setPosition(0, 0);
-    menuLayer->addChild(scrollView, 1);
-    scrollView->setContentOffset(Vec2(0, (-1 * userListLayer->getContentSize().height)), false);
-
-//    scrollContainer->addChild(<#cocos2d::Node *child#>)
-
-    //	scrollView->setDelegate(scrollViewDelegateLayer);             // ScrollView∏¶ Delegate«“ Layer∑Œ ¿ßø°º≠ ¡§¿««— ScrollViewDelegateLayer∏¶ ¡ˆ¡§«ÿ¡›¥œ¥Ÿ.
-    
-    // offset¿Ã∂ı »≠∏È¿« Ω√¿€¡ˆ¡°¿∏∑Œ∫Œ≈Õ ∂≥æÓ¡¯ ∞≈∏Æ∏¶ ¿«πÃ«œ¥¬µ•,
-    // ±‚∫ª∞™¿Ã 0¿Ã±‚ ∂ßπÆø° ºº∑Œ ScrollView¿« ∞ÊøÏ ∞°¿Â æ∆∑°∑Œ ¡§«ÿ¡Æ ¿÷Ω¿¥œ¥Ÿ.
-    // √≥¿Ω ∫∏ø©¡ˆ¥¬ Contrainer¿« ∫Œ∫–¿ª ∞°¿Â ¿ß∑Œ πŸ≤Ÿ±‚ ¿ß«ÿº≠¥¬ Container¿« ≈©±‚∏¶ ¿Ωºˆ∑Œ ¡÷Ω√∏È µÀ¥œ¥Ÿ.
-    //	scrollView->setContentOffset(Point(0, -1 * container->getContentSize().height), false);
-
-    
-//    for(int i = 0; i  < 20; i++)
-//    addNextUserList(i, 5, "test1");
-    
 /*
 	auto moveChannel = MenuItemImage::create(
 		"channel_list.png",
@@ -271,159 +261,117 @@ void LobbyScene::menuCloseCallback(Ref* pSender)
 #endif
 }
 
+void LobbyScene::changeLobbyLayer(int layerNumber)
+{
+    if(currentLayer == layerNumber)
+    {
+        return ;
+    }
+
+    
+    switch (currentLayer) {
+        case CURRENT_LAYER_GAME:
+        {
+            removeChildByTag(TAG_LOBBY_GAME_LAYER, false);
+            break;
+        }
+        case CURRENT_LAYER_CHANNEL:
+        {
+            removeChildByTag(TAG_LOBBY_CHANNEL_LAYER, false);
+            break;
+        }
+        case CURRENT_LAYER_FRIEND:
+        {
+            removeChildByTag(TAG_LOBBY_FRIEND_LAYER, false);
+            break;
+        }
+        case CURRENT_LAYER_CLAN:
+        {
+            removeChildByTag(TAG_LOBBY_CLAN_LAYER, false);
+
+            break;
+        }
+        case CURRENT_LAYER_RANKING:
+        {
+            removeChildByTag(TAG_LOBBY_RANKING_LAYER, false);
+
+            break;
+        }
+        case CURRENT_LAYER_BOARD:
+        {
+            removeChildByTag(TAG_LOBBY_BOARD_LAYER, false);
+
+            break;
+        }
+            
+        default:
+            break;
+    }
+
+    
+    switch (layerNumber) {
+        case CURRENT_LAYER_GAME:
+        {
+            addChild(lobbyGameLayer, 1, TAG_LOBBY_GAME_LAYER);
+            break;
+        }
+        case CURRENT_LAYER_CHANNEL:
+        {
+            addChild(lobbyChannelLayer, 1, TAG_LOBBY_CHANNEL_LAYER);
+            break;
+        }
+        case CURRENT_LAYER_FRIEND:
+        {
+            addChild(lobbyFriendLayer, 1, TAG_LOBBY_FRIEND_LAYER);
+
+            break;
+        }
+        case CURRENT_LAYER_CLAN:
+        {
+            addChild(lobbyClanLayer, 1, TAG_LOBBY_CLAN_LAYER);
+
+            break;
+        }
+        case CURRENT_LAYER_RANKING:
+        {
+            addChild(lobbyRankingLayer, 1, TAG_LOBBY_RANKING_LAYER);
+
+            break;
+        }
+        case CURRENT_LAYER_BOARD:
+        {
+            addChild(lobbyBoardLayer, 1, TAG_LOBBY_BOARD_LAYER);
+
+            break;
+        }
+            
+        default:
+            break;
+    }
+    
+    currentLayer = layerNumber;
+}
+
+
+
+
 
 void LobbyScene::addUserInfo(int64_t userNo, int nickNameLen, const char* nickName)
 {
-    userListLayer->addUserViewInfo(userNo, nickNameLen, nickName);
+    lobbyChannelLayer->userListLayer->addUserViewInfo(userNo, nickNameLen, nickName);
 }
 
 void LobbyScene::removeUserInfo(int64_t userNo)
 {
-    userListLayer->removeUserViewInfo(userNo);
-}
-
-
-
-void LobbyScene::clickChina(cocos2d::Ref *pSender)
-{
-    int tribe = GameClient::GetInstance().tribe;
-    
-    if(tribe == TRIBE_TYPE_CHINA)
-    {
-        tribeChina->removeChildByTag(123);
-    }
-    else if(tribe == TRIBE_TYPE_EUROPE)
-    {
-        tribeEurope->removeChildByTag(123);
-    }
-    else if(tribe == TRIBE_TYPE_USA)
-    {
-        tribeUSA->removeChildByTag(123);
-
-    }
-    else
-    {
-        tribeRandom->removeChildByTag(123);
-
-    }
-    
-    GameClient::GetInstance().tribe = TRIBE_TYPE_CHINA;
-    
-    auto choose = Sprite::create("choose_tribe.png");
-    choose->setAnchorPoint(Vec2::ZERO);
-    
-    tribeChina->addChild(choose, 1, 123);
-}
-void LobbyScene::clickEurope(cocos2d::Ref *pSender)
-{
-    int tribe = GameClient::GetInstance().tribe;
-
-    if(tribe == TRIBE_TYPE_CHINA)
-    {
-        tribeChina->removeChildByTag(123);
-
-    }
-    else if(tribe == TRIBE_TYPE_EUROPE)
-    {
-        tribeEurope->removeChildByTag(123);
-
-    }
-    else if(tribe == TRIBE_TYPE_USA)
-    {
-        tribeUSA->removeChildByTag(123);
-
-    }
-    else
-    {
-        tribeRandom->removeChildByTag(123);
-
-    }
-    
-    GameClient::GetInstance().tribe = TRIBE_TYPE_EUROPE;
-    
-    auto choose = Sprite::create("choose_tribe.png");
-    choose->setAnchorPoint(Vec2::ZERO);
-    
-    tribeEurope->addChild(choose, 1, 123);
-}
-void LobbyScene::clickUSA(cocos2d::Ref *pSender)
-{
-    int tribe = GameClient::GetInstance().tribe;
-    
-    if(tribe == TRIBE_TYPE_CHINA)
-    {
-        tribeChina->removeChildByTag(123);
-
-    }
-    else if(tribe == TRIBE_TYPE_EUROPE)
-    {
-        tribeEurope->removeChildByTag(123);
-
-    }
-    else if(tribe == TRIBE_TYPE_USA)
-    {
-        tribeUSA->removeChildByTag(123);
-    }
-    else
-    {
-        tribeRandom->removeChildByTag(123);
-
-    }
-    
-    auto choose = Sprite::create("choose_tribe.png");
-    choose->setAnchorPoint(Vec2::ZERO);
-    
-    
-    GameClient::GetInstance().tribe = TRIBE_TYPE_USA;
-    tribeUSA->addChild(choose, 1, 123);
-}
-void LobbyScene::clickRandom(cocos2d::Ref *pSender)
-{
-    int tribe = GameClient::GetInstance().tribe;
-    
-    if(tribe == TRIBE_TYPE_CHINA)
-    {
-        tribeChina->removeChildByTag(123);
-
-    }
-    else if(tribe == TRIBE_TYPE_EUROPE)
-    {
-        tribeEurope->removeChildByTag(123);
-
-    }
-    else if(tribe == TRIBE_TYPE_USA)
-    {
-        tribeUSA->removeChildByTag(123);
-
-    }
-    else
-    {
-        tribeRandom->removeChildByTag(123);
-
-    }
-    
-    GameClient::GetInstance().tribe = -1;
-    
-    auto choose = Sprite::create("choose_tribe.png");
-    choose->setAnchorPoint(Vec2::ZERO);
-    
-    tribeRandom->addChild(choose, 1, 123);
-    
-}
-
-
-
-void LobbyScene::clickQuickPlay(cocos2d::Ref *pSender)
-{
-    ((NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER))->handler->lobbySendQuickPlayReq(GameClient::GetInstance().tribe);
+    lobbyChannelLayer->userListLayer->removeUserViewInfo(userNo);
 }
 
 
 void LobbyScene::waitToStart()
 {
-    quickPlayButton->setSelectedSpriteFrame(SpriteFrame::create("quick_play_cancel_btn.png", Rect(0, 0, 400, 200)));
+//    quickPlayButton->setSelectedSpriteFrame(SpriteFrame::create("quick_play_cancel_btn.png", Rect(0, 0, 400, 200)));
 
-    menu->setEnabled(false);
+//    menu->setEnabled(false);
 }
 
 
@@ -433,18 +381,18 @@ void LobbyScene::waitToStart()
 bool LobbyScene::onTouchBegan(Touch* touch, Event* _event){
     printf("onTouchBegan");
 
-    Rect userListRect = Rect(0,0,SCREEN_WIDTH / 4, SCREEN_HEIGHT);
-    Point point = Point(touch->getLocation().x, touch->getLocation().y);
-    if(userListRect.containsPoint(point))
-    {
-        printf("begin");
-        
-        Vec2 vec = this->convertToNodeSpace(Vec2(touch->getLocation().x, touch->getLocation().y));
-        
-        printf("begin %f %f\n", vec.x, vec.y);
-        
-        userListLayer->onTouchBegan(touch, _event);
-    }
+//    Rect userListRect = Rect(0,0,SCREEN_WIDTH / 4, SCREEN_HEIGHT);
+//    Point point = Point(touch->getLocation().x, touch->getLocation().y);
+//    if(userListRect.containsPoint(point))
+//    {
+//        printf("begin");
+//        
+//        Vec2 vec = this->convertToNodeSpace(Vec2(touch->getLocation().x, touch->getLocation().y));
+//        
+//        printf("begin %f %f\n", vec.x, vec.y);
+//        
+//        userListLayer->onTouchBegan(touch, _event);
+//    }
     
     return true;
 }

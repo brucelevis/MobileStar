@@ -4,6 +4,7 @@
 #include "ClientFrontPacket.h"
 #include "NetworkLayer.h"
 #include "DefineHeader.h"
+#include "GameClient.h"
 
 USING_NS_CC;
 
@@ -42,6 +43,8 @@ bool ResultScene::init()
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 100, TAG_MENU);
 
+    GameClient::GetInstance().currentScene = RESULT_SCENE_NOW;
+    
     return true;
 }
 

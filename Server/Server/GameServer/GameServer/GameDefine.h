@@ -12,13 +12,6 @@ enum ServerModule
 	SERVER_MODULE_COUNT
 };
 
-enum ReturnFailReason
-{
-	SUCCESS = 0,
-	INTERNAL_ERROR,
-	ALREADY_EXIST_USER,
-};
-
 #endif //__LOBBY_DEFINE_H__
 
 

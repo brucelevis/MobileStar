@@ -1,5 +1,6 @@
 
 
+
 //
 // FrontData.cpp
 //
@@ -17,7 +18,7 @@
 #if OS_PLATFORM == PLATFORM_LINUX
 const char* LOG_NAME = "./connect_info.xml";
 #else
-const char* LOG_NAME = "/Users/kimyongchan/MoblieStar/Server/Server/ChattingServer/ChattingServer/connect_info.xml";
+const char* LOG_NAME = "/Users/kimyongchan/MobileStar/Server/Server/ChattingServer/ChattingServer/connect_info.xml";
 #endif
 
 ////////////////FrontData
@@ -26,21 +27,21 @@ using namespace tinyxml2;
 
 ChattingData::ChattingData()
 {
-	networkInfoList = NULL;
+    networkInfoList = NULL;
     networkInfoCount = 0;
 }
 
 ChattingData::~ChattingData()
 {
-	delete networkInfoList;
+    delete networkInfoList;
 }
 
 
 bool ChattingData::Initialize()
 {
-	if (LoadNetworkInfo() == false) return false;
-
-	return true;
+    if (LoadNetworkInfo() == false) return false;
+    
+    return true;
 }
 
 bool ChattingData::LoadNetworkInfo()
@@ -69,14 +70,6 @@ bool ChattingData::LoadNetworkInfo()
         else if (strcmp(serverModule, "lobby_server") == 0)
         {
             module = SERVER_MODULE_LOBBY_SERVER;
-        }
-        else if (strcmp(serverModule, "game_server") == 0)
-        {
-            module = SERVER_MODULE_GAME_SERVER;
-        }
-        else if (strcmp(serverModule, "chatting_server") == 0)
-        {
-            module = SERVER_MODULE_CHATTING_SERVER;
         }
         else if (strcmp(serverModule, "client") == 0)
         {
@@ -140,3 +133,20 @@ bool ChattingData::LoadNetworkInfo()
     
     return true;
 }
+
+
+
+
+const NetworkInfo* ChattingData::getNetworkInfo(int serverModule)
+{
+    for(int i = 0; i <networkInfoCount; i++)
+    {
+        if(networkInfoList[i].module == serverModule)
+        {
+            return &networkInfoList[i];
+        }
+    }
+    
+    return NULL;
+}
+

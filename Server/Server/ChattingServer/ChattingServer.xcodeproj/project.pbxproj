@@ -14,21 +14,12 @@
 		6F2DF0D01BA2F807002A5D43 /* Network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0C51BA2F807002A5D43 /* Network.cpp */; };
 		6F2DF0D11BA2F807002A5D43 /* WorkerThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0C71BA2F807002A5D43 /* WorkerThread.cpp */; };
 		6F2DF0D21BA2F807002A5D43 /* XmlData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0C91BA2F807002A5D43 /* XmlData.cpp */; };
-		6F2DF0F31BA2F9C2002A5D43 /* Channel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0D31BA2F9C2002A5D43 /* Channel.cpp */; };
 		6F2DF0F41BA2F9C2002A5D43 /* ChattingData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0D51BA2F9C2002A5D43 /* ChattingData.cpp */; };
-		6F2DF0F51BA2F9C2002A5D43 /* ChattingReceiveHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0D81BA2F9C2002A5D43 /* ChattingReceiveHandler.cpp */; };
-		6F2DF0F61BA2F9C2002A5D43 /* ChattingSendHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0DA1BA2F9C2002A5D43 /* ChattingSendHandler.cpp */; };
 		6F2DF0F71BA2F9C2002A5D43 /* ChattingServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0DC1BA2F9C2002A5D43 /* ChattingServer.cpp */; };
-		6F2DF0F81BA2F9C2002A5D43 /* ClientReceiveHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0DE1BA2F9C2002A5D43 /* ClientReceiveHandler.cpp */; };
-		6F2DF0F91BA2F9C2002A5D43 /* ClientSendHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0E01BA2F9C2002A5D43 /* ClientSendHandler.cpp */; };
-		6F2DF0FA1BA2F9C2002A5D43 /* FrontReceiveHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0E31BA2F9C2002A5D43 /* FrontReceiveHandler.cpp */; };
-		6F2DF0FB1BA2F9C2002A5D43 /* FrontSendHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0E51BA2F9C2002A5D43 /* FrontSendHandler.cpp */; };
-		6F2DF0FC1BA2F9C2002A5D43 /* GameReceiveHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0E71BA2F9C2002A5D43 /* GameReceiveHandler.cpp */; };
-		6F2DF0FD1BA2F9C2002A5D43 /* GameSendHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0E91BA2F9C2002A5D43 /* GameSendHandler.cpp */; };
 		6F2DF0FE1BA2F9C2002A5D43 /* IOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0EB1BA2F9C2002A5D43 /* IOManager.cpp */; };
-		6F2DF0FF1BA2F9C2002A5D43 /* LobbyReceiveHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0ED1BA2F9C2002A5D43 /* LobbyReceiveHandler.cpp */; };
-		6F2DF1001BA2F9C2002A5D43 /* LobbySendHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0EF1BA2F9C2002A5D43 /* LobbySendHandler.cpp */; };
 		6F2DF1011BA2F9C2002A5D43 /* User.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0F11BA2F9C2002A5D43 /* User.cpp */; };
+		6FD8FC8D1BCA61060029BD4A /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 6FD8FC821BCA61060029BD4A /* Makefile */; settings = {ASSET_TAGS = (); }; };
+		6FD8FC941BCB83AF0029BD4A /* LObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6FD8FC921BCB83AF0029BD4A /* LObject.cpp */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -54,7 +45,6 @@
 		6F2DF0AA1BA2F7FE002A5D43 /* ClientLobbyPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientLobbyPacket.h; sourceTree = "<group>"; };
 		6F2DF0AB1BA2F7FE002A5D43 /* FrontCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontCachePacket.h; sourceTree = "<group>"; };
 		6F2DF0AC1BA2F7FE002A5D43 /* FrontCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontCenterPacket.h; sourceTree = "<group>"; };
-		6F2DF0AD1BA2F7FE002A5D43 /* FrontLobbyPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontLobbyPacket.h; sourceTree = "<group>"; };
 		6F2DF0AE1BA2F7FE002A5D43 /* GameCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameCachePacket.h; sourceTree = "<group>"; };
 		6F2DF0AF1BA2F7FE002A5D43 /* GameCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameCenterPacket.h; sourceTree = "<group>"; };
 		6F2DF0B01BA2F7FE002A5D43 /* GameLobbyPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameLobbyPacket.h; sourceTree = "<group>"; };
@@ -72,38 +62,24 @@
 		6F2DF0C81BA2F807002A5D43 /* WorkerThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkerThread.h; sourceTree = "<group>"; };
 		6F2DF0C91BA2F807002A5D43 /* XmlData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XmlData.cpp; sourceTree = "<group>"; };
 		6F2DF0CA1BA2F807002A5D43 /* XmlData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XmlData.h; sourceTree = "<group>"; };
-		6F2DF0D31BA2F9C2002A5D43 /* Channel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Channel.cpp; sourceTree = "<group>"; };
-		6F2DF0D41BA2F9C2002A5D43 /* Channel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Channel.h; sourceTree = "<group>"; };
 		6F2DF0D51BA2F9C2002A5D43 /* ChattingData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChattingData.cpp; sourceTree = "<group>"; };
 		6F2DF0D61BA2F9C2002A5D43 /* ChattingData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingData.h; sourceTree = "<group>"; };
 		6F2DF0D71BA2F9C2002A5D43 /* ChattingDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingDefine.h; sourceTree = "<group>"; };
-		6F2DF0D81BA2F9C2002A5D43 /* ChattingReceiveHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChattingReceiveHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0D91BA2F9C2002A5D43 /* ChattingReceiveHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingReceiveHandler.h; sourceTree = "<group>"; };
-		6F2DF0DA1BA2F9C2002A5D43 /* ChattingSendHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChattingSendHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0DB1BA2F9C2002A5D43 /* ChattingSendHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingSendHandler.h; sourceTree = "<group>"; };
 		6F2DF0DC1BA2F9C2002A5D43 /* ChattingServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChattingServer.cpp; sourceTree = "<group>"; };
 		6F2DF0DD1BA2F9C2002A5D43 /* ChattingServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingServer.h; sourceTree = "<group>"; };
-		6F2DF0DE1BA2F9C2002A5D43 /* ClientReceiveHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClientReceiveHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0DF1BA2F9C2002A5D43 /* ClientReceiveHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientReceiveHandler.h; sourceTree = "<group>"; };
-		6F2DF0E01BA2F9C2002A5D43 /* ClientSendHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClientSendHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0E11BA2F9C2002A5D43 /* ClientSendHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientSendHandler.h; sourceTree = "<group>"; };
 		6F2DF0E21BA2F9C2002A5D43 /* connect_info.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = connect_info.xml; sourceTree = "<group>"; };
-		6F2DF0E31BA2F9C2002A5D43 /* FrontReceiveHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrontReceiveHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0E41BA2F9C2002A5D43 /* FrontReceiveHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontReceiveHandler.h; sourceTree = "<group>"; };
-		6F2DF0E51BA2F9C2002A5D43 /* FrontSendHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrontSendHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0E61BA2F9C2002A5D43 /* FrontSendHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontSendHandler.h; sourceTree = "<group>"; };
-		6F2DF0E71BA2F9C2002A5D43 /* GameReceiveHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameReceiveHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0E81BA2F9C2002A5D43 /* GameReceiveHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameReceiveHandler.h; sourceTree = "<group>"; };
-		6F2DF0E91BA2F9C2002A5D43 /* GameSendHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameSendHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0EA1BA2F9C2002A5D43 /* GameSendHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSendHandler.h; sourceTree = "<group>"; };
 		6F2DF0EB1BA2F9C2002A5D43 /* IOManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IOManager.cpp; sourceTree = "<group>"; };
 		6F2DF0EC1BA2F9C2002A5D43 /* IOManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOManager.h; sourceTree = "<group>"; };
-		6F2DF0ED1BA2F9C2002A5D43 /* LobbyReceiveHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LobbyReceiveHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0EE1BA2F9C2002A5D43 /* LobbyReceiveHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyReceiveHandler.h; sourceTree = "<group>"; };
-		6F2DF0EF1BA2F9C2002A5D43 /* LobbySendHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LobbySendHandler.cpp; sourceTree = "<group>"; };
-		6F2DF0F01BA2F9C2002A5D43 /* LobbySendHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbySendHandler.h; sourceTree = "<group>"; };
 		6F2DF0F11BA2F9C2002A5D43 /* User.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = User.cpp; sourceTree = "<group>"; };
 		6F2DF0F21BA2F9C2002A5D43 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		6FD8FC821BCA61060029BD4A /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		6FD8FC921BCB83AF0029BD4A /* LObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LObject.cpp; sourceTree = "<group>"; };
+		6FD8FC931BCB83AF0029BD4A /* LObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LObject.h; sourceTree = "<group>"; };
+		6FD8FC951BCB8DAC0029BD4A /* ChattingFrontPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingFrontPacket.h; sourceTree = "<group>"; };
+		6FD8FC961BCB8DAC0029BD4A /* ClientChattingPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientChattingPacket.h; sourceTree = "<group>"; };
+		6FD8FC971BCB8DAC0029BD4A /* LobbyChattingPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyChattingPacket.h; sourceTree = "<group>"; };
+		6FD8FC981BCB8FE00029BD4A /* GameFrontPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameFrontPacket.h; sourceTree = "<group>"; };
+		6FD8FC991BCB8FE00029BD4A /* LobbyFrontPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyFrontPacket.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,36 +116,17 @@
 		6F2DF0161BA2DA7A002A5D43 /* ChattingServer */ = {
 			isa = PBXGroup;
 			children = (
-				6F2DF0D31BA2F9C2002A5D43 /* Channel.cpp */,
-				6F2DF0D41BA2F9C2002A5D43 /* Channel.h */,
+				6FD8FC921BCB83AF0029BD4A /* LObject.cpp */,
+				6FD8FC931BCB83AF0029BD4A /* LObject.h */,
+				6FD8FC821BCA61060029BD4A /* Makefile */,
 				6F2DF0D51BA2F9C2002A5D43 /* ChattingData.cpp */,
 				6F2DF0D61BA2F9C2002A5D43 /* ChattingData.h */,
 				6F2DF0D71BA2F9C2002A5D43 /* ChattingDefine.h */,
-				6F2DF0D81BA2F9C2002A5D43 /* ChattingReceiveHandler.cpp */,
-				6F2DF0D91BA2F9C2002A5D43 /* ChattingReceiveHandler.h */,
-				6F2DF0DA1BA2F9C2002A5D43 /* ChattingSendHandler.cpp */,
-				6F2DF0DB1BA2F9C2002A5D43 /* ChattingSendHandler.h */,
 				6F2DF0DC1BA2F9C2002A5D43 /* ChattingServer.cpp */,
 				6F2DF0DD1BA2F9C2002A5D43 /* ChattingServer.h */,
-				6F2DF0DE1BA2F9C2002A5D43 /* ClientReceiveHandler.cpp */,
-				6F2DF0DF1BA2F9C2002A5D43 /* ClientReceiveHandler.h */,
-				6F2DF0E01BA2F9C2002A5D43 /* ClientSendHandler.cpp */,
-				6F2DF0E11BA2F9C2002A5D43 /* ClientSendHandler.h */,
 				6F2DF0E21BA2F9C2002A5D43 /* connect_info.xml */,
-				6F2DF0E31BA2F9C2002A5D43 /* FrontReceiveHandler.cpp */,
-				6F2DF0E41BA2F9C2002A5D43 /* FrontReceiveHandler.h */,
-				6F2DF0E51BA2F9C2002A5D43 /* FrontSendHandler.cpp */,
-				6F2DF0E61BA2F9C2002A5D43 /* FrontSendHandler.h */,
-				6F2DF0E71BA2F9C2002A5D43 /* GameReceiveHandler.cpp */,
-				6F2DF0E81BA2F9C2002A5D43 /* GameReceiveHandler.h */,
-				6F2DF0E91BA2F9C2002A5D43 /* GameSendHandler.cpp */,
-				6F2DF0EA1BA2F9C2002A5D43 /* GameSendHandler.h */,
 				6F2DF0EB1BA2F9C2002A5D43 /* IOManager.cpp */,
 				6F2DF0EC1BA2F9C2002A5D43 /* IOManager.h */,
-				6F2DF0ED1BA2F9C2002A5D43 /* LobbyReceiveHandler.cpp */,
-				6F2DF0EE1BA2F9C2002A5D43 /* LobbyReceiveHandler.h */,
-				6F2DF0EF1BA2F9C2002A5D43 /* LobbySendHandler.cpp */,
-				6F2DF0F01BA2F9C2002A5D43 /* LobbySendHandler.h */,
 				6F2DF0F11BA2F9C2002A5D43 /* User.cpp */,
 				6F2DF0F21BA2F9C2002A5D43 /* User.h */,
 				6F2DF0171BA2DA7A002A5D43 /* main.cpp */,
@@ -181,13 +138,17 @@
 			isa = PBXGroup;
 			children = (
 				6F2DF0A61BA2F7FE002A5D43 /* BasicPacket.h */,
+				6FD8FC981BCB8FE00029BD4A /* GameFrontPacket.h */,
+				6FD8FC991BCB8FE00029BD4A /* LobbyFrontPacket.h */,
+				6FD8FC951BCB8DAC0029BD4A /* ChattingFrontPacket.h */,
+				6FD8FC961BCB8DAC0029BD4A /* ClientChattingPacket.h */,
+				6FD8FC971BCB8DAC0029BD4A /* LobbyChattingPacket.h */,
 				6F2DF0A71BA2F7FE002A5D43 /* CenterCachePacket.h */,
 				6F2DF0A81BA2F7FE002A5D43 /* ClientFrontPacket.h */,
 				6F2DF0A91BA2F7FE002A5D43 /* ClientGamePacket.h */,
 				6F2DF0AA1BA2F7FE002A5D43 /* ClientLobbyPacket.h */,
 				6F2DF0AB1BA2F7FE002A5D43 /* FrontCachePacket.h */,
 				6F2DF0AC1BA2F7FE002A5D43 /* FrontCenterPacket.h */,
-				6F2DF0AD1BA2F7FE002A5D43 /* FrontLobbyPacket.h */,
 				6F2DF0AE1BA2F7FE002A5D43 /* GameCachePacket.h */,
 				6F2DF0AF1BA2F7FE002A5D43 /* GameCenterPacket.h */,
 				6F2DF0B01BA2F7FE002A5D43 /* GameLobbyPacket.h */,
@@ -300,25 +261,16 @@
 			files = (
 				6F2DF0CF1BA2F807002A5D43 /* Log.cpp in Sources */,
 				6F2DF0CD1BA2F807002A5D43 /* tinyxml2.cpp in Sources */,
-				6F2DF0FC1BA2F9C2002A5D43 /* GameReceiveHandler.cpp in Sources */,
-				6F2DF0FB1BA2F9C2002A5D43 /* FrontSendHandler.cpp in Sources */,
-				6F2DF0FA1BA2F9C2002A5D43 /* FrontReceiveHandler.cpp in Sources */,
 				6F2DF0FE1BA2F9C2002A5D43 /* IOManager.cpp in Sources */,
+				6FD8FC8D1BCA61060029BD4A /* Makefile in Sources */,
 				6F2DF0D11BA2F807002A5D43 /* WorkerThread.cpp in Sources */,
 				6F2DF0D21BA2F807002A5D43 /* XmlData.cpp in Sources */,
-				6F2DF0F61BA2F9C2002A5D43 /* ChattingSendHandler.cpp in Sources */,
-				6F2DF0F51BA2F9C2002A5D43 /* ChattingReceiveHandler.cpp in Sources */,
 				6F2DF0D01BA2F807002A5D43 /* Network.cpp in Sources */,
+				6FD8FC941BCB83AF0029BD4A /* LObject.cpp in Sources */,
 				6F2DF0F41BA2F9C2002A5D43 /* ChattingData.cpp in Sources */,
 				6F2DF0181BA2DA7A002A5D43 /* main.cpp in Sources */,
-				6F2DF1001BA2F9C2002A5D43 /* LobbySendHandler.cpp in Sources */,
-				6F2DF0F91BA2F9C2002A5D43 /* ClientSendHandler.cpp in Sources */,
-				6F2DF0F81BA2F9C2002A5D43 /* ClientReceiveHandler.cpp in Sources */,
 				6F2DF0F71BA2F9C2002A5D43 /* ChattingServer.cpp in Sources */,
-				6F2DF0F31BA2F9C2002A5D43 /* Channel.cpp in Sources */,
 				6F2DF1011BA2F9C2002A5D43 /* User.cpp in Sources */,
-				6F2DF0FF1BA2F9C2002A5D43 /* LobbyReceiveHandler.cpp in Sources */,
-				6F2DF0FD1BA2F9C2002A5D43 /* GameSendHandler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -455,6 +407,7 @@
 				6F2DF01D1BA2DA7A002A5D43 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

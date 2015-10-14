@@ -9,13 +9,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../Classes/NetworkManager.cpp"
-            timestampString = "465461255.881001"
+            filePath = "ios/MyObject.mm"
+            timestampString = "466150889.237841"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "122"
-            endingLineNumber = "122"
-            landmarkName = "NetworkManager::FetchFromServer(int length, const char* str)"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
+            landmarkName = "-doSomethingWith:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -25,13 +25,29 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../Classes/NetworkLayer.cpp"
-            timestampString = "465907407.526282"
+            filePath = "ios/MyObject.mm"
+            timestampString = "466150890.874895"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "230"
-            endingLineNumber = "230"
-            landmarkName = "NetworkHandler::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "-doSomethingWith:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Classes/LobbyChannelLayer.cpp"
+            timestampString = "466418085.133794"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
+            landmarkName = "LobbyChannelLayer::notifyChatting(char* nickName, int nickNameLen, char* chatting, int chattingLen)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

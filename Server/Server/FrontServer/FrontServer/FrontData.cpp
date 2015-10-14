@@ -17,7 +17,7 @@
 #if OS_PLATFORM == PLATFORM_LINUX
 const char* LOG_NAME = "./connect_info.xml";
 #else
-const char* LOG_NAME = "/Users/kimyongchan/MoblieStar/Server/Server/FrontServer/FrontServer/connect_info.xml";
+const char* LOG_NAME = "/Users/kimyongchan/MobileStar/Server/Server/FrontServer/FrontServer/connect_info.xml";
 #endif
 
 ////////////////FrontData
@@ -62,15 +62,7 @@ bool FrontData::LoadNetworkInfo()
     {
         int8_t module = 0;
         const char* serverModule = element->FirstChildElement("server_module")->GetText();
-        if (strcmp(serverModule, "login_server") == 0)
-        {
-            module = SERVER_MODULE_LOGIN_SERVER;
-        }
-        else if (strcmp(serverModule, "front_server") == 0)
-        {
-            module = SERVER_MODULE_FRONT_SERVER;
-        }
-        else if (strcmp(serverModule, "lobby_server") == 0)
+        if (strcmp(serverModule, "lobby_server") == 0)
         {
             module = SERVER_MODULE_LOBBY_SERVER;
         }

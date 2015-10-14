@@ -1,5 +1,6 @@
 #include "GameWorld.h"
 #include "AStarAlgorithm.h"
+#include "GameClient.h"
 
 Scene* GameWorld::createScene()
 {
@@ -96,11 +97,18 @@ GameWorld::GameWorld()
 
     CameraMgr->SetMovePos(Vec2(0,500));
     
+
     //디버그용
     m_pDebugLabel = Label::createWithTTF("","fonts/arial.ttf",24);
     m_pDebugLabel->setAnchorPoint(Vec2(0,0));
     m_pDebugLabel->setPosition(0,120);
     addChild(m_pDebugLabel);
+
+    
+    //Scene setting
+    
+    GameClient::GetInstance().currentScene = GAME_SCENE_NOW;
+
 }
 
 GameWorld::~GameWorld(){

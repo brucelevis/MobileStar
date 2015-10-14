@@ -8,19 +8,12 @@
 
 #include <stdint.h>
 #include <list>
+#include <vector>
 #include "BasicPacket.h"
 
-const int MAX_CHANNEL_COUNT = 3;
-
-struct ChannelInfo
-{
-	int8_t channelNo;
-	char channelName[BasicPacket::MAX_CHANNEL_NAME_LEN + 1];
-};
 
 class User;
 class UserInfo;
-class Session;
 
 class Channel
 {
@@ -28,13 +21,14 @@ public:
 
 	Channel();
 
-	bool Initialize(int channelNameInt);
-	bool InitChannel(ChannelInfo* channelInfo);
-	int AddUser(User* user);
-	int RemoveUser(User* user);
-	int16_t GetChannelNo() { return m_channelNo; }
-	const char* GetChannelName() { return m_channelName; }
-	const std::list<User*> GetUserList() { return m_userList; }
+	bool initialize(ChannelInfo* channelInfo);
+	int addUser(User* user);
+	int removeUser(User* user);
+	int16_t getChannelNo() { return channelNo; }
+    int getChannelNameLen() { return channelNameLen; }
+	const char* getChannelName() { return channelName; }
+	std::list<User*> getUserList() { return userList; }
+    bool isPossibleMove() { return (userList.size() < 200); }
 	~Channel();
 
 public:
@@ -42,9 +36,13 @@ public:
 	friend class ChannelManager;
 
 private:
-	int16_t m_channelNo;
-	char m_channelName[BasicPacket::MAX_CHANNEL_NAME_LEN + 1];
-	std::list<User*> m_userList;
+	int16_t channelNo;
+    int channelNameLen;
+	char channelName[MAX_CHANNEL_NAME_LEN + 1];
+	std::list<User*> userList;
+    
+    char notifyBuffer[5000];
+    char sendBuffer[50000];
 };
 
 
@@ -52,17 +50,24 @@ class ChannelManager
 {
 public:
 	ChannelManager();
-	bool Initialize();
-	bool InitChannel(int channelCount, ChannelInfo* channelInfo);
-	Channel* GetChannelByChannelNo(int16_t channelNo);
+	bool initialize(int channelCount, ChannelInfo* channelInfo);
+    int createChannel(ChannelInfo* channelInfo);
+    int deleteChannel(int16_t channelNo);
+    
+	Channel* getChannelByChannelNo(int16_t channelNo);
 
-	int16_t GetRandomChannelNo();
-	int16_t FirstEnterUser(User* user);
+	int16_t getRandomChannelNo();
+	int firstEnterUser(User* user);
+    Channel* getChannelByIndex(int index) { return channelList.at(index); }
+    int getChannelCount() { return (int)channelList.size(); }
 
 	~ChannelManager();
 
 private:
-	Channel m_channelList[MAX_CHANNEL_COUNT];
+    std::vector<Channel*>::iterator itr;
+    std::vector<Channel*> channelList;
+    int commonChannelCount;
+    unsigned long createChannelNo;
 };
 
 #endif //__CHANNEL_H__
