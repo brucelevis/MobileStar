@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <arpa/inet.h>
+#include <signal.h>
 
 #include "Log.h"
 
@@ -208,6 +209,8 @@ Network::~Network()
 
 bool Network::Initialize(const NetworkInfo* _networkInfoList, int _networkInfoCount, int _workerThreadCount, WorkerThread** _workerThreadArray)
 {
+    listenSocketCount = 0;
+    
     signal(SIGPIPE, SIG_IGN);
     
     

@@ -8,43 +8,17 @@
 
 #include <string.h>
 #include <stdint.h>
-#include "Channel.h"
 #include "BasicPacket.h"
+#include <vector>
+#include <string>
 
-const int INVALID_USER_NO = -1;
-const int INVALID_ROOM_NO = -1;
-const int INVALID_CHANNEL_NO = -1;
+class ConnectInfo;
 
-struct UserInfo
+
+enum USER_LOCATION
 {
-	int64_t userNo;
-	int8_t nickNameLen;
-	char nickName[BasicPacket::MAX_NICK_NAME_LEN + 1];
-	int32_t gold;
-	int8_t memoLen;
-	char memo[BasicPacket::MAX_MEMO_LEN + 1];
-	int16_t commonWin;
-	int16_t commonLose;
-	int16_t commonDiss;
-	int16_t rankWin;
-	int16_t rankLose;
-	int16_t rankDiss;
-	int8_t grade;
-	int8_t gradeReachedCount;
-	int8_t point;
-	int8_t icon;
-};
-
-struct NickNameInfo
-{
-	int8_t nickNameLen;
-	char nickName[BasicPacket::MAX_NICK_NAME_LEN + 1];
-};
-
-struct RequestInfo
-{
-	int16_t requestType;
-	NickNameInfo nickNameInfo;
+    USER_LOCATION_NO = 0,
+    USER_LOCATION,
 };
 
 class User
@@ -52,72 +26,71 @@ class User
 public:
 
 	User();
-/*
-	bool Initialize(Session* session, SessionId_t sid, UserInfo* userInfo);
 
-	Session* GetSession() { return m_session; }
-	void SetSession(Session* session) { m_session = session; }
+    bool initialize(SessionId_t* sid, NickNameInfo* nickNameInfo);
 
-	int64_t GetUserNo() { return m_userInfo.userNo; }
-	void SetUserNo(int64_t userNo) { m_userInfo.userNo = userNo; }
+	ConnectInfo* getConnectInfo() { return connectInfo; }
+	void setConnectInfo(ConnectInfo* _connectInfo) { connectInfo = _connectInfo; }
 
-	const char* GetNickName() { return m_userInfo.nickName; }
-	int8_t GetNickNameLen() { return m_userInfo.nickNameLen; }
-	void SetNickName(char* nickName, int8_t nickNameLen)
+	const char* getNickName() { return nickNameInfo.nickName; }
+	int8_t getNickNameLen() { return nickNameInfo.nickNameLen; }
+	void setNickName(char* _nickName, int8_t _nickNameLen)
 	{
-		m_userInfo.nickNameLen = nickNameLen;
-		memcpy(m_userInfo.nickName, nickName, m_userInfo.nickNameLen);
+		nickNameInfo.nickNameLen = _nickNameLen;
+		memcpy(nickNameInfo.nickName, _nickName, nickNameInfo.nickNameLen);
 	}
 
-	int8_t GetChannelNo() { return m_channelNo; }
-	void SetChannelNo(int16_t channelNo) { m_channelNo = channelNo; }
-
-	int8_t GetRoomNo() { return m_roomNo; }
-	void SetRoomNo(int16_t roomNo) { m_roomNo = roomNo; }
-
-	SessionId_t GetTempSid() { return m_tempSid; }
-	void SetTempSid(SessionId_t sid) { m_tempSid = sid; }
-
-	UserInfo* GetUserInfo() { return &m_userInfo; }
+    SessionId_t* getSid() { return &sid; }
+    void setSid(SessionId_t _sid) { sid = _sid; }
+    
+    int8_t getUserLocation() { return userLocation; }
+    void* getLocationObject() { return locationObject; }
+    void setLoctionObject(int8_t _userLocation, void* _locationObject) { userLocation = _userLocation; locationObject = _locationObject; }
 
 	~User();
 
 public:
 
-	friend class Channel;
 	friend class UserManager;
 
 private:
-//	SessionId_t m_tempSid;
-//	Session* m_session;
-	UserInfo m_userInfo;
-
-	int16_t m_channelNo;
-	int16_t m_roomNo;
-*/
+    SessionId_t sid;
+	ConnectInfo* connectInfo;
+    
+    NickNameInfo nickNameInfo;
+    
+    int8_t userLocation;
+    void* locationObject;
 };
 
 
-#include <boost/unordered_map.hpp>
+#include <deque>
+#include <map>
 
 class UserManager
 {
 public:
 	UserManager();
-/*
-	bool Initialize();
-	int AddUser(Session* session, SessionId_t sid, UserInfo* userInfo);
-	User* GetUserByUserNo(int64_t userNo);
-	bool RemoveUser(User* user);
-	bool RemoveUserByUserNo(int64_t userNo);
 
-
+	bool initialize();
+    int addUnconnectedUser(NickNameInfo* userInfo, SessionId_t* sessionId);
+    
+    int addConnectedUser(SessionId_t* sessionId, ConnectInfo* connectInfo);
+	
+    User* getUnconnectedUserByNickNameInfo(NickNameInfo* nickNameInfo);
+    User* getUserByNickNameInfo(NickNameInfo* nickNameInfo);
+    bool removeUnconnectedUserByUser(User* _user);
+    bool removeUnconnectedUserByNickNameInfo(NickNameInfo* nickNameInfo);
+    
+    bool removeUser(User* _user);
+	bool removeUserByNickNameInfo(NickNameInfo* nickNameInfo);
 
 	~UserManager();
 
 private:
-	boost::unordered_map< int64_t, User* > m_userMap;
-	long m_createUserNo;*/
+    std::map<std::string, User*> userMap;
+    std::deque<User*>::iterator unconnectedUserListItr;
+    std::deque<User*> unconnectedUserList;
 };
 
 #endif //__USER_H__

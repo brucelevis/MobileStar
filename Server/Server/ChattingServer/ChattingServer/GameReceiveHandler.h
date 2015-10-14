@@ -11,7 +11,7 @@ class GameReceiveHandler
 		~GameReceiveHandler();
 		bool initialize();
 
-		virtual void receiveData(const ConnectInfo* connectInfo, const commandType_t cmd, const char* body, const int bodySize);
+		virtual void receiveData(const ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize);
 		virtual void sessionIn(const ConnectInfo* connectInfo);
 		virtual void sessionOut(const ConnectInfo* connectInfo);
 

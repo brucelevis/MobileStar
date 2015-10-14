@@ -6,6 +6,7 @@
 #include "DefineHeader.h"
 #include <stdio.h>
 USING_NS_CC;
+using namespace ui;
 
 bool UserListLayer::init()
 {
@@ -14,12 +15,27 @@ bool UserListLayer::init()
         return false;
     }
 	
+    
+    auto closeBtn = MenuItemImage::create(
+                                            "cancel_btn_01.png",
+                                            "cancel_btn_01.png",
+                                            CC_CALLBACK_1(UserListLayer::clickCloseBtn, this));
+    
+    closeBtn->setAnchorPoint(Vec2(0, 0));
+    closeBtn->setPosition(Vec2(DISPLAY_WIDTH - 100, DISPLAY_HEIGHT - 100));
+    
+    menu = Menu::create(closeBtn, NULL);
+    menu->setAnchorPoint(Vec2::ZERO);
+    menu->setPosition(Vec2::ZERO);
+    
+    this->addChild(menu, 100, TAG_MENU);
+    
+    
 
     userCount = 0;
     nextAddUserNumber = 0;
     downCount = 0;
     
- //   MenuItemImage* bgItem[MAX_USER_COUNT_IN_CHANNEL];
     
     for(int i = 0; i < MAX_USER_COUNT_IN_CHANNEL; i++)
     {
@@ -28,26 +44,22 @@ bool UserListLayer::init()
         userInfoLayer->SetUserInfo(INVALID_USER_NO, 0, NULL);
         userInfoLayer->setAnchorPoint(Vec2(0, 0));
         userInfoLayerList.push_back(userInfoLayer);
-        
-        
-        
-        
-//        
-//        bgItem[i] = MenuItemImage::create(
-//                                           "user_view_info.png",
-//                                           "user_view_info.png",
-//                                           CC_CALLBACK_1(UserListLayer::clickUserInfo, this));
-//        bgItem[i]->retain();
-//        
-//        bgItem[i]->setPosition(Vec2(getContentSize().width / 2, getContentSize().height - (nextAddUserNumber+1) * (SCREEN_HEIGHT / 10)));
     }
-    
-//    menu = Menu::create(bgItem[0], bgItem[1], bgItem[2], NULL);
-//    menu->setAnchorPoint(Vec2::ZERO);
-//    menu->setPosition(Vec2::ZERO);
-    
-//    this->addChild(menu, 100, TAG_MENU);
 
+    
+    scrollView = cocos2d::ui::ScrollView::create();
+    scrollView->retain();
+    
+    scrollView->setDirection(ui::ScrollView::Direction::VERTICAL);
+    scrollView->setInnerContainerSize(Size(DISPLAY_WIDTH, CONTAINER_HEIGHT));
+    scrollView->setContentSize(Size(DISPLAY_WIDTH, DISPLAY_HEIGHT));
+    scrollView->setBounceEnabled(false);
+    scrollView->setAnchorPoint(Vec2(0.5, 0.5));
+    
+    scrollView->setBackGroundImage("user_list_back_ground.png");
+    scrollView->setPosition(Vec2(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2));
+    
+    this->addChild(scrollView, 99);
     
     return true;
 }
@@ -58,7 +70,9 @@ void UserListLayer::addUserViewInfo(int64_t userNo, int nickNameLen, const char*
     userInfoLayerList.erase(userInfoLayerList.begin());
     userInfoLayer->SetUserInfo(userNo, nickNameLen, nickName);
 //    userInfoLayer->setScale(((float)SCREEN_WIDTH / 4) / SCREEN_WIDTH, ((float)SCREEN_HEIGHT / 10) / SCREEN_HEIGHT);
-    userInfoLayer->setPosition(Vec2(getContentSize().width / 2, getContentSize().height - (nextAddUserNumber) * (SCREEN_HEIGHT / 10)));
+    userInfoLayer->setPosition(Vec2(DISPLAY_WIDTH / 2, CONTAINER_HEIGHT - 128 - (nextAddUserNumber * (SCREEN_HEIGHT / 10))));
+    
+//        userInfoLayer->setPosition(Vec2(getContentSize().width / 2, getContentSize().height - (nextAddUserNumber) * (SCREEN_HEIGHT / 10)));
     
     userInfoLayer->layerPosition = nextAddUserNumber;
     //    MenuItem* item = MenuItem::create(userInfoLayerList[nextAddUserNumber], CC_CALLBACK_1(UserListLayer::ClickUserInfo, this, nextAddUserNumber));
@@ -71,8 +85,8 @@ void UserListLayer::addUserViewInfo(int64_t userNo, int nickNameLen, const char*
     
 //    this->removeChildByTag(nextAddUserNumber);
     
-    
-    this->addChild(userInfoLayer, 1, (int)userNo);
+    scrollView->addChild(userInfoLayer, 1, (int)userNo);
+//    this->addChild(userInfoLayer, 1, (int)userNo);
     
     nextAddUserNumber++;
 }
@@ -81,20 +95,20 @@ void UserListLayer::removeUserViewInfo(int64_t userNo)
 {
     std::vector<UserInfoLayer*>::iterator itr = userInfoLayerList.begin();
     
-    UserInfoLayer* userInfoLayer = (UserInfoLayer*)getChildByTag((int)userNo);
+    UserInfoLayer* userInfoLayer = (UserInfoLayer*)scrollView->getChildByTag((int)userNo);
     if(userInfoLayer->userNo == userNo)
     {
         userInfoLayerList.push_back(userInfoLayer);
-        removeChild(userInfoLayer);
+        scrollView->removeChild(userInfoLayer);
     }
     
     nextAddUserNumber--;
     
-    const Vector<Node*> childVector = getChildren();
+    const Vector<Node*> childVector = scrollView->getChildren();
     
     for(int i = 0; i < nextAddUserNumber; i++)
     {
-        ((UserInfoLayer*)childVector.at(i))->setPosition(Vec2(getContentSize().width / 2, getContentSize().height - i * (SCREEN_HEIGHT / 10)));
+        ((UserInfoLayer*)childVector.at(i))->setPosition(Vec2(DISPLAY_WIDTH / 2, CONTAINER_HEIGHT - 128 - (i * (SCREEN_HEIGHT / 10))));
         ((UserInfoLayer*)childVector.at(i))->layerPosition = i;
     }
 }
@@ -105,11 +119,15 @@ void UserListLayer::clickUserInfo(cocos2d::Ref *pSender)
     printf("click user Info %d\n", 1);
 }
 
+void UserListLayer::clickCloseBtn(cocos2d::Ref* pSender)
+{
+    getParent()->removeChildByTag(TAG_USER_LIST_LAYER, false);
+}
 
 
 bool UserListLayer::onTouchBegan(Touch* touch, Event* _event){
     
-    Vec2 vec = this->convertToNodeSpace(Vec2(touch->getLocation().x, touch->getLocation().y));
+    Vec2 vec = scrollView->convertToNodeSpace(Vec2(touch->getLocation().x, touch->getLocation().y));
     
     printf("begin %f %f\n", vec.x, vec.y);
     
@@ -122,7 +140,7 @@ bool UserListLayer::onTouchBegan(Touch* touch, Event* _event){
     }
     
     
-    const Vector<Node*> childVector = getChildren();
+    const Vector<Node*> childVector = scrollView->getChildren();
     
     
     

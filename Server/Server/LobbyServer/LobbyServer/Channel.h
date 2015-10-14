@@ -28,6 +28,7 @@ public:
     int getChannelNameLen() { return channelNameLen; }
 	const char* getChannelName() { return channelName; }
 	std::list<User*> getUserList() { return userList; }
+    bool isPossibleMove() { return (userList.size() < 200); }
 	~Channel();
 
 public:
@@ -40,8 +41,8 @@ private:
 	char channelName[MAX_CHANNEL_NAME_LEN + 1];
 	std::list<User*> userList;
     
-    char notifyBuffer[1000];
-    char sendBuffer[10000];
+    char notifyBuffer[5000];
+    char sendBuffer[50000];
 };
 
 
@@ -50,12 +51,14 @@ class ChannelManager
 public:
 	ChannelManager();
 	bool initialize(int channelCount, ChannelInfo* channelInfo);
+    int createChannel(ChannelInfo* channelInfo);
+    int deleteChannel(int16_t channelNo);
+    
 	Channel* getChannelByChannelNo(int16_t channelNo);
 
 	int16_t getRandomChannelNo();
-	int16_t firstEnterUser(User* user);
+	int firstEnterUser(User* user);
     Channel* getChannelByIndex(int index) { return channelList.at(index); }
-//    void resetUserListViewAllChannel();
     int getChannelCount() { return (int)channelList.size(); }
 
 	~ChannelManager();
@@ -63,8 +66,8 @@ public:
 private:
     std::vector<Channel*>::iterator itr;
     std::vector<Channel*> channelList;
+    int commonChannelCount;
     unsigned long createChannelNo;
-	//Channel channelList[MAX_CHANNEL_COUNT];
 };
 
 #endif //__CHANNEL_H__

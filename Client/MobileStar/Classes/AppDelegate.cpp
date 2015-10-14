@@ -5,6 +5,8 @@
 #include "GameClient.h"
 #include "NetworkLayer.h"
 #include "LoginScene.h"
+#include "BasicDefines.h"
+
 
 USING_NS_CC;
 
@@ -45,8 +47,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setOpenGLView(glview);
     }
     
-    glview->setDesignResolutionSize(SCREEN_WIDTH, SCREEN_HEIGHT, ResolutionPolicy::SHOW_ALL);
-    
+    glview->setDesignResolutionSize(DISPLAY_WIDTH, DISPLAY_HEIGHT, ResolutionPolicy::SHOW_ALL);
+
     // turn on display FPS
     director->setDisplayStats(true);
     
@@ -55,12 +57,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     
     register_all_packages();
     
-    
     ///////////////////////////로그인 서버로 접속
     
     GameClient::GetInstance().Initialize();
-    
-    
     
     auto networkBGLayer = NetworkLayer::create();
     networkBGLayer->retain();
@@ -74,7 +73,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     
     
 ////////////////////////////////// 게임 테스트용
-    
+//    glview->setDesignResolutionSize(SCREEN_WIDTH, SCREEN_HEIGHT, ResolutionPolicy::SHOW_ALL);
 //    // create a scene. it's an autorelease object
 //    auto scene = GameWorld::createScene();
 //    

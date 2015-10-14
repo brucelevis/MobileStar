@@ -15,26 +15,26 @@
 class NetworkInfo;
 
 /*
-struct ConnectXmlInfo
-{
+ struct ConnectXmlInfo
+ {
 	int8_t	serverModule;
 	int8_t	serverType;
 	int16_t	port;
-	char	ipAddress[BasicPacket::MAX_IP_ADDRESS_LEN + 1];
-};*/
+	char	ipAddress[MAX_IP_ADDRESS_LEN + 1];
+ };*/
 
 class ChattingData
 {
 public:
-	ChattingData();
-	~ChattingData();
-	bool Initialize();
-	bool LoadNetworkInfo();
-
+    ChattingData();
+    ~ChattingData();
+    bool Initialize();
+    bool LoadNetworkInfo();
+    
+    const NetworkInfo* getNetworkInfo(int serverModule);
+    
     int networkInfoCount;
-	NetworkInfo* networkInfoList;
+    NetworkInfo* networkInfoList;
 };
 
 #endif //__CHATTING_DATA_H__
-
-

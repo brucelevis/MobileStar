@@ -1,5 +1,6 @@
 #include "GameWorld.h"
 #include "AStarAlgorithm.h"
+#include "GameClient.h"
 
 Scene* GameWorld::createScene()
 {
@@ -54,6 +55,11 @@ GameWorld::GameWorld()
     printf("This is %d Computer\n",NetMgr->GetPlayerFlag());
 
     CameraMgr->SetMovePos(Vec2(0,500));
+    
+    
+    //Scene setting
+    
+    GameClient::GetInstance().currentScene = GAME_SCENE_NOW;
 }
 
 GameWorld::~GameWorld(){

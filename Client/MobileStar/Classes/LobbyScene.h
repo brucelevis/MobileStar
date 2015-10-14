@@ -10,6 +10,12 @@ using namespace std;
 #include "BasicPacket.h"
 #include "UserListLayer.h"
 
+class LobbyGameLayer;
+class LobbyChannelLayer;
+class LobbyFriendLayer;
+class LobbyClanLayer;
+class LobbyRankingLayer;
+class LobbyBoardLayer;
 
 
 class ChannelListLayer;
@@ -22,6 +28,18 @@ class NickNameInfo;
 
 const int MAX_CHATTING_COUNT = 30;
 
+enum CURRENT_LAYER
+{
+    CURRENT_LAYER_GAME = 0,
+    CURRENT_LAYER_CHANNEL,
+    CURRENT_LAYER_FRIEND,
+    CURRENT_LAYER_CLAN,
+    CURRENT_LAYER_RANKING,
+    CURRENT_LAYER_BOARD,
+    
+    CURRENT_LAYER_COUNT,
+};
+
 class LobbyScene : public cocos2d::Layer
 {
 public:
@@ -30,15 +48,17 @@ public:
 	virtual bool init();
 
 	void menuCloseCallback(cocos2d::Ref* pSender);
+    
+    
+    void changeLobbyLayer(int layerNumber);
+    
+    
+    
+    
+    
+    
     void addUserInfo(int64_t userNo, int nickNameLen, const char* nickName);
     void removeUserInfo(int64_t userNo);
-
-    void clickChina(cocos2d::Ref* pSender);
-    void clickEurope(cocos2d::Ref* pSender);
-    void clickUSA(cocos2d::Ref* pSender);
-    void clickRandom(cocos2d::Ref* pSender);
-    
-    void clickQuickPlay(cocos2d::Ref* pSender);
     
     void waitToStart();
 
@@ -66,7 +86,7 @@ public:
 //private:
 	Menu* menu;
 	Layer* scrollContainer;
-	ScrollView* scrollView;
+//	ScrollView* scrollView;
 	Layer* menuLayer;
 	ChannelListLayer* channelListLayer;
 	UserListLayer* userListLayer;
@@ -78,7 +98,20 @@ public:
     MenuItemImage* tribeUSA;
     MenuItemImage* tribeRandom;
     MenuItemImage* quickPlayButton;
-        
+    
+    Layer* myInfoLayer;
+    
+    LobbyGameLayer* lobbyGameLayer;
+    LobbyChannelLayer* lobbyChannelLayer;
+    LobbyFriendLayer* lobbyFriendLayer;
+    LobbyClanLayer* lobbyClanLayer;
+    LobbyRankingLayer* lobbyRankingLayer;
+    LobbyBoardLayer* lobbyBoardLayer;
+    
+    Layer* menuButtonLayer;
+    
+    int currentLayer;
+    
     Sprite* chooseTribe;
 };
 

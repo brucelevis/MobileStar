@@ -3,6 +3,11 @@
 #include "Log.h"
 #include "User.h"
 
+#include "LobbyServer.h"
+#include "ClientLobbyPacket.h"
+#include "Channel.h"
+
+
 ClientReceiveHandler::ClientReceiveHandler()
 {
 	
@@ -15,38 +20,46 @@ ClientReceiveHandler::~ClientReceiveHandler()
 
 bool ClientReceiveHandler::initialize()
 {
-
+    testName = 0;
 	return true;
 }
 
-void ClientReceiveHandler::sessionIn(const ConnectInfo* connectInfo)
+void ClientReceiveHandler::sessionIn(ConnectInfo* connectInfo)
 {
+    
 
+    
+    
 }
 
-void ClientReceiveHandler::sessionOut(const ConnectInfo* connectInfo)
+void ClientReceiveHandler::sessionOut(ConnectInfo* connectInfo)
 {
     User* user = (User*)connectInfo->userData;
 	if (user == NULL)
 	{
-		ErrorLog("user not login");
+		DebugLog("user not login");
 		return;
 	}
+    else
+    {
+        LobbyServer::getInstance()->userMgr->removeUser(user);
+    }
+    
+    
 
 //	user->SetSession(NULL);
 
 //	LobbyServer::getInstance()->centerSendHandler->HandleLogoutUserReq(userNo);
 }
 
-void ClientReceiveHandler::receiveData(const ConnectInfo* connectInfo, const uint32_t cmd, const char* body, const int bodySize)
+void ClientReceiveHandler::receiveData(ConnectInfo* connectInfo, const uint32_t cmd, const char* body, const int bodySize)
 {
-    /*
-	switch(cmd)
+  	switch(cmd)
 	{
 	case ClientLobbyPacket::FIRST_CONNECT_REQ:
 		handleFirstConnectReq(connectInfo, body, bodySize);
 		break;
-
+/*
 	case ClientLobbyPacket::CHATTING_REQ:
 		handleChattingReq(connectInfo, body, bodySize);
 		break;
@@ -58,7 +71,6 @@ void ClientReceiveHandler::receiveData(const ConnectInfo* connectInfo, const uin
 	case ClientLobbyPacket::MOVE_CHANNEL_REQ:
 		handleMoveChannelReq(connectInfo, body, bodySize);
 		break;
-
 	case ClientLobbyPacket::GET_USER_LIST_REQ:
 		handleGetUserListReq(connectInfo, body, bodySize);
 		break;
@@ -74,30 +86,84 @@ void ClientReceiveHandler::receiveData(const ConnectInfo* connectInfo, const uin
 	case ClientLobbyPacket::ADD_RESPONSE_FRIEND_REQ:
 		handleAddResponseFriendReq(connectInfo, body, bodySize);
 		break;
-
+*/
 	default:
 		ErrorLog("invalid command - type = %d", cmd);
 		return ;
 	}
-     */
-
 }
-/*
-void ClientReceiveHandler::HandleFirstConnectReq(const ConnectInfo* connectInfo, const char* body, const int bodySize)
+
+
+void ClientReceiveHandler::handleFirstConnectReq(ConnectInfo* connectInfo, const char* body, const int bodySize)
 {
 	DebugLog("ClientReceiveHandler::HandleFirstConnectReq");
-	ClientLobbyPacket::FirstConnectReqPacket packet;
-	memset(&packet, 0, sizeof(packet));
-	if (sizeof(packet) != bodySize)
-	{
-		ErrorLog("??");
-		return;
-	}
-	memcpy(&packet, body, bodySize);
+//	ClientLobbyPacket::FirstConnectReqPacket packet;
+//	memset(&packet, 0, sizeof(packet));
+//	if (sizeof(packet) != bodySize)
+//	{
+//		ErrorLog("??");
+//		return;
+//	}
+//	memcpy(&packet, body, bodySize);
+//
+//	int64_t userNo = packet.userNo;
 
-	int64_t userNo = packet.userNo;
+    /*
+    
+    ///////////////////test userInfo
+    UserInfo userInfo;
+    userInfo.userNo = testName;
+    userInfo.nickNameLen = 5;
+    char nickName[5];
+    sprintf(nickName, "test%d", testName);
+    memcpy(userInfo.nickName, nickName, 5);
+    
+    testName++;
+    
+    ///////////////
+    
+    
+    
+    int failReason = LobbyServer::getInstance()->userMgr->addUser(connectInfo, &userInfo);
+    DebugLog("add user %d", failReason);
+    
+    User* user = LobbyServer::getInstance()->userMgr->getUserByUserNo(userInfo.userNo);
+    if(user == NULL)
+    {
+        ErrorLog("user not found - %d", userInfo.userNo);
+        return ;
+    }
+    
+    
+    int16_t channelNo = LobbyServer::getInstance()->channelMgr->firstEnterUser(user);
+    
+    DebugLog("channelNo %d", channelNo);
+    
+    user->setChannelNo(channelNo);
 
-	User* user = LobbyServer::GetInstance().userMgr->GetUserByUserNo(userNo);
+    
+    ClientLobbyPacket::FirstConnectResPacket packet;
+    packet.cmd = ClientLobbyPacket::FIRST_CONNECT_RES;
+    
+    Channel* channel = LobbyServer::getInstance()->channelMgr->getChannelByChannelNo(channelNo);
+    
+    if(channel == NULL)
+    {
+        ErrorLog("?? %d", channelNo);
+        return ;
+    }
+    
+    packet.channelNameLen = channel->getChannelNameLen();
+    memcpy(packet.channelName, channel->getChannelName(), packet.channelNameLen);
+    
+    packet.requestInfoCount = 0;
+           
+    LobbyServer::getInstance()->network->sendData(, <#const ConnectInfo *connectInfo#>, <#const char *data#>, <#int dataSize#>)
+    
+           
+           
+    
+	User* user = LobbyServer::GetInstance().userMgr->getUserByUserNo(userNo);
 	if (user == NULL)
 	{
 		ErrorLog("user not exist userNo = %d", userNo);
@@ -124,8 +190,13 @@ void ClientReceiveHandler::HandleFirstConnectReq(const ConnectInfo* connectInfo,
 
 	LobbyServer::GetInstance().centerSendHandler->HandleEnterFrontUserReq(session->GetSessionId(), user);
 
-	return;
+	return;*/
 }
+
+
+
+/*
+ 
 
 void ClientReceiveHandler::HandleChattingReq(Session* const session, const char* body, int bodySize)
 {
@@ -148,11 +219,11 @@ void ClientReceiveHandler::HandleChattingReq(Session* const session, const char*
 		return;
 	}
 
-	char nickName[BasicPacket::MAX_NICK_NAME_LEN + 1] = { 0, };
+	char nickName[MAX_NICK_NAME_LEN + 1] = { 0, };
 	memcpy(nickName, user->GetNickName(), user->GetNickNameLen());
 
 	int8_t chattingLen = packet.chattingLen;
-	char chatting[BasicPacket::MAX_CHATTING_LEN + 1] = { 0, };
+	char chatting[MAX_CHATTING_LEN + 1] = { 0, };
 	memcpy(chatting, packet.chatting, chattingLen);
 
 	Channel* channel = LobbyServer::GetInstance().channelMgr->GetChannelByChannelNo(user->GetChannelNo());
@@ -183,14 +254,14 @@ void ClientReceiveHandler::HandleChattingReq(Session* const session, const char*
 
 						LobbyServer::GetInstance().cacheSendHandler->HandleAddRequestFriendReq(session->GetSessionId(), session->userKey, nickName, nickNameStr.length());
 					}
-					else // ¹®¹ý¿À·ù
+					else // Ï€Ã†Ï€ËÃ¸Â¿âˆ‘Ë˜
 					{
 						LobbyServer::GetInstance().clientSendHandler->HandleFailPacket(session, ClientLobbyPacket::CHATTING_FAIL, ClientLobbyPacket::SERVER_ERROR);
 						return;
 					}
 
 				}
-				else //¹®¹ý ¿À·ù
+				else //Ï€Ã†Ï€Ë Ã¸Â¿âˆ‘Ë˜
 				{
 					LobbyServer::GetInstance().clientSendHandler->HandleFailPacket(session, ClientLobbyPacket::CHATTING_FAIL, ClientLobbyPacket::SERVER_ERROR);
 					return;
@@ -208,26 +279,26 @@ void ClientReceiveHandler::HandleChattingReq(Session* const session, const char*
 
 						LobbyServer::GetInstance().cacheSendHandler->HandleRemoveFriendReq(session->GetSessionId(), user->GetUserNo(), nickName, nickNameStr.length());
 					}
-					else // ¹®¹ý¿À·ù
+					else // Ï€Ã†Ï€ËÃ¸Â¿âˆ‘Ë˜
 					{
 						LobbyServer::GetInstance().clientSendHandler->HandleFailPacket(session, ClientLobbyPacket::CHATTING_FAIL, ClientLobbyPacket::SERVER_ERROR);
 						return;
 					}
 
 				}
-				else //¹®¹ý ¿À·ù
+				else //Ï€Ã†Ï€Ë Ã¸Â¿âˆ‘Ë˜
 				{
 					LobbyServer::GetInstance().clientSendHandler->HandleFailPacket(session, ClientLobbyPacket::CHATTING_FAIL, ClientLobbyPacket::SERVER_ERROR);
 					return;
 				}
 			}
-			else//Ä£±¸Ãß°¡»èÁ¦°¡ ¾Æ´Ò¶§
+			else//Æ’Â£Â±âˆâˆšï¬‚âˆžÂ°ÂªÃ‹Â¡Â¶âˆžÂ° Ã¦âˆ†Â¥â€œâˆ‚ÃŸ
 			{
 				LobbyServer::GetInstance().clientSendHandler->HandleFailPacket(session, ClientLobbyPacket::CHATTING_FAIL, ClientLobbyPacket::SERVER_ERROR);
 				return;
 			}
 		}
-		else //Ä£±¸ ±â´ÉÀÌ ¾Æ´Ò¶§
+		else //Æ’Â£Â±âˆ Â±â€šÂ¥â€¦Â¿Ãƒ Ã¦âˆ†Â¥â€œâˆ‚ÃŸ
 		{
 			LobbyServer::GetInstance().clientSendHandler->HandleFailPacket(session, ClientLobbyPacket::CHATTING_FAIL, ClientLobbyPacket::SERVER_ERROR);
 			return;
@@ -269,7 +340,7 @@ void ClientReceiveHandler::HandleMoveChannelReq(const ConnectInfo* connectInfo, 
 	}
 	memcpy(&packet, body, bodySize);
 
-	//channelNo°¡ ÀÌ ¼­¹ö¿¡ Á¸ÀçÇÏ´ÂÁö È®ÀÎÇÏ±â.
+	//channelNoâˆžÂ° Â¿Ãƒ Âºâ‰ Ï€Ë†Ã¸Â° Â¡âˆÂ¿ÃÂ«Å“Â¥Â¬Â¡Ë† Â»Ã†Â¿Å’Â«Å“Â±â€š.
 
 	User* user = LobbyServer::GetInstance().userMgr->GetUserByUserNo(session->userKey);
 	if (user == NULL)
@@ -338,7 +409,7 @@ void ClientReceiveHandler::HandleGetUserInfoReq(const ConnectInfo* connectInfo, 
 	memset(&nickNameInfo, 0, sizeof(NickNameInfo));
 
 	nickNameInfo.nickNameLen = packet.nickNameInfo.nickNameLen;
-	memcpy(nickNameInfo.nickName, packet.nickNameInfo.nickName, BasicPacket::MAX_NICK_NAME_LEN);
+	memcpy(nickNameInfo.nickName, packet.nickNameInfo.nickName, MAX_NICK_NAME_LEN);
 
 	DebugLog("nickName %s %s %d %d", nickNameInfo.nickName, packet.nickNameInfo.nickName, nickNameInfo.nickNameLen, packet.nickNameInfo.nickNameLen);
 

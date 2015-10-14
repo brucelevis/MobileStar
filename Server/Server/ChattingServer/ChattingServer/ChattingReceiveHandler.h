@@ -11,7 +11,7 @@ public:
 	~ChattingReceiveHandler();
 	bool initialize();
 
-	void receiveData(const ConnectInfo* connectInfo, const commandType_t cmd, const char* body, const int bodySize);
+	void receiveData(const ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize);
 	void sessionIn(const ConnectInfo* connectInfo);
     void sessionOut(const ConnectInfo* connectInfo);
 

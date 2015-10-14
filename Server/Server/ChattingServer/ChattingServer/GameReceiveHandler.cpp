@@ -30,7 +30,7 @@ void GameReceiveHandler::sessionOut(const ConnectInfo* connectInfo)
 
 }
 
-void GameReceiveHandler::receiveData(const ConnectInfo* connectInfo, commandType_t cmd, const char* body, const int bodySize)
+void GameReceiveHandler::receiveData(const ConnectInfo* connectInfo, command_t cmd, const char* body, const int bodySize)
 {
 	switch(cmd)
 	{

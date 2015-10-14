@@ -6,6 +6,7 @@
 #include "ClientLobbyPacket.h"
 #include "LobbyFrontPacket.h"
 #include "GameLobbyPacket.h"
+#include "LobbyChattingPacket.h"
 #include "Room.h"
 
 #include "LobbyDefine.h"
@@ -15,63 +16,32 @@
 #include "QuickPlay.h"
 
 
-#include "FrontReceiveHandler.h"
-#include "FrontSendHandler.h"
-#include "LobbyReceiveHandler.h"
-#include "LobbySendHandler.h"
-#include "GameReceiveHandler.h"
-#include "GameSendHandler.h"
-#include "ChattingReceiveHandler.h"
-#include "ChattingSendHandler.h"
-#include "ClientReceiveHandler.h"
-#include "ClientSendHandler.h"
-
-IOManager::IOManager(FrontSendHandler* _frontSendHandler, LobbySendHandler* _lobbySendHandler, GameSendHandler* _gameSendHandler, ChattingSendHandler* _chattingSendHandler, ClientSendHandler* _clientSendHandler, FrontReceiveHandler* _frontReceiveHandler, LobbyReceiveHandler* _lobbyReceiveHandler, GameReceiveHandler* _gameReceiveHandler, ChattingReceiveHandler* _chattingReceiveHandler, ClientReceiveHandler* _clientReceiveHandler)
+IOManager::IOManager()
 {
-    frontReceiveHandler = _frontReceiveHandler;
-    frontSendHandler = _frontSendHandler;
-    lobbyReceiveHandler = _lobbyReceiveHandler;
-    lobbySendHandler = _lobbySendHandler;
-    gameReceiveHandler = _gameReceiveHandler;
-    gameSendHandler = _gameSendHandler;
-    chattingReceiveHandler = _chattingReceiveHandler;
-    chattingSendHandler = _chattingSendHandler;
-    clientReceiveHandler = _clientReceiveHandler;
-    clientSendHandler = _clientSendHandler;
-    
-    testNameInt = 1;
+
 }
 
 
 IOManager::~IOManager()
 {
-    delete frontReceiveHandler;
-    delete frontSendHandler;
-    delete lobbyReceiveHandler;
-    delete lobbySendHandler;
-    delete gameReceiveHandler;
-    delete gameSendHandler;
-    delete clientReceiveHandler;
-    delete clientSendHandler;
+
 }
 
 void IOManager::connected(ConnectInfo* connectInfo)
 {
-    DebugLog("connected");
-    
     switch (connectInfo->serverModule)
     {
         case SERVER_MODULE_FRONT_SERVER:
             frontSessionIn(connectInfo);
             break;
         case SERVER_MODULE_LOBBY_SERVER:
-            lobbyReceiveHandler->sessionIn(connectInfo);
+            lobbySessionIn(connectInfo);
             break;
         case SERVER_MODULE_GAME_SERVER:
             gameSessionIn(connectInfo);
             break;
         case SERVER_MODULE_CHATTING_SERVER:
-            chattingReceiveHandler->sessionIn(connectInfo);
+            chattingSessionIn(connectInfo);
             break;
         case SERVER_MODULE_CLIENT:
             clientSessionIn(connectInfo);
@@ -99,13 +69,13 @@ void IOManager::disconnected(ConnectInfo* connectInfo)
             frontSessionOut(connectInfo);
             break;
         case SERVER_MODULE_LOBBY_SERVER:
-            lobbyReceiveHandler->sessionOut(connectInfo);
+            lobbySessionOut(connectInfo);
             break;
         case SERVER_MODULE_GAME_SERVER:
             gameSessionOut(connectInfo);
             break;
         case SERVER_MODULE_CHATTING_SERVER:
-            chattingReceiveHandler->sessionOut(connectInfo);
+            chattingSessionOut(connectInfo);
             break;
         case SERVER_MODULE_CLIENT:
             clientSessionOut(connectInfo);
@@ -146,13 +116,13 @@ void IOManager::receiveData(ConnectInfo* connectInfo, const char* data, int data
             frontReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
             break;
         case SERVER_MODULE_LOBBY_SERVER:
-            lobbyReceiveHandler->receiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
+            lobbyReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
             break;
         case SERVER_MODULE_GAME_SERVER:
             gameReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
             break;
         case SERVER_MODULE_CHATTING_SERVER:
-            chattingReceiveHandler->receiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
+            chattingReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
             break;
         case SERVER_MODULE_CLIENT:
             clientReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
@@ -188,15 +158,6 @@ void IOManager::frontReceiveData(ConnectInfo* connectInfo, const command_t cmd, 
             frontHandleEnterClientOut(connectInfo, body, bodySize);
             break;
 
-//        case ClientLobbyPacket::MOVE_CHANNEL_REQ:
-//            clientHandleMoveChannelReq(connectInfo, body, bodySize);
-//            break;
-//            
-//        case ClientLobbyPacket::GET_ROOM_LIST_REQ:
-//            clientHandleGetRoomListReq(connectInfo, body, bodySize);
-//            break;
-            
-
         default:
             ErrorLog("invalid command - type = %d", cmd);
             return ;
@@ -229,9 +190,13 @@ void IOManager::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const char*
 {
     LobbyFrontPacket::FirstConnectResPacket packet;
     
-//    memcpy(&packet + sizeof(command_t), body, bodySize);
+    memcpy(packet.chattingIp, body, MAX_IP_ADDRESS_LEN);
+    body += MAX_IP_ADDRESS_LEN;
     
-    ///////////// connect with chatting server
+    memcpy(&packet.chattingPort, body, sizeof(packet.chattingPort));
+    body += sizeof(packet.chattingPort);
+    
+    /////////////TODO. connect with chatting server
 }
 
 
@@ -288,12 +253,10 @@ void IOManager::frontHandleEnterClientOk(ConnectInfo* connectInfo, const char* b
     
     if(user == NULL)
     {
-        ErrorLog("??");
+        ErrorLog("not exist user");
+        //???
         return ;
     }
-    
-    user->setUserState(USER_STATE_LOBBY);
-    
     
     ///////////// send packet
     
@@ -331,6 +294,36 @@ void IOManager::frontHandleEnterClientOut(ConnectInfo* connectInfo, const char* 
     }
     
 }
+
+
+//////////////////////////////////////// lobby recv
+
+void IOManager::lobbyReceiveData(ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize)
+{
+    
+}
+
+
+void IOManager::lobbySessionIn(ConnectInfo* connectInfo)
+{
+    
+}
+
+
+void IOManager::lobbySessionOut(ConnectInfo* connectInfo)
+{
+    
+}
+
+
+
+void IOManager::lobbyHandleFirstConnectReq(ConnectInfo* connectInfo, const char* body, const int bodySize)
+{
+    
+}
+
+
+
 
 
 //////////////////////////////////////// game recv
@@ -386,11 +379,9 @@ void IOManager::gameSessionOut(ConnectInfo* connectInfo)
         }
         else
         {
-            
+            DebugLog("game server remove");
         }
     }
-    
-    
 }
 
 
@@ -421,8 +412,6 @@ void IOManager::gameHandleFirstConnectReq(ConnectInfo* connectInfo, const char* 
 
 void IOManager::gameHandleEnterRoomRes(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
-    DebugLog("game enter room res");
-    
     GameLobbyPacket::EnterRoomResPacket packet;
     
     memcpy(&packet.roomNo, body, sizeof(packet.roomNo));
@@ -435,62 +424,15 @@ void IOManager::gameHandleEnterRoomRes(ConnectInfo* connectInfo, const char* bod
         return ;
     }
     
-    
-    ////////////////////////// send to client
-    
     GameServerInfo* gameServerInfo = (GameServerInfo*)connectInfo->userData;
-
-    ClientLobbyPacket::StartGameNotifyPacket sendPacket;
     
-    sendPacket.userCount = room->getUserCount();
-
-    const RoomSlotInfo* roomSlotList = room->getRoomSlotList();
-    
-    int userCount = 0;
-    for(int i = 0; i < MAX_ROOM_SLOT_COUNT; i++)
+    if(gameServerInfo == NULL)
     {
-        if(roomSlotList[i].isOpen == 1 && roomSlotList[i].isExistUser == 1)
-        {
-            sendPacket.gameUserInfo[userCount].userNo = roomSlotList[i].user->getUserNo();
-            sendPacket.gameUserInfo[userCount].userNo = roomSlotList[i].tribe;
-        }
+        ErrorLog("gameSreverInfo is null");
+        return ;
     }
     
-    memcpy(sendPacket.ip, gameServerInfo->clientIp, MAX_IP_ADDRESS_LEN);
-    sendPacket.port = gameServerInfo->clientPort;
-    
-    
-    char* pSendBuffer = sendBuffer;
-    
-    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
-    pSendBuffer += sizeof(sendPacket.cmd);
-    
-    memcpy(pSendBuffer, &sendPacket.userCount, sizeof(sendPacket.userCount));
-    pSendBuffer += sizeof(sendPacket.userCount);
-    
-    for(int i = 0; i < sendPacket.userCount; i++)
-    {
-        memcpy(pSendBuffer, &sendPacket.gameUserInfo[i].userNo, sizeof(sendPacket.gameUserInfo[i].userNo));
-        pSendBuffer += sizeof(sendPacket.gameUserInfo[i].userNo);
-        
-        memcpy(pSendBuffer, &sendPacket.gameUserInfo[i].tribe, sizeof(sendPacket.gameUserInfo[i].tribe));
-        pSendBuffer += sizeof(sendPacket.gameUserInfo[i].tribe);
-    }
-    
-    memcpy(pSendBuffer, sendPacket.ip, MAX_IP_ADDRESS_LEN);
-    pSendBuffer += MAX_IP_ADDRESS_LEN;
-    
-    memcpy(pSendBuffer, &sendPacket.port, sizeof(sendPacket.port));
-    pSendBuffer += sizeof(sendPacket.port);
-
-    
-    for(int i = 0; i < MAX_ROOM_SLOT_COUNT; i++)
-    {
-        if(roomSlotList[i].isOpen == 1 && roomSlotList[i].isExistUser == 1)
-        {
-            LobbyServer::getInstance()->network->sendPacket(roomSlotList[i].user->getConnectInfo(), sendBuffer, (int)(pSendBuffer - sendBuffer));
-        }
-    }
+    room->startGameNotify(gameServerInfo);
 }
 
 
@@ -520,19 +462,16 @@ void IOManager::gameHandleFinishGameReq(ConnectInfo* connectInfo, const char* bo
     LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
 }
 
-
 void IOManager::gameHandleMovingClientDisconnect(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     GameLobbyPacket::MovingClientDisconnectPacket packet;
     
-    const char* pBody = body;
-    
-    memcpy(&packet.userNo, pBody, sizeof(packet.userNo));
-    pBody += sizeof(packet.userNo);
-    
+    memcpy(&packet.userNo, body, sizeof(packet.userNo));
     
     if(LobbyServer::getInstance()->userMgr->removeUnconnectedUserByUserNo(packet.userNo) == false)
     {
+        ErrorLog("not exist unconnect user - %lld", packet.userNo);
+        
         User* user = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
         
         if(user == NULL)
@@ -545,9 +484,95 @@ void IOManager::gameHandleMovingClientDisconnect(ConnectInfo* connectInfo, const
 
 
 
+//////////////////////////////////////// chatting recv
+
+void IOManager::chattingReceiveData(ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize)
+{
+    switch(cmd)
+    {
+        case LobbyChattingPacket::FIRST_CONNECT_RES:
+            chattingHandleFirstConnectRes(connectInfo, body, bodySize);
+            break;
+            
+        case LobbyChattingPacket::ENTER_CLIENT_RES:
+            chattingHandleEnterClientRes(connectInfo, body, bodySize);
+            break;
+            
+        case LobbyChattingPacket::ENTER_CLIENT_OK:
+            frontHandleEnterClientOk(connectInfo, body, bodySize);
+            break;
+            
+        case LobbyChattingPacket::ENTER_CLIENT_OUT:
+            frontHandleEnterClientOut(connectInfo, body, bodySize);
+            break;
+            
+        default:
+            ErrorLog("invalid command - type = %d", cmd);
+            return ;
+    }
+}
+
+
+void IOManager::chattingSessionIn(ConnectInfo* connectInfo)
+{
+    LobbyChattingPacket::FirstConnectReqPacket packet;
+    
+    LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&packet, sizeof(packet));
+}
+
+
+void IOManager::chattingSessionOut(ConnectInfo* connectInfo)
+{
+    ErrorLog("never chatting session out");
+}
 
 
 
+void IOManager::chattingHandleFirstConnectRes(ConnectInfo* connectInfo, const char* body, const int bodySize)
+{
+    LobbyChattingPacket::FirstConnectResPacket packet;
+    
+    memcpy(packet.clientIp, body, MAX_IP_ADDRESS_LEN);
+    body += MAX_IP_ADDRESS_LEN;
+    
+    memcpy(&packet.clientPort, body, sizeof(packet.clientPort));
+    body += sizeof(packet.clientPort);
+    
+    DebugLog("chatting ip port : %s %d", packet.clientIp, packet.clientPort);
+    
+    LobbyServer::getInstance()->serverInfoMgr->addChattingServer(connectInfo, packet.clientIp, packet.clientPort);
+}
+
+
+void IOManager::chattingHandleEnterClientRes(ConnectInfo* connectInfo, const char* body, const int bodySize)
+{
+    LobbyChattingPacket::EnterClientResPacket packet;
+    
+    memcpy(&packet.userNo, body, sizeof(packet.userNo));
+    body += sizeof(packet.userNo);
+    
+    User* user = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
+    
+    if(user == NULL || user->getConnectInfo() == NULL)
+    {
+        DebugLog("already out");
+        return ;
+    }
+    
+    ChattingServerInfo* chattingServerInfo = LobbyServer::getInstance()->serverInfoMgr->getChattingServerInfo();
+    
+    if(chattingServerInfo == NULL)
+    {
+        ErrorLog("chatting server not exist");
+        return ;
+    }
+    
+    ClientLobbyPacket::FirstConnectResPacket sendPacket;
+    memcpy(sendPacket.chattingIp, chattingServerInfo->clientIp, MAX_IP_ADDRESS_LEN);
+    sendPacket.chattingPort = chattingServerInfo->clientPort;
+    
+    LobbyServer::getInstance()->network->sendPacket(user->getConnectInfo(), (char*)&sendPacket, sizeof(sendPacket));
+}
 
 
 
@@ -573,10 +598,10 @@ void IOManager::clientSessionOut(ConnectInfo* connectInfo)
     }
     else
     {
-        if(user->getUserState() == USER_STATE_LOBBY)
+        if(user->getUserState() == USER_STATE_LOBBY || user->getUserState() == USER_STATE_WAIT_START_IN_LOBBY)
         {
-            DebugLog("delete from channel in %d", user->getChannelNo());
-            Channel* channel = LobbyServer::getInstance()->channelMgr->getChannelByChannelNo(user->getChannelNo());
+            DebugLog("delete from channel");
+            Channel* channel = (Channel*)user->getLocationObject();
             if(channel == NULL)
             {
                 ErrorLog("not channel %d", user->getChannelNo());
@@ -587,20 +612,19 @@ void IOManager::clientSessionOut(ConnectInfo* connectInfo)
                 {
                     if(LobbyServer::getInstance()->quickPlayMgr->removeUser(user) == false)
                     {
-                        ErrorLog("??");
+                        ErrorLog("quickPlayMgr->removeUser(user)");
                     }
                 }
                 
                 
-                if(channel->removeUser(user) != SUCCESS)
+                if(channel->removeUser(user) < 0)
                 {
-                    ErrorLog("??");
+                    ErrorLog("channel->removeUser(user)");
                 }
             }
-            
-            LobbyServer::getInstance()->userMgr->removeUser(user);
+
         }
-        else if(user->getUserState() == USER_STATE_ROOM)
+        else if(user->getUserState() == USER_STATE_ROOM || user->getUserState() == USER_STATE_MOVING_GAME)
         {
             Room* room = LobbyServer::getInstance()->roomMgr->getRoomByRoomNo(user->getRoomNo());
             
@@ -612,50 +636,57 @@ void IOManager::clientSessionOut(ConnectInfo* connectInfo)
             {
                 if(room->getRoomState() == ROOM_STATE_STAND_BY)
                 {
-                    int8_t leaveIndex = room->getIndexByUser(user);
-                    
-                    if(LobbyServer::getInstance()->roomMgr->leaveRoom(user) != SUCCESS)
+                    if(LobbyServer::getInstance()->roomMgr->leaveRoom(user) < 0)
                     {
                         ErrorLog("??");
-                        return ;
                     }
-                    
-                    room = LobbyServer::getInstance()->roomMgr->getRoomByRoomNo(user->getRoomNo());
-                    
-                    if(room != NULL)
+                    else
                     {
-                        clientSendLeaveRoomNotify(room, leaveIndex);
+
                     }
-                    
-                    LobbyServer::getInstance()->userMgr->removeUser(user);
                 }
-                else
+                else if(room->getRoomState() == ROOM_STATE_START) // moving game or gaming
                 {
-                    DebugLog("go game server");
-                    
-                    
-                    if(user->getUserState() == USER_STATE_MOVING_GAME)
-                    {
-                        GameLobbyPacket::StartGameYesPacket packet;
-                        
-                        packet.roomNo = room->getRoomNo();
-                        
-                        LobbyServer::getInstance()->network->sendPacket(LobbyServer::getInstance()->serverInfoMgr->getGameServerInfo()->connectInfo, (char*)&packet, sizeof(packet));
-                    }
-                    else if(user->getUserState() == USER_STATE_GAME)
-                    {
-                        DebugLog("ok");
-                    }
+//                    DebugLog("go game server");
+//                    
+//                    if(user->getUserState() == USER_STATE_MOVING_GAME)
+//                    {
+//                        GameLobbyPacket::StartGameYesPacket packet;
+//                        
+//                        packet.roomNo = room->getRoomNo();
+//                        
+//                        LobbyServer::getInstance()->network->sendPacket(LobbyServer::getInstance()->serverInfoMgr->getGameServerInfo()->connectInfo, (char*)&packet, sizeof(packet));
+//                    }
+//                    else if(user->getUserState() == USER_STATE_GAME)
+//                    {
+//                        DebugLog("ok");
+//                    }
                 }
             }
         }
+        else if(user->getUserState() == USER_STATE_GAME)
+        {
+            connectInfo->userData = NULL;
+            
+            user->setConnectInfo(NULL);
+            
+            return ;
+        }
+        else
+        {
+            // not enter room or channel.. just wait req to enter
+        }
+    }
+    
+    if(LobbyServer::getInstance()->userMgr->removeUser(user) == false)
+    {
+        ErrorLog("userMgr->removeUser(user)");
     }
     
     connectInfo->userData = NULL;
     
     user->setConnectInfo(NULL);
     
-    //	LobbyServer::getInstance()->centerSendHandler->HandleLogoutUserReq(userNo);
 }
 
 void IOManager::clientReceiveData(ConnectInfo* connectInfo, const uint32_t cmd, const char* body, const int bodySize)
@@ -737,30 +768,7 @@ void IOManager::clientReceiveData(ConnectInfo* connectInfo, const uint32_t cmd, 
         case ClientLobbyPacket::QUICK_PLAY_OK:
             clientHandleQuickPlayOk(connectInfo, body, bodySize);
             break;
-            
-                        /*
-             case ClientLobbyPacket::CHATTING_REQ:
-             handleChattingReq(connectInfo, body, bodySize);
-             break;
-             
 
-             
-             case ClientLobbyPacket::GET_USER_LIST_REQ:
-             handleGetUserListReq(connectInfo, body, bodySize);
-             break;
-             
-             case ClientLobbyPacket::GET_USER_INFO_REQ:
-             handleGetUserInfoReq(connectInfo, body, bodySize);
-             break;
-             
-             case ClientLobbyPacket::GET_FRIEND_LIST_REQ:
-             handleGetFriendListReq(connectInfo, body, bodySize);
-             break;
-             
-             case ClientLobbyPacket::ADD_RESPONSE_FRIEND_REQ:
-             handleAddResponseFriendReq(connectInfo, body, bodySize);
-             break;
-             */
         default:
             ErrorLog("invalid command - type = %d", cmd);
             return ;
@@ -781,7 +789,19 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
     if(failReason != SUCCESS)
     {
         DebugLog("add user %d", failReason);
-        return ;
+        if(failReason == ALREADY_EXIST_USER)
+        {
+            DebugLog("add user already exist");
+            
+            //TODO dissconnect my other user
+            return ;
+        }
+        else
+        {
+            ErrorLog("??");
+            return ;
+        }
+        
     }
     
     
@@ -792,47 +812,42 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
         return ;
     }
     
-    ClientLobbyPacket::FirstConnectResPacket sendPacket;
-
-    LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
-
     
-    int16_t channelNo = LobbyServer::getInstance()->channelMgr->firstEnterUser(user);
+    LobbyChattingPacket::EnterClientReqPacket sendPacket;
     
-    DebugLog("channelNo %d", channelNo);
+    memcpy(&sendPacket.sid, user->getSid(), sizeof(sendPacket.sid));
+    sendPacket.userNo = user->getUserNo();
+    sendPacket.nickNameInfo.nickNameLen = user->getNickNameLen();
+    memcpy(sendPacket.nickNameInfo.nickName, user->getNickName(), user->getNickNameLen());
     
-    user->setChannelNo(channelNo);
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
+    pSendBuffer += sizeof(sendPacket.cmd);
+    
+    memcpy(pSendBuffer, &sendPacket.sid, sizeof(sendPacket.sid));
+    pSendBuffer += sizeof(sendPacket.sid);
+    
+    memcpy(pSendBuffer, &sendPacket.userNo, sizeof(sendPacket.userNo));
+    pSendBuffer += sizeof(sendPacket.userNo);
+    
+    memcpy(pSendBuffer, &sendPacket.nickNameInfo.nickNameLen, sizeof(sendPacket.nickNameInfo.nickNameLen));
+    pSendBuffer += sizeof(sendPacket.nickNameInfo.nickNameLen);
+    
+    memcpy(pSendBuffer, &sendPacket.nickNameInfo.nickName, sendPacket.nickNameInfo.nickNameLen);
+    pSendBuffer += sendPacket.nickNameInfo.nickNameLen;
+    
+    ChattingServerInfo* chattingServerInfo = LobbyServer::getInstance()->serverInfoMgr->getChattingServerInfo();
+    
+    if(chattingServerInfo->connectInfo == NULL)
+    {
+        ErrorLog("chatting server fuck");
+        return ;
+    }
+    
+    LobbyServer::getInstance()->network->sendPacket(chattingServerInfo->connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
     
     
-//    Channel* channel = LobbyServer::getInstance()->channelMgr->getChannelByChannelNo(channelNo);
-//    
-//    if(channel == NULL)
-//    {
-//        ErrorLog("?? %d", channelNo);
-//        return ;
-//    }
-//    
-//    sendPacket.channelNo = channelNo;
-//    sendPacket.channelNameLen = channel->getChannelNameLen();
-//    memcpy(sendPacket.channelName, channel->getChannelName(), sendPacket.channelNameLen);
-//    
-//    char* pSendBuffer = sendBuffer;
-//    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
-//    pSendBuffer += sizeof(sendPacket.cmd);
-//    
-//    memcpy(pSendBuffer, &sendPacket.channelNo, sizeof(sendPacket.channelNo));
-//    pSendBuffer += sizeof(sendPacket.channelNo);
-//    
-//    memcpy(pSendBuffer, &sendPacket.channelNameLen, sizeof(sendPacket.channelNameLen));
-//    pSendBuffer += sizeof(sendPacket.channelNameLen);
-//    
-//    memcpy(pSendBuffer, sendPacket.channelName, sendPacket.channelNameLen);
-//    pSendBuffer += sendPacket.channelNameLen;
-//    
-//    DebugLog("%d %d %s %d", sendPacket.channelNo, sendPacket.channelNameLen, sendPacket.channelName, pSendBuffer - sendBuffer);
-//    
-//    LobbyServer::getInstance()->network->sendPacket(connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
-//    
     return;
 }
 
@@ -898,12 +913,6 @@ void IOManager::clientHandleMoveChannelReq(ConnectInfo* connectInfo, const char*
     DebugLog("ClientReceiveHandler::HandleMoveChannelReq");
     
     ClientLobbyPacket::MoveChannelReqPacket packet;
-    memset(&packet, 0, sizeof(packet));
-    if (sizeof(packet) < bodySize)
-    {
-        ErrorLog("??");
-        return;
-    }
     
     const char* pBody = body;
     
@@ -919,85 +928,163 @@ void IOManager::clientHandleMoveChannelReq(ConnectInfo* connectInfo, const char*
         return;
     }
     
-    if (user->getChannelNo() == packet.channelNo)
+    
+    if(packet.channelNo != INVALID_CHANNEL_NO) // move channel
     {
-        ErrorLog("same channel Move user channel = %d, move channel = %d", user->getChannelNo(), packet.channelNo);
-        // send fail
-        return;
+        if (user->getChannelNo() == packet.channelNo)
+        {
+            ErrorLog("same channel Move user channel = %d, move channel = %d", user->getChannelNo(), packet.channelNo);
+            // session out
+            return;
+        }
+        
+        Channel* moveToChannel = LobbyServer::getInstance()->channelMgr->getChannelByChannelNo(packet.channelNo);
+        
+        ////////////move user other channel
+        if(user->getUserLocation() == USER_LOCATION_CHANNEL)
+        {
+            if(moveToChannel == NULL)
+            {
+                DebugLog("??");
+                // send fail
+                return;
+            }
+            
+            if(moveToChannel->isPossibleMove() == false)
+            {
+                DebugLog("not moving");
+                //fail send
+                return ;
+            }
+            
+            Channel* moveFromChannel = (Channel*)user->getLocationObject();
+            
+            if(moveFromChannel == NULL)
+            {
+                ErrorLog("??");
+                // session out
+                return;
+            }
+            
+
+            
+            if(moveFromChannel->removeUser(user) != SUCCESS)
+            {
+                ErrorLog("??");
+                //session out
+                return ;
+            }
+        }
+        else if(user->getUserLocation() == USER_LOCATION_NO)
+        {
+            if(moveToChannel == NULL)
+            {
+                DebugLog("already deleted channel");
+                int16_t channelNo = LobbyServer::getInstance()->channelMgr->firstEnterUser(user);
+                
+                if(channelNo < 0)
+                {
+                    if(channelNo == FULL_USER_IN_CHANNEL)
+                    {
+                        DebugLog("user full");
+                        //sessionOut
+                        return ;
+                    }
+                    else
+                    {
+                        ErrorLog("channelNo < 0 %d", channelNo);
+                        //sessionOut
+                        return ;
+                    }
+                }
+                return;
+            }
+            
+            if(moveToChannel->isPossibleMove() == false)
+            {
+                DebugLog("not moving");
+                //fail send
+                return ;
+            }
+        }
+        else
+        {
+            ErrorLog("??");
+            //session out
+            return ;
+        }
+        
+        if(moveToChannel->addUser(user) != SUCCESS)
+        {
+            ErrorLog("??");
+            //session out
+            return ;
+        }
+    }
+    else // not move, first enter channel
+    {
+        if(user->getUserLocation() != USER_LOCATION_NO)
+        {
+            DebugLog("user send fuck message");
+            //sessionOut
+            return ;
+        }
+        
+        int16_t channelNo = LobbyServer::getInstance()->channelMgr->firstEnterUser(user);
+        
+        if(channelNo < 0)
+        {
+            if(channelNo == FULL_USER_IN_CHANNEL)
+            {
+                DebugLog("user full");
+                //sessionOut
+                return ;
+            }
+            else
+            {
+                ErrorLog("channelNo < 0 %d", channelNo);
+                //sessionOut
+                return ;
+            }
+        }
     }
     
-    
-    
-    ////////////move user other channel
-    
-    Channel* moveToChannel = LobbyServer::getInstance()->channelMgr->getChannelByChannelNo(packet.channelNo);
-    Channel* moveFromChannel = LobbyServer::getInstance()->channelMgr->getChannelByChannelNo(user->getChannelNo());
-    
-    if(moveFromChannel == NULL)
-    {
-        ErrorLog("??");
-        // send fail
-        return;
-    }
-    
-    if(moveToChannel == NULL)
-    {
-        ErrorLog("??");
-        // send fail
-        return;
-    }
-    
-    if(moveToChannel->addUser(user) != SUCCESS)
-    {
-        ErrorLog("??");
-        return ;
-    }
-    
-    if(moveFromChannel->removeUser(user) != SUCCESS)
-    {
-        ErrorLog("??");
-        return ;
-    }
-    
-    user->setChannelNo(moveToChannel->getChannelNo());
-    
-    
-    //////////////////////make packet
-    
-    ClientLobbyPacket::MoveChannelResPacket sendPacket;
-    sendPacket.cmd = ClientLobbyPacket::MOVE_CHANNEL_RES;
-    sendPacket.channelInfo.channelNo = user->getChannelNo();
-    sendPacket.channelInfo.channelNameLen = moveToChannel->getChannelNameLen();
-    memcpy(sendPacket.channelInfo.channelName, moveToChannel->getChannelName(), sendPacket.channelInfo.channelNameLen);
-    
-    
-    
-    
-    
-    
-    //////////////////////////////// send Packet
-    DebugLog("%d",user->getChannelNo());
-    
-    char* pSendBuffer = sendBuffer;
-    
-    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
-    pSendBuffer += sizeof(sendPacket.cmd);
-    
-    memcpy(pSendBuffer, &sendPacket.channelInfo.channelNo, sizeof(sendPacket.channelInfo.channelNo));
-    pSendBuffer += sizeof(sendPacket.channelInfo.channelNo);
-    
-    memcpy(pSendBuffer, &sendPacket.channelInfo.channelNameLen, sizeof(sendPacket.channelInfo.channelNameLen));
-    pSendBuffer += sizeof(sendPacket.channelInfo.channelNameLen);
-    
-    
-    memcpy(pSendBuffer, sendPacket.channelInfo.channelName, sendPacket.channelInfo.channelNameLen);
-    pSendBuffer += sendPacket.channelInfo.channelNameLen;
-    
-    
-    LobbyServer::getInstance()->network->sendPacket(connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
+//    //////////////////////make packet
+//    
+//    ClientLobbyPacket::MoveChannelResPacket sendPacket;
+//    sendPacket.cmd = ClientLobbyPacket::MOVE_CHANNEL_RES;
+//    sendPacket.channelInfo.channelNo = user->getChannelNo();
+//    sendPacket.channelInfo.channelNameLen = moveToChannel->getChannelNameLen();
+//    memcpy(sendPacket.channelInfo.channelName, moveToChannel->getChannelName(), sendPacket.channelInfo.channelNameLen);
+//    
+//    
+//    
+//    
+//    
+//    
+//    //////////////////////////////// send Packet
+//    DebugLog("%d",user->getChannelNo());
+//    
+//    char* pSendBuffer = sendBuffer;
+//    
+//    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
+//    pSendBuffer += sizeof(sendPacket.cmd);
+//    
+//    memcpy(pSendBuffer, &sendPacket.channelInfo.channelNo, sizeof(sendPacket.channelInfo.channelNo));
+//    pSendBuffer += sizeof(sendPacket.channelInfo.channelNo);
+//    
+//    memcpy(pSendBuffer, &sendPacket.channelInfo.channelNameLen, sizeof(sendPacket.channelInfo.channelNameLen));
+//    pSendBuffer += sizeof(sendPacket.channelInfo.channelNameLen);
+//    
+//    
+//    memcpy(pSendBuffer, sendPacket.channelInfo.channelName, sendPacket.channelInfo.channelNameLen);
+//    pSendBuffer += sendPacket.channelInfo.channelNameLen;
+//    
+//    
+//    LobbyServer::getInstance()->network->sendPacket(connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
 }
 
-void IOManager::clientHandleGetUserListReq(ConnectInfo* connectInfo, const char* body, int bodySize)
+void IOManager::clientHandleGetUserListReq(ConnectInfo* connectInfo, const char* body, int bodySize) // not need
 {
     User* user = (User*)connectInfo->userData;
     
@@ -1086,13 +1173,19 @@ void IOManager::clientHandleRequestGameReq(ConnectInfo* connectInfo, const char*
         return ;
     }
     
+    if(user->getUserState() != USER_STATE_LOBBY)
+    {
+        DebugLog("not lobby");
+        return ;
+    }
+    
     
     ClientLobbyPacket::RequestGameReqPacket packet;
     memcpy(&packet.userNo, body, sizeof(packet.userNo));
     
     User* otherUser = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
     
-    if(otherUser == NULL || otherUser->getConnectInfo() == NULL)
+    if(otherUser == NULL || otherUser->getUserLocation() != USER_LOCATION_CHANNEL || otherUser->getConnectInfo() == NULL)
     {
         DebugLog("not exist user");
         return ;
@@ -1121,9 +1214,9 @@ void IOManager::clientHandleRequestGameCancelReq(ConnectInfo* connectInfo, const
         return ;
     }
     
-    if(user->getUserState() == USER_STATE_MOVING_GAME)
+    if(user->getUserState() != USER_STATE_LOBBY)
     {
-        DebugLog("already start");
+        DebugLog("not waiting state");
         return ;
     }
     
@@ -1157,7 +1250,7 @@ void IOManager::clientHandleResponceGameYesReq(ConnectInfo* connectInfo, const c
         return ;
     }
     
-    if(otherUser->getRequestGameUserNo() != user->getUserNo())
+    if(otherUser->getRequestGameUserNo() != user->getUserNo() || otherUser->getUserState() != USER_STATE_LOBBY)
     {
         DebugLog("already cancel");
         return ;
@@ -1206,7 +1299,7 @@ void IOManager::clientHandleResponceGameNoReq(ConnectInfo* connectInfo, const ch
     
     User* otherUser = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
     
-    if(otherUser == NULL || otherUser->getConnectInfo() == NULL)
+    if(otherUser == NULL || otherUser->getUserState() != USER_STATE_LOBBY)
     {
         DebugLog("already out");
         return ;
@@ -1806,7 +1899,7 @@ void IOManager::clientHandleReadyReq(ConnectInfo* connectInfo, const char* body,
             pSendBuffer += sizeof(UserInfo);
         }
         
-        LobbyServer::getInstance()->network->sendPacket(LobbyServer::getInstance()->serverInfoMgr->getGameServerInfo()->connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
+        LobbyServer::getInstance()->network->sendPacket(LobbyServer::getInstance()->serverInfoMgr->getFreeGameServerInfo()->connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
     }
 }
 
@@ -2210,7 +2303,15 @@ void IOManager::clientHandleStartGameOk(ConnectInfo* connectInfo, const char* bo
         
         packet.roomNo = room->getRoomNo();
         
-        LobbyServer::getInstance()->network->sendPacket(LobbyServer::getInstance()->serverInfoMgr->getGameServerInfo()->connectInfo, (char*)&packet, sizeof(packet));
+        GameServerInfo* gameServerInfo = LobbyServer::getInstance()->serverInfoMgr->getGameServerInfo(room->getGameServerNo());
+        
+        if(gameServerInfo == NULL)
+        {
+            ErrorLog("??");
+            return ;
+        }
+        
+        LobbyServer::getInstance()->network->sendPacket(gameServerInfo->connectInfo, (char*)&packet, sizeof(packet));
     }
     else
     {
@@ -2242,7 +2343,7 @@ void IOManager::clientHandleQuickPlayReq(ConnectInfo* connectInfo, const char* b
 }
 
 
-void IOManager::clientHandleQuickPlayOk(ConnectInfo* connectInfo, const char* body, const int bodySize)
+void IOManager::clientHandleQuickPlayOk(ConnectInfo* connectInfo, const char* body, const int bodySize) //?
 {
     DebugLog("qOK");
     

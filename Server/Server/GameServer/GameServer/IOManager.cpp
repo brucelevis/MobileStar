@@ -9,42 +9,19 @@
 #include "User.h"
 #include "ServerInfo.h"
 
-#include "FrontReceiveHandler.h"
-#include "FrontSendHandler.h"
-#include "LobbyReceiveHandler.h"
-#include "LobbySendHandler.h"
-#include "GameReceiveHandler.h"
-#include "GameSendHandler.h"
-#include "ClientReceiveHandler.h"
-#include "ClientSendHandler.h"
-
 #include "GameFrontPacket.h"
 #include "GameLobbyPacket.h"
 #include "ClientGamePacket.h"
 
-IOManager::IOManager(FrontSendHandler* _frontSendHandler, LobbySendHandler* _lobbySendHandler, GameSendHandler* _gameSendHandler, ClientSendHandler* _clientSendHandler, FrontReceiveHandler* _frontReceiveHandler, LobbyReceiveHandler* _lobbyReceiveHandler, GameReceiveHandler* _gameReceiveHandler, ClientReceiveHandler* _clientReceiveHandler)
+IOManager::IOManager()
 {
-    frontReceiveHandler = _frontReceiveHandler;
-    frontSendHandler = _frontSendHandler;
-    lobbyReceiveHandler = _lobbyReceiveHandler;
-    lobbySendHandler = _lobbySendHandler;
-    gameReceiveHandler = _gameReceiveHandler;
-    gameSendHandler = _gameSendHandler;
-    clientReceiveHandler = _clientReceiveHandler;
-    clientSendHandler = _clientSendHandler;
+
 }
 
 
 IOManager::~IOManager()
 {
-    delete frontReceiveHandler;
-    delete frontSendHandler;
-    delete lobbyReceiveHandler;
-    delete lobbySendHandler;
-    delete gameReceiveHandler;
-    delete gameSendHandler;
-    delete clientReceiveHandler;
-    delete clientSendHandler;
+
 }
 
 void IOManager::connected(ConnectInfo* connectInfo)
@@ -58,9 +35,6 @@ void IOManager::connected(ConnectInfo* connectInfo)
             break;
         case SERVER_MODULE_LOBBY_SERVER:
             lobbySessionIn(connectInfo);
-            break;
-        case SERVER_MODULE_GAME_SERVER:
- //           gameSessionIn(connectInfo);
             break;
         case SERVER_MODULE_CLIENT:
             clientSessionIn(connectInfo);
@@ -89,9 +63,6 @@ void IOManager::disconnected(ConnectInfo* connectInfo)
             break;
         case SERVER_MODULE_LOBBY_SERVER:
             lobbySessionOut(connectInfo);
-            break;
-        case SERVER_MODULE_GAME_SERVER:
-            gameReceiveHandler->sessionOut(connectInfo);
             break;
         case SERVER_MODULE_CLIENT:
             clientSessionOut(connectInfo);
@@ -135,9 +106,6 @@ void IOManager::receiveData(ConnectInfo* connectInfo, const char* data, int data
             break;
         case SERVER_MODULE_LOBBY_SERVER:
             lobbyReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
-            break;
-        case SERVER_MODULE_GAME_SERVER:
-//            gameReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
             break;
         case SERVER_MODULE_CLIENT:
             clientReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));

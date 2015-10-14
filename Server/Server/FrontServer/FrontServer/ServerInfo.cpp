@@ -16,6 +16,7 @@ bool ServerInfoManager::initialize()
 {
     chattingServerInfo = NULL;
     lobbyServerInfoList.clear();
+    lobbyNoCreator = 1;
     return true;
 }
 
@@ -46,6 +47,8 @@ bool ServerInfoManager::addLobbyServer(ConnectInfo* connectInfo, char* gameIp, u
 {
     LobbyServerInfo* lobbyServerInfo = new LobbyServerInfo();
     
+    lobbyServerInfo->lobbyNo = lobbyNoCreator++;
+    
     memcpy(lobbyServerInfo->gameIp, gameIp, MAX_IP_ADDRESS_LEN);
     lobbyServerInfo->gamePort = gamePort;
     memcpy(lobbyServerInfo->clientIp, clientIp, MAX_IP_ADDRESS_LEN);
@@ -57,4 +60,19 @@ bool ServerInfoManager::addLobbyServer(ConnectInfo* connectInfo, char* gameIp, u
     lobbyServerInfoList.push_back(lobbyServerInfo);
     
     return true;
+}
+
+LobbyServerInfo* ServerInfoManager::getLobbyServerInfo(int lobbyNo)
+{
+    for(int i = 0; i < lobbyServerInfoList.size(); i++)
+    {
+        if(lobbyServerInfoList[i]->lobbyNo == lobbyNo)
+        {
+            return lobbyServerInfoList[i];
+        }
+    }
+    
+    ErrorLog("lobby server no not exist lobbyNo");
+    
+    return NULL;
 }

@@ -6,21 +6,13 @@
 #include "BasicPacket.h"
 #include <map>
 
-class FrontReceiveHandler;
-class FrontSendHandler;
-class LobbyReceiveHandler;
-class LobbySendHandler;
-class GameReceiveHandler;
-class GameSendHandler;
-class ClientReceiveHandler;
-class ClientSendHandler;
 
 class Room;
 
 class IOManager : public WorkerThread
 {
 public:
-    IOManager(FrontSendHandler* _frontSendHandler, LobbySendHandler* _lobbySendHandler, GameSendHandler* _gameSendHandler, ClientSendHandler* _clientSendHandler, FrontReceiveHandler* _frontReceiveHandler, LobbyReceiveHandler* _lobbyReceiveHandler, GameReceiveHandler* _gameReceiveHandler, ClientReceiveHandler* _clientReceiveHandler);
+    IOManager();
     ~IOManager();
 
     ////////////virtual method///////////////
@@ -73,15 +65,7 @@ public:
     
     
 public:
-    FrontSendHandler* frontSendHandler;
-    LobbySendHandler* lobbySendHandler;
-    GameSendHandler* gameSendHandler;
-    ClientSendHandler* clientSendHandler;
-    
-    FrontReceiveHandler* frontReceiveHandler;
-    LobbyReceiveHandler* lobbyReceiveHandler;
-    GameReceiveHandler* gameReceiveHandler;
-    ClientReceiveHandler* clientReceiveHandler;
+
 };
 
 #endif // __I_O_MANAGER_H__

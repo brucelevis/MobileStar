@@ -1,6 +1,6 @@
 
 //
-// CenterServer.h
+// ChattingServer.h
 //
 // create by kimyc on 2014.6.28
 //
@@ -12,8 +12,9 @@
 #include <stddef.h>
 
 
-class ChannelManager;
+class LObjectManager;
 class UserManager;
+
 class ChattingData;
 
 class Network;
@@ -40,14 +41,14 @@ public:
     Network* network;
     Log* log;
     
-	ChattingData* chattingData;
-	ChannelManager* channelMgr;
-	UserManager* userMgr;
-
+    ChattingData* chattingData;
+    LObjectManager* lObjectMgr;
+    UserManager* userMgr;
+    
 private:
-	long _prevTime;
+    long _prevTime;
 };
 
-#endif //__FRONT_SERVER_H__
+#endif //__CHATTING_SERVER_H__
 
 

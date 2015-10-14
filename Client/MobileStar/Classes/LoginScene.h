@@ -14,6 +14,9 @@ public:
 	void clickLoginBtn(cocos2d::Ref* pSender);
 
 	CREATE_FUNC(LoginScene);
+    
+private:
+    cocos2d::Menu* menu;
 };
 
 #endif //__FRONT_SCENE_H__

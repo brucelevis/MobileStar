@@ -3,52 +3,60 @@
 
 #include <vector>
 #include "WorkerThread.h"
+#include "BasicPacket.h"
 #include <map>
 
-class FrontReceiveHandler;
-class FrontSendHandler;
-class LobbyReceiveHandler;
-class LobbySendHandler;
-class GameReceiveHandler;
-class GameSendHandler;
-class ChattingReceiveHandler;
-class ChattingSendHandler;
-class ClientReceiveHandler;
-class ClientSendHandler;
-
+class Room;
 
 class IOManager : public WorkerThread
 {
 public:
-    IOManager(FrontSendHandler* _frontSendHandler, LobbySendHandler* _lobbySendHandler, GameSendHandler* _gameSendHandler, ChattingSendHandler* _chattingSendHandler, ClientSendHandler* _clientSendHandler, FrontReceiveHandler* _frontReceiveHandler, LobbyReceiveHandler* _lobbyReceiveHandler, GameReceiveHandler* _gameReceiveHandler, ChattingReceiveHandler* _chattingReceiveHandler, ClientReceiveHandler* _clientReceiveHandler);
+    IOManager();
     ~IOManager();
 
     ////////////virtual method///////////////
-    void connected(const ConnectInfo* connectInfo);
-    void disconnected(const ConnectInfo* connectInfo);
-    void receiveData(const ConnectInfo* connectInfo, const char* data, int dataSize);
+    void connected(ConnectInfo* connectInfo);
+    void disconnected(ConnectInfo* connectInfo);
+    void receiveData(ConnectInfo* connectInfo, const char* data, int dataSize);
     
     
-    ////////////////////////////////////////
-    void receiveClientData(const ConnectInfo* connectInfo, const char* data, int dataSize);
-    void receiveMasterData(const ConnectInfo* connectInfo, const char* data, int dataSize);
+    //////////////////////////////////////// front recv
+    
+    
+//    void frontHandleMoveChannelReq(const ConnectInfo* connectInfo, const char* body, int bodySize);
+//    void frontHandleGetRoomListReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
+    
+    //////////////////////////////////////// lobby recv
+    
+    void lobbyReceiveData(ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize);
+    void lobbySessionIn(ConnectInfo* connectInfo);
+    void lobbySessionOut(ConnectInfo* connectInfo);
+    
+    void lobbyHandleFirstConnectReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
+    void lobbyHandleEnterClientReq(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void lobbyHandleEnterClientOk(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void lobbyHandleEnterClientOut(ConnectInfo* connectInfo, const char* body, int bodySize);
 
+
+    ////////////////////////////////////////
+    
+    
+    void clientReceiveData(ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize);
+    void clientSessionIn(ConnectInfo* connectInfo);
+    void clientSessionOut(ConnectInfo* connectInfo);
+    
+    void clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char* body, const int bodySize);
+    void clientHandleMoveLocationReq(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void clientHandleSendChattingReq(ConnectInfo* connectInfo, const char* body, int bodySize);
+    
+    
     
     //////////////to send client
     
     
 public:
-    FrontSendHandler* frontSendHandler;
-    LobbySendHandler* lobbySendHandler;
-    GameSendHandler* gameSendHandler;
-    ChattingSendHandler* chattingSendHandler;
-    ClientSendHandler* clientSendHandler;
+    char sendBuffer[5000];
     
-    FrontReceiveHandler* frontReceiveHandler;
-    LobbyReceiveHandler* lobbyReceiveHandler;
-    GameReceiveHandler* gameReceiveHandler;
-    ChattingReceiveHandler* chattingReceiveHandler;
-    ClientReceiveHandler* clientReceiveHandler;
 };
 
 #endif // __I_O_MANAGER_H__

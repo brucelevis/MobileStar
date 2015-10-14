@@ -10,16 +10,6 @@
 #include "LobbyServer.h"
 #include "Network.h"
 #include "Log.h"
-#include "FrontReceiveHandler.h"
-#include "FrontSendHandler.h"
-#include "LobbyReceiveHandler.h"
-#include "LobbySendHandler.h"
-#include "GameReceiveHandler.h"
-#include "GameSendHandler.h"
-#include "ChattingReceiveHandler.h"
-#include "ChattingSendHandler.h"
-#include "ClientReceiveHandler.h"
-#include "ClientSendHandler.h"
 #include "LobbyData.h"
 #include "Channel.h"
 #include "Room.h"
@@ -32,7 +22,7 @@
 #if OS_PLATFORM == PLATFORM_LINUX
 const char* LOG_PATH = "../../Log/LobbyLog/";
 #elif OS_PLATFORM == PLATFORM_MAC
-const char* LOG_PATH = "/Users/kimyongchan/MoblieStar/Server/Server/Log/LobbyLog/";
+const char* LOG_PATH = "/Users/kimyongchan/MobileStar/Server/Server/Log/LobbyLog/";
 #endif
 
 LobbyServer* LobbyServer::m_instance = NULL;
@@ -57,77 +47,7 @@ bool LobbyServer::initialize(int workerThreadCount)
     
     for(int i = 0; i < workerThreadCount; i++)
     {
-        FrontReceiveHandler* frontReceiveHandler = new FrontReceiveHandler();
-        if (!frontReceiveHandler->initialize())
-        {
-            ErrorLog("_frontReceiveHandler Initialize");
-            return false;
-        }
-        
-        FrontSendHandler* frontSendHandler = new FrontSendHandler();
-        if (!frontSendHandler->initialize())
-        {
-            ErrorLog("frontSendHandler Initialize");
-            return false;
-        }
-        
-        
-        LobbyReceiveHandler* lobbyReceiveHandler = new LobbyReceiveHandler();
-        if (!lobbyReceiveHandler->initialize())
-        {
-            ErrorLog("lobbyReceiveHandler Initialize");
-            return false;
-        }
-        LobbySendHandler* lobbySendHandler = new LobbySendHandler();
-        if (!lobbySendHandler->initialize())
-        {
-            ErrorLog("lobbySendHandler Initialize");
-            return false;
-        }
-        
-        
-        GameReceiveHandler* gameReceiveHandler = new GameReceiveHandler();
-        if (!gameReceiveHandler->initialize())
-        {
-            ErrorLog("_gameReceiveHandler Initialize");
-            return false;
-        }
-        GameSendHandler* gameSendHandler = new GameSendHandler();
-        if (!gameSendHandler->initialize())
-        {
-            ErrorLog("gameSendHandler Initialize");
-            return false;
-        }
-        
-        
-        ChattingReceiveHandler* chattingReceiveHandler = new ChattingReceiveHandler();
-        if (!chattingReceiveHandler->initialize())
-        {
-            ErrorLog("chattingReceiveHandler Initialize");
-            return false;
-        }
-        ChattingSendHandler* chattingSendHandler = new ChattingSendHandler();
-        if (!chattingSendHandler->initialize())
-        {
-            ErrorLog("chattingSendHandler Initialize");
-            return false;
-        }
-        
-        
-        ClientReceiveHandler* clientReceiveHandler = new ClientReceiveHandler();
-        if (!clientReceiveHandler->initialize())
-        {
-            ErrorLog("_clientReceiveHandler Initialize");
-            return false;
-        }
-        ClientSendHandler* clientSendHandler = new ClientSendHandler();
-        if (!clientSendHandler->initialize())
-        {
-            ErrorLog("clientSendHandler Initialize");
-            return false;
-        }
-        
-        workerThreadArray[i] = new IOManager(frontSendHandler, lobbySendHandler, gameSendHandler, chattingSendHandler, clientSendHandler, frontReceiveHandler, lobbyReceiveHandler, gameReceiveHandler, chattingReceiveHandler, clientReceiveHandler);
+        workerThreadArray[i] = new IOManager();
     }
     
     

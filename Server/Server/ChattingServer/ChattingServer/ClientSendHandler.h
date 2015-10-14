@@ -16,7 +16,7 @@ public:
 	~ClientSendHandler();
 	bool initialize();
 	
-//	void handleFirstConnectRes(const ConnectInfo* connectInfo, Channel* channel, int16_t requestInfoCount, RequestInfo* requestInfoList);
+	void handleFirstConnectRes(ConnectInfo* connectInfo, Channel* channel, int16_t requestInfoCount, RequestInfo* requestInfoList);
 //	void handleChattingNotify(Channel* channel, const char* nickName, int8_t chattingLen, const char* chatting);
 //	void handleGetChannelListRes(const ConnectInfo* connectInfo, int8_t channelCount, ChannelInfo* channelInfo);
 //	void handleMoveChannelRes(const ConnectInfo* connectInfo, int16_t channelNo, const char* channelName);

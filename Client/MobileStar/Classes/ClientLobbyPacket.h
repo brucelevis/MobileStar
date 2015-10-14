@@ -157,6 +157,8 @@ public:
 	{
         FirstConnectResPacket() { cmd = FIRST_CONNECT_RES; }
 
+        char chattingIp[MAX_IP_ADDRESS_LEN];
+        int16_t chattingPort;
 	};
     
     struct FirstConnectOkPacket : public Packet

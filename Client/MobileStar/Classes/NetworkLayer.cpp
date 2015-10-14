@@ -8,10 +8,24 @@
 #include "ClientFrontPacket.h"
 #include "ClientLobbyPacket.h"
 #include "ClientGamePacket.h"
+#include "ClientChattingPacket.h"
 #include "UserListLayer.h"
 #include "GameWorld.h"
 
+#include "LobbyChannelLayer.h"
+
 #include "BasicPacket.h"
+
+
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#include "platform/android/jni/JniHelper.h"
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#include "MyObject-C-Interface.h"
+#endif
+
+
+
 USING_NS_CC;
 
 bool NetworkHandler::initialize()
@@ -24,7 +38,7 @@ bool NetworkHandler::initialize()
     
     //127.0.0.1
     
-    if (network->connectWithServer(SERVER_MODULE_FRONT_SERVER, IP_ADDRESS, 20400) == false)
+    if (network->connectWithServer(SERVER_MODULE_FRONT_SERVER, IP_ADDRESS, PORT) == false)
     {
         return false;
     }
@@ -75,6 +89,10 @@ void NetworkHandler::Receive(ConnectInfo* connectInfo, const char* data, int dat
                 
             case ClientLobbyPacket::FIRST_CONNECT_OK:
                 lobbyHandleFirstConnectOk(connectInfo, pData, pDataSize);
+                break;
+                
+            case ClientLobbyPacket::FIRST_CONNECT_OUT:
+                lobbyHandleFirstConnectOut(connectInfo, pData, pDataSize);
                 break;
                 
             case ClientLobbyPacket::GET_CHANNEL_LIST_RES:
@@ -216,6 +234,28 @@ void NetworkHandler::Receive(ConnectInfo* connectInfo, const char* data, int dat
                 
         }
     }
+    else if(connectInfo->serverModule == SERVER_MODULE_CHATTING_SERVER)
+    {
+        switch (cmd)
+        {
+            case ClientChattingPacket::FIRST_CONNECT_RES:
+                chattingHandleFirstConnectRes(connectInfo, pData, pDataSize);
+                break;
+                
+            case ClientChattingPacket::MOVE_LOCATION_RES:
+                chattingHandleMoveLocationRes(connectInfo, pData, pDataSize);
+                break;
+                
+            case ClientChattingPacket::SEND_CHATTING_NOTIFY:
+                chattingHandleSendChattingNotify(connectInfo, pData, pDataSize);
+                break;
+                
+            default:
+                printf("type invalid - %d", cmd);
+                break;
+                
+        }
+    }
 }
 
 void NetworkHandler::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)
@@ -232,16 +272,14 @@ void NetworkHandler::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     GameClient::GetInstance().userInfo->userNo = packet.userInfo.userNo;
     
     ///////////////////send enter lobby req
-
+    
     frontSendEnterLobbyReq();
 }
 
 
 void NetworkHandler::frontHandleEnterLobbyRes(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-    
     printf("NetworkHandler::frontHandleEnterLobbyRes");
-
     
     ClientFrontPacket::EnterLobbyResPacket packet;
     
@@ -261,7 +299,7 @@ void NetworkHandler::frontHandleEnterLobbyRes(ConnectInfo* connectInfo, const ch
         printf("??");
         return ;
     }
-    
+
     lobbySendFirstConnectReq();
 }
 
@@ -272,33 +310,20 @@ void NetworkHandler::frontHandleEnterLobbyRes(ConnectInfo* connectInfo, const ch
 void NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
     ClientLobbyPacket::FirstConnectResPacket packet;
-    memset(&packet, 0, sizeof(packet));
-    if (dataSize > sizeof(packet))
+    
+    memcpy(packet.chattingIp, data, MAX_IP_ADDRESS_LEN);
+    data += MAX_IP_ADDRESS_LEN;
+    
+    memcpy(&packet.chattingPort, data, sizeof(packet.chattingPort));
+    
+    if(network->connectWithServer(SERVER_MODULE_CHATTING_SERVER, IP_ADDRESS, packet.chattingPort) < 0)
     {
-        printf("small");
-        return;
+        printf("??");
+        return ;
     }
     
-//    const char* pData = data;
-//    
-//    memcpy(&packet.channelNo, pData, sizeof(packet.channelNo));
-//    pData += sizeof(packet.channelNo);
-//    
-//    memcpy(&packet.channelNameLen, pData, sizeof(packet.channelNameLen));
-//    pData += sizeof(packet.channelNameLen);
-//    
-//    memcpy(packet.channelName, pData, packet.channelNameLen);
-//    pData += packet.channelNameLen;
-//    
-//    if(pData - data != dataSize)
-//    {
-//        printf("dataSize = %d, - data = %d", dataSize, (int)(pData - data));
-//        return ;
-//    }
-//    
-//    printf("%d %d %s\n", packet.channelNo, packet.channelNameLen, packet.channelName);
-//    
-
+    chattingSendFirstConnectReq();
+    
     
     int currentScene = GameClient::GetInstance().currentScene;
     
@@ -314,14 +339,13 @@ void NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     
         network->disconnectWithServer(SERVER_MODULE_GAME_SERVER);
     }
-
-//    NetworkLayer* networkLyr = (NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-//    
-//    Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOGIN_SCENE)->removeChildByTag(TAG_NETWORK_LAYER, false);
-//    
-//    auto scene = LobbyScene::createScene();
-//    ((NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER))->AddThisToScene(scene);
     
+    GameClient::GetInstance().currentScene = NO_SCENE_NOW;
+
+    Scene* scene = LobbyScene::createScene();
+    
+    ((NetworkLayer*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER)))->AddThisToScene(scene);
+    Director::getInstance()->replaceScene(scene);
 }
 
 
@@ -370,29 +394,28 @@ void NetworkHandler::lobbyHandleChannelInfoNotify(ConnectInfo* connectInfo, cons
     
     printf("%d %d %s\n", packet.channelNo, packet.channelNameLen, packet.channelName);
     
-    Scene* scene = LobbyScene::createScene();
-    
-    ((NetworkLayer*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER)))->AddThisToScene(scene);
-    Director::getInstance()->replaceScene(scene);
-
-    if(((LobbyScene*)(scene->getChildByTag(TAG_LOBBY_SCENE))) == NULL)
-    {
-        CCLOG("??");
-    }
-    
     for(int i = 0; i < packet.userCount; i++)
     {
-        ((LobbyScene*)(scene->getChildByTag(TAG_LOBBY_SCENE)))->addUserInfo(packet.userViewInfoList[i].userNo, packet.userViewInfoList[i].nickNameInfo.nickNameLen, packet.userViewInfoList[i].nickNameInfo.nickName);
+        ((LobbyScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE)))->addUserInfo(packet.userViewInfoList[i].userNo, packet.userViewInfoList[i].nickNameInfo.nickNameLen, packet.userViewInfoList[i].nickNameInfo.nickName);
     }
+    
+    if(GameClient::GetInstance().isConnectedWithChattingServer)
+    {
+        chattingSendMoveLocationReq(packet.channelNo);
+    }
+    
 }
 
 void NetworkHandler::lobbyHandleFirstConnectOk(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-// TODO. receiveUserList
-    
-    printf("ok");
-    
+    GameClient::GetInstance().isConnectedWithLobbyServer = true;
+    if(GameClient::GetInstance().isConnectedWithChattingServer)
+        lobbySendMoveChannelReq(INVALID_CHANNEL_NO);
+}
 
+void NetworkHandler::lobbyHandleFirstConnectOut(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    exit(0);
 }
 
 void NetworkHandler::lobbyHandleGetChannelListRes(ConnectInfo* connectInfo, const char* data, int dataSize)
@@ -765,7 +788,7 @@ void NetworkHandler::lobbyHandleStartGameNotify(ConnectInfo* connectInfo, const 
     
         memcpy(&packet.gameUserInfo[i].tribe, pData, sizeof(packet.gameUserInfo[i].tribe));
         pData += sizeof(packet.gameUserInfo[i].tribe);
-        
+        printf("%lld\n", packet.gameUserInfo[i].userNo);
         GameClient::GetInstance().gameUserInfo[i].userNo = packet.gameUserInfo[i].userNo;
         GameClient::GetInstance().gameUserInfo[i].tribe = packet.gameUserInfo[i].tribe;
         
@@ -821,7 +844,27 @@ void NetworkHandler::gameHandleFirstConnectRes(ConnectInfo* connectInfo, const c
 void NetworkHandler::gameHandleStartGameNotify(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
     printf("NetworkHandler::gameHandleStartGameNotify");
+    
+    auto glview = Director::getInstance()->getOpenGLView();
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+    JniMethodInfo t;
+    if(JniHelper::getStaticMethodInfo(t, "org/cocos2dx/cpp/AppActivity", "CallJavaFunction", "()V"))
+    {
+        t.env->CallStaticVoidMethod(t.classID, t.methodID);
+    }
+
+    glview->setFrameSize(glview->getFrameSize().height, glview->getFrameSize().width);
+    
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    MyObjectDoSomethingWith (NULL, NULL);
+#endif
+    
+    glview->setDesignResolutionSize(SCREEN_WIDTH, SCREEN_HEIGHT, ResolutionPolicy::SHOW_ALL);
+
+    
+    GameClient::GetInstance().currentScene = NO_SCENE_NOW;
+    
     Scene* scene = GameWorld::createScene();
     
     ((NetworkLayer*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER)))->AddThisToScene(scene);
@@ -860,6 +903,8 @@ void NetworkHandler::gameHandleFinishGameRes(ConnectInfo* connectInfo, const cha
     }
     
     
+    GameClient::GetInstance().currentScene = NO_SCENE_NOW;
+    
     Scene* scene = ResultScene::createScene();
     
     ((NetworkLayer*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER)))->AddThisToScene(scene);
@@ -870,7 +915,44 @@ void NetworkHandler::gameHandleFinishGameRes(ConnectInfo* connectInfo, const cha
 
 
 
+/////////////////////////////////////////////////////////////
 
+void NetworkHandler::chattingHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    GameClient::GetInstance().isConnectedWithChattingServer = true;
+    if(GameClient::GetInstance().isConnectedWithLobbyServer)
+        lobbySendMoveChannelReq(INVALID_CHANNEL_NO);
+}
+
+
+void NetworkHandler::chattingHandleMoveLocationRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    
+}
+
+
+void NetworkHandler::chattingHandleSendChattingNotify(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    ClientChattingPacket::SendChattingNotifyPacket packet;
+    memcpy(&packet.nickNameLen, data, sizeof(packet.nickNameLen));
+    data += sizeof(packet.nickNameLen);
+    
+    memcpy(&packet.nickName, data, packet.nickNameLen);
+    data += packet.nickNameLen;
+
+    memcpy(&packet.chattingLen, data, sizeof(packet.chattingLen));
+    data += sizeof(packet.chattingLen);
+    
+    memcpy(&packet.chatting, data, packet.chattingLen);
+    data += packet.chattingLen;
+    
+    CCLOG("%s %d %s %d", packet.nickName, packet.nickNameLen, packet.chatting, packet.chattingLen);
+    
+    if(GameClient::GetInstance().currentScene == LOBBY_SCENE_NOW)
+    {
+        ((LobbyScene*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE))->lobbyChannelLayer->notifyChatting(packet.nickName, packet.nickNameLen, packet.chatting, packet.chattingLen);
+    }
+}
 
 
 
@@ -1175,6 +1257,49 @@ void NetworkHandler::gameSendMoveLobbyOk()
 }
 
 
+
+void NetworkHandler::chattingSendFirstConnectReq()
+{
+    ClientChattingPacket::FirstConnectReqPacket packet;
+    
+    memcpy(&packet.sessionId, &GameClient::GetInstance().sessionId, sizeof(packet.sessionId));
+    
+    network->sendPacket(SERVER_MODULE_CHATTING_SERVER, (char*)&packet, sizeof(packet));
+    
+}
+
+
+void NetworkHandler::chattingSendMoveLocationReq(int32_t loNo)
+{
+    ClientChattingPacket::MoveLocationReqPacket packet;
+    
+    packet.loNo = loNo;
+    
+    network->sendPacket(SERVER_MODULE_CHATTING_SERVER, (char*)&packet, sizeof(packet));
+}
+
+void NetworkHandler::chattingSendSendChattingReq(const char* chatting, uint8_t chattingLen)
+{
+    ClientChattingPacket::SendChattingReqPacket packet;
+    
+    packet.chattingLen = chattingLen;
+    memcpy(packet.chatting, chatting, chattingLen);
+    
+    char sendChattingBuffer[300];
+    char* pSendChattingBuffer = sendChattingBuffer;
+    
+    memcpy(pSendChattingBuffer, &packet.cmd, sizeof(packet.cmd));
+    pSendChattingBuffer += sizeof(packet.cmd);
+    
+    memcpy(pSendChattingBuffer, &packet.chattingLen, sizeof(packet.chattingLen));
+    pSendChattingBuffer += sizeof(packet.chattingLen);
+    
+    memcpy(pSendChattingBuffer, &packet.chatting, packet.chattingLen);
+    pSendChattingBuffer += packet.chattingLen;
+    
+    network->sendPacket(SERVER_MODULE_CHATTING_SERVER, sendChattingBuffer, (int)(pSendChattingBuffer - sendChattingBuffer));
+}
+
 ////////////////////////////////////////////
 
 
@@ -1227,6 +1352,13 @@ void NetworkLayer::update(float dt)
         if(recvBytes <= 0)
             break;
     }
+    
+    while (1)
+    {
+        recvBytes = handler->network->receiveData(SERVER_MODULE_CHATTING_SERVER);
+        if(recvBytes <= 0)
+            break;
+    }
 }
 
 
@@ -1236,8 +1368,4 @@ void NetworkLayer::AddThisToScene(cocos2d::Scene* scene)
 	Director::getInstance()->getRunningScene()->removeChildByTag(TAG_NETWORK_LAYER, false);
 	scene->addChild(nl, 0, TAG_NETWORK_LAYER);
 }
-
-
-
-
 

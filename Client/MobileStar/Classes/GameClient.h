@@ -49,6 +49,9 @@ public:
     int myGameIndex;
     int8_t userCount;
     GameUserInfo gameUserInfo[MAX_ROOM_SLOT_COUNT];
+    
+    bool isConnectedWithChattingServer;
+    bool isConnectedWithLobbyServer;
 };
 
 #endif //__GAME_CLIENT_H__

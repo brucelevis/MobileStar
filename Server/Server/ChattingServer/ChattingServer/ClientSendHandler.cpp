@@ -2,6 +2,8 @@
 #include "Log.h"
 #include "User.h"
 
+#include "ClientLobbyPacket.h"
+
 ClientSendHandler::ClientSendHandler()
 {
 
@@ -17,26 +19,26 @@ bool ClientSendHandler::initialize()
 
 	return true;
 }
-/*
-void ClientSendHandler::HandleFirstConnectRes(Session* const session, Channel* channel, int16_t requestInfoCount, RequestInfo* requestInfoList)
+
+void ClientSendHandler::handleFirstConnectRes(ConnectInfo* connectInfo, Channel* channel, int16_t requestInfoCount, RequestInfo* requestInfoList)
 {
 	DebugLog("ClientSendHandler::HandleFirstConnectRes");
-
+/*
 	ClientLobbyPacket::FirstConnectResPacket packet;
 	memset(&packet, 0, sizeof(packet));
 
-	packet.channelNo = channel->GetChannelNo();
-	memcpy(packet.channelName, channel->GetChannelName(), BasicPacket::MAX_CHANNEL_NAME_LEN);
+	packet.channelNo = channel->getChannelNo();
+	memcpy(packet.channelName, channel->getChannelName(), MAX_CHANNEL_NAME_LEN);
 
 	for (int i = 0; i < requestInfoCount; i++)
 	{
 		packet.requestInfoList[i].requestType = requestInfoList[i].requestType;
 		packet.requestInfoList[i].nickNameInfo.nickNameLen = requestInfoList[i].nickNameInfo.nickNameLen;
-		memcpy(packet.requestInfoList[i].nickNameInfo.nickName, requestInfoList[i].nickNameInfo.nickName, BasicPacket::MAX_NICK_NAME_LEN);
+		memcpy(packet.requestInfoList[i].nickNameInfo.nickName, requestInfoList[i].nickNameInfo.nickName, MAX_NICK_NAME_LEN);
 	}
 
 	packet.requestInfoCount = requestInfoCount;
-	int packetSize = sizeof(packet) - (sizeof(BasicPacket::RequestInfo)*(BasicPacket::MAX_REQUEST_INFO_COUNT - requestInfoCount));
+	int packetSize = sizeof(packet) - (sizeof(RequestInfo)*(MAX_REQUEST_INFO_COUNT - requestInfoCount));
 	if (packetSize < 0)
 	{
 		ErrorLog("packetSize %d", packetSize);
@@ -47,8 +49,8 @@ void ClientSendHandler::HandleFirstConnectRes(Session* const session, Channel* c
 	memcpy(m_sendBuffer, &packet, packetSize);
 
 	LobbyServer::GetInstance().network->SendData(CLIENT, session, ClientLobbyPacket::FIRST_CONNECT_RES, m_sendBuffer, packetSize);
-}
-
+*/}
+/*
 void ClientSendHandler::HandleChattingNotify(Channel* channel, const char* nickName, int8_t chattingLen, const char* chatting)
 {
 	DebugLog("ClientSendHandler::HandleChattingNotify");
@@ -56,11 +58,11 @@ void ClientSendHandler::HandleChattingNotify(Channel* channel, const char* nickN
 	ClientLobbyPacket::ChattingNotifyPacket packet;
 	memset(&packet, 0, sizeof(packet));
 
-	memcpy(packet.nickName, nickName, BasicPacket::MAX_NICK_NAME_LEN);
+	memcpy(packet.nickName, nickName, MAX_NICK_NAME_LEN);
 	packet.chattingLen = chattingLen;
-	memcpy(packet.chatting, chatting, BasicPacket::MAX_CHATTING_LEN);
+	memcpy(packet.chatting, chatting, MAX_CHATTING_LEN);
 
-	int packetSize = sizeof(packet) - (BasicPacket::MAX_CHATTING_LEN - chattingLen + 1);
+	int packetSize = sizeof(packet) - (MAX_CHATTING_LEN - chattingLen + 1);
 	if (packetSize < 0)
 	{
 		ErrorLog("packetSize %d", packetSize);
@@ -99,10 +101,10 @@ void ClientSendHandler::HandleGetChannelListRes(Session* const session, int8_t c
 	for (int i = 0; i < channelCount; i++)
 	{
 		packet.channelInfo[i].channelNo = channelInfo[i].channelNo;
-		memcpy(packet.channelInfo[i].channelName, channelInfo[i].channelName, BasicPacket::MAX_CHANNEL_NAME_LEN);
+		memcpy(packet.channelInfo[i].channelName, channelInfo[i].channelName, MAX_CHANNEL_NAME_LEN);
 	}
 
-	int packetSize = sizeof(packet) - ((BasicPacket::MAX_CHANNEL_COUNT - packet.channelCount) * sizeof(BasicPacket::ChannelInfo));
+	int packetSize = sizeof(packet) - ((MAX_CHANNEL_COUNT - packet.channelCount) * sizeof(ChannelInfo));
 
 	memset(m_sendBuffer, 0, sizeof(SEND_BUF_SIZE));
 	memcpy(m_sendBuffer, &packet, packetSize);
@@ -118,7 +120,7 @@ void ClientSendHandler::HandleMoveChannelRes(Session* const session, int16_t cha
 	memset(&packet, 0, sizeof(packet));
 
 	packet.channelInfo.channelNo = channelNo;
-	memcpy(packet.channelInfo.channelName, channelName, BasicPacket::MAX_CHANNEL_NAME_LEN);
+	memcpy(packet.channelInfo.channelName, channelName, MAX_CHANNEL_NAME_LEN);
 
 	memset(m_sendBuffer, 0, sizeof(SEND_BUF_SIZE));
 	memcpy(m_sendBuffer, &packet, sizeof(packet));
@@ -149,12 +151,12 @@ void ClientSendHandler::HandleGetUserListRes(Session* const session, Channel* ch
 			continue;
 		}
 
-		memcpy(packet.nickNameInfoList[userCount].nickName, user->GetNickName(), BasicPacket::MAX_NICK_NAME_LEN);
+		memcpy(packet.nickNameInfoList[userCount].nickName, user->GetNickName(), MAX_NICK_NAME_LEN);
 		userCount++;
 	}
 
 	packet.nickNameInfoListCount = userCount;
-	int packetSize = sizeof(packet) - (sizeof(BasicPacket::NickNameInfo)*(BasicPacket::MAX_USER_COUNT_IN_CHANNEL - userCount));
+	int packetSize = sizeof(packet) - (sizeof(NickNameInfo)*(MAX_USER_COUNT_IN_CHANNEL - userCount));
 	if (packetSize < 0)
 	{
 		ErrorLog("packetSize %d", packetSize);
@@ -214,11 +216,11 @@ void ClientSendHandler::HandleGetFriendListRes(Session* const session, int16_t n
 	for (int i = 0; i < nickNameInfoListCount; i++)
 	{
 		packet.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen = nickNameInfoList[i].nickNameLen;
-		memcpy(packet.nickNameInfoWithOnlineList[i].nickNameInfo.nickName, nickNameInfoList[i].nickName, BasicPacket::MAX_NICK_NAME_LEN);
+		memcpy(packet.nickNameInfoWithOnlineList[i].nickNameInfo.nickName, nickNameInfoList[i].nickName, MAX_NICK_NAME_LEN);
 		packet.nickNameInfoWithOnlineList[i].online = online[i];
 	}
 
-	int packetSize = sizeof(packet) - (sizeof(BasicPacket::NickNameInfoWithOnline)*(BasicPacket::MAX_FRIEND_COUNT - nickNameInfoListCount));
+	int packetSize = sizeof(packet) - (sizeof(NickNameInfoWithOnline)*(MAX_FRIEND_COUNT - nickNameInfoListCount));
 	if (packetSize < 0)
 	{
 		ErrorLog("packetSize %d", packetSize);
@@ -253,7 +255,7 @@ void ClientSendHandler::HandleAddRequestFriendNotify(Session* const session, int
 	memset(&packet, 0, sizeof(packet));
 
 	packet.nickNameInfo.nickNameLen = nickNameLen;
-	memcpy(packet.nickNameInfo.nickName, nickName, BasicPacket::MAX_NICK_NAME_LEN);
+	memcpy(packet.nickNameInfo.nickName, nickName, MAX_NICK_NAME_LEN);
 
 	memset(m_sendBuffer, 0, sizeof(SEND_BUF_SIZE));
 	memcpy(m_sendBuffer, &packet, sizeof(packet));

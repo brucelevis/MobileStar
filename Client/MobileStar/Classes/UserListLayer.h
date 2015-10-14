@@ -6,6 +6,10 @@
 #include "UserInfoLayer.h"
 #include <vector>
 
+#include <ui/UIScrollView.h>
+
+#define CONTAINER_HEIGHT DISPLAY_HEIGHT * 2
+
 class UserListLayer : public cocos2d::Layer
 {
 public:
@@ -15,13 +19,13 @@ public:
     void removeUserViewInfo(int64_t userNo);
     
     void clickUserInfo(cocos2d::Ref* pSender);
+    void clickCloseBtn(cocos2d::Ref* pSender);
 
 
 //	void SetUserList(int nickNameCount, NickNameInfo* nickNameInfo);
 //	void SetUserInfo(UserInfo* userInfo);
 //
 //	cocos2d::Sprite* backgroundImage;
-//	void menuCloseCallback(cocos2d::Ref* pSender);
 //	void userInfoLayerClose(cocos2d::Ref* pSender);
 //	void doClick2(cocos2d::Ref* pSender);
 //	void doClick3(cocos2d::Ref* pSender);
@@ -43,6 +47,8 @@ public:
     
     std::vector<UserInfoLayer*> userInfoLayerList;
 //    UserInfoLayer* userInfoLayerList[MAX_USER_COUNT_IN_CHANNEL];
+    
+    cocos2d::ui::ScrollView* scrollView;
 };
 
 #endif //__USER_LIST_LAYER_H__

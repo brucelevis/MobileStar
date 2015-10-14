@@ -3,7 +3,13 @@
 #include "GameDefines.h"
 #include "ClientFrontPacket.h"
 #include "NetworkLayer.h"
-#include "DefineHeader.h"
+#include "GameClient.h"
+#include "MiniMapLayer.h"
+
+
+
+
+#include "ControlLayer.h"
 
 USING_NS_CC;
 
@@ -26,22 +32,24 @@ bool LoginScene::init()
     }
     
 	auto loginBtn = MenuItemImage::create(
-		"btn_makeroom_01.png",
-		"btn_makeroom_01.png",
+		"login_btn_01.png",
+		"login_btn_01.png",
 		CC_CALLBACK_1(LoginScene::clickLoginBtn, this));
 
-	loginBtn->setPosition(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 3);
-
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(LoginScene::menuCloseCallback, this));
+	loginBtn->setPosition(DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 4);
     
-    
-	auto menu = Menu::create(loginBtn, closeItem, NULL);
+	menu = Menu::create(loginBtn, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 100, TAG_MENU);
+    
+    GameClient::GetInstance().currentScene = LOGIN_SCENE_NOW;
 
+//    auto cl = ControlLayer::create();
+//    cl->setAnchorPoint(Vec2(0,0));
+//    cl->setPosition(Vec2(0,0));
+//    addChild(cl, 10000);
+    
+    
     return true;
 }
 
@@ -61,6 +69,8 @@ void LoginScene::menuCloseCallback(Ref* pSender)
 
 void LoginScene::clickLoginBtn(Ref* pSender)
 {
+    menu->setEnabled(false); //TODO. erase and test
+    
     ((NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER))->handler->frontSendFirstConnectReq();
 
 }

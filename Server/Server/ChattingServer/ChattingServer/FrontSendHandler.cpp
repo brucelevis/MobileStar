@@ -25,7 +25,7 @@ void FrontSendHandler::HandleFirstConnectReq(Session* const session)
 	memset(&packet, 0, sizeof(packet));
 
 	packet.packetVersion = FrontLobbyPacket::PACKET_VERSION;
-	memcpy(packet.clientIp, LobbyServer::GetInstance().lobbyData->connectInfo[CLIENT].ipAddress, BasicPacket::MAX_IP_ADDRESS_LEN);
+	memcpy(packet.clientIp, LobbyServer::GetInstance().lobbyData->connectInfo[CLIENT].ipAddress, MAX_IP_ADDRESS_LEN);
 	packet.clientPort = LobbyServer::GetInstance().lobbyData->connectInfo[CLIENT].port;
 
 	

@@ -17,7 +17,7 @@
 #if OS_PLATFORM == PLATFORM_LINUX
 const char* LOG_NAME = "./connect_info.xml";
 #else
-const char* LOG_NAME = "/Users/kimyongchan/MoblieStar/Server/Server/GameServer/GameServer/connect_info.xml";
+const char* LOG_NAME = "/Users/kimyongchan/MobileStar/Server/Server/GameServer/GameServer/connect_info.xml";
 #endif
 
 ////////////////FrontData
