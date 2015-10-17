@@ -1,5 +1,5 @@
-#ifndef __LOGIN_SCENE_H__
-#define __LOGIN_SCENE_H__
+#ifndef __SIGN_UP_LAYER_H__
+#define __SIGN_UP_LAYER_H__
 
 #include "cocos2d.h"
 #include <ui/UIEditBox/UIEditBox.h>
@@ -9,25 +9,19 @@ USING_NS_CC;
 
 using namespace ui;
 
-class SignUpLayer;
-
-class LoginScene : public cocos2d::Layer, cocos2d::ui::EditBoxDelegate
+class SignUpLayer : public cocos2d::Layer, cocos2d::ui::EditBoxDelegate
 {
 public:
-    static cocos2d::Scene* createScene();
-
     virtual bool init();
 
     void menuCloseCallback(cocos2d::Ref* pSender);
-    void clickLoginBtn(cocos2d::Ref* pSender);
-    void clickSignUpBtn(cocos2d::Ref* pSender);
-    
-    void completeFirstConnect();
-    void completeSignUp();
-    void removeSignUpLayer();
+    void clickMakeBtn(cocos2d::Ref* pSender);
+    void clickCancelBtn(cocos2d::Ref* pSender);
     
 
-	CREATE_FUNC(LoginScene);
+	CREATE_FUNC(SignUpLayer);
+    
+    friend class LoginScene;
     
 protected:
     void editBoxEditingDidBegin(cocos2d::ui::EditBox* editBox);
@@ -40,9 +34,9 @@ private:
     
     cocos2d::ui::EditBox* idEditBox;
     cocos2d::ui::EditBox* passwordEditBox;
+    cocos2d::ui::EditBox* confirmPasswordEditBox;
+    cocos2d::ui::EditBox* emailEditBox;
     
-    
-    SignUpLayer* signUpLayer;
 };
 
-#endif //__FRONT_SCENE_H__
+#endif //__SIGN_UP_LAYER_H__

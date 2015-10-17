@@ -64,6 +64,14 @@ void NetworkHandler::Receive(ConnectInfo* connectInfo, const char* data, int dat
                 frontHandleFirstConnectRes(connectInfo, pData, pDataSize);
                 break;
                 
+            case ClientFrontPacket::LOGIN_RES:
+                frontHandleLoginRes(connectInfo, pData, pDataSize);
+                break;
+                
+            case ClientFrontPacket::SIGN_UP_RES:
+                frontHandleSignUpRes(connectInfo, pData, pDataSize);
+                break;
+                
             case ClientFrontPacket::ENTER_LOBBY_RES:
                 frontHandleEnterLobbyRes(connectInfo, pData, pDataSize);
                 break;
@@ -265,6 +273,20 @@ void NetworkHandler::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     ///////////////////TODO. draw waitting bar for user
     
     ClientFrontPacket::FirstConnectResPacket packet;
+    memcpy(&packet.sessionId, data, sizeof(packet.sessionId));
+    
+    memcpy(&GameClient::GetInstance().sessionId, &packet.sessionId, sizeof(packet.sessionId));
+    
+    ((LoginScene*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOGIN_SCENE))->completeFirstConnect();
+}
+
+void NetworkHandler::frontHandleLoginRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    printf("NetworkHandler::frontHandleLoginRes");
+    
+    ///////////////////TODO. draw waitting bar for user
+    
+    ClientFrontPacket::LoginResPacket packet;
     memcpy(&packet.userInfo, data, sizeof(packet.userInfo));
     
     printf("%lld", packet.userInfo.userNo);
@@ -277,30 +299,25 @@ void NetworkHandler::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const 
 }
 
 
+void NetworkHandler::frontHandleSignUpRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    printf("NetworkHandler::frontHandleLoginRes");
+    
+    ///////////////////TODO. draw waitting bar for user
+    
+    ClientFrontPacket::SignUpResPacket packet;
+    
+    ((LoginScene*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOGIN_SCENE))->completeSignUp();
+}
+
+
 void NetworkHandler::frontHandleEnterLobbyRes(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
     printf("NetworkHandler::frontHandleEnterLobbyRes");
     
     ClientFrontPacket::EnterLobbyResPacket packet;
     
-    const char* pData = data;
-    
-    memcpy(packet.ip, pData, MAX_IP_ADDRESS_LEN);
-    pData += MAX_IP_ADDRESS_LEN;
-    
-    memcpy(&packet.port, pData, sizeof(packet.port));
-    pData += sizeof(packet.port);
-    
-    printf("%s %d", packet.ip, packet.port);
-    
-    //    if(network->connectWithServer(SERVER_MODULE_LOBBY_SERVER, packet.ip, packet.port) < 0)
-    if(network->connectWithServer(SERVER_MODULE_LOBBY_SERVER, IP_ADDRESS, packet.port) < 0)
-    {
-        printf("??");
-        return ;
-    }
-
-    lobbySendFirstConnectReq();
+    ((LoginScene*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOGIN_SCENE))->completeSignUp();
 }
 
 
@@ -973,13 +990,76 @@ void NetworkHandler::frontSendFirstConnectReq()
 {
     ClientFrontPacket::FirstConnectReqPacket packet;
     
-    memcpy(&packet.sessionId, &GameClient::GetInstance().sessionId, sizeof(packet.sessionId));
+    packet.packetVersion = ClientFrontPacket::PACKET_VERSION;
     
     
     memcpy(sendBuffer, &packet, sizeof(packet));
     
     network->sendPacket(SERVER_MODULE_FRONT_SERVER, sendBuffer, sizeof(packet));
     
+}
+
+void NetworkHandler::frontSendLoginReq(const char* nickName, int8_t nickNameLen, const char* password, int8_t passwordLen)
+{
+    ClientFrontPacket::LoginReqPacket packet;
+    
+    packet.nickNameLen = nickNameLen;
+    memcpy(packet.nickName, nickName, nickNameLen);
+    packet.passwordLen = passwordLen;
+    memcpy(packet.password, password, passwordLen);
+    
+    
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &packet.nickNameLen, sizeof(packet.nickNameLen));
+    pSendBuffer += sizeof(packet.nickNameLen);
+    
+    memcpy(pSendBuffer, packet.nickName, packet.nickNameLen);
+    pSendBuffer += packet.nickNameLen;
+    
+    memcpy(pSendBuffer, &packet.passwordLen, sizeof(packet.passwordLen));
+    pSendBuffer += sizeof(packet.passwordLen);
+    
+    memcpy(pSendBuffer, packet.password, packet.passwordLen);
+    pSendBuffer += packet.passwordLen;
+    
+    network->sendPacket(SERVER_MODULE_FRONT_SERVER, sendBuffer, (int)(pSendBuffer - sendBuffer));
+}
+
+void NetworkHandler::frontSendSignUpReq(const char* nickName, int8_t nickNameLen, const char* password, int8_t passwordLen, const char* email, int8_t emailLen)
+{
+    ClientFrontPacket::SignUpReqPacket packet;
+    
+    packet.nickNameLen = nickNameLen;
+    memcpy(packet.nickName, nickName, nickNameLen);
+    packet.passwordLen = passwordLen;
+    memcpy(packet.password, password, passwordLen);
+    packet.emailLen = emailLen;
+    memcpy(packet.email, email, emailLen);
+    
+    
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &packet.nickNameLen, sizeof(packet.nickNameLen));
+    pSendBuffer += sizeof(packet.nickNameLen);
+    
+    memcpy(pSendBuffer, packet.nickName, packet.nickNameLen);
+    pSendBuffer += packet.nickNameLen;
+    
+    memcpy(pSendBuffer, &packet.passwordLen, sizeof(packet.passwordLen));
+    pSendBuffer += sizeof(packet.passwordLen);
+    
+    memcpy(pSendBuffer, packet.password, packet.passwordLen);
+    pSendBuffer += packet.passwordLen;
+    
+    memcpy(pSendBuffer, &packet.emailLen, sizeof(packet.emailLen));
+    pSendBuffer += sizeof(packet.emailLen);
+    
+    memcpy(pSendBuffer, packet.email, packet.emailLen);
+    pSendBuffer += packet.emailLen;
+    
+    
+    network->sendPacket(SERVER_MODULE_FRONT_SERVER, sendBuffer, (int)(pSendBuffer - sendBuffer));
 }
 
 

@@ -29,6 +29,8 @@ public:
     ////front
     
     void frontHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void frontHandleLoginRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void frontHandleSignUpRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     void frontHandleEnterLobbyRes(ConnectInfo* connectInfo, const char* data, int dataSize);
 
     ////lobby
@@ -81,6 +83,8 @@ public:
     
     
     void frontSendFirstConnectReq();
+    void frontSendLoginReq(const char* nickName, int8_t nickNameLen, const char* password, int8_t passwordLen);
+    void frontSendSignUpReq(const char* nickName, int8_t nickNameLen, const char* password, int8_t passwordLen, const char* email, int8_t emailLen);
     void frontSendEnterLobbyReq();
     void frontSendEnterLobbyOk();
     
