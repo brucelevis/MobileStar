@@ -83,4 +83,8 @@ public:
     int GetFirstTaskSize()const{return (int)FirstTask.size();}
     
     int GetSecondTaskSize()const{return (int)SecondTask.size();}
+    
+    int GetFirstFront()const{return FirstTask.front().packet;}
+    
+    int GetSecondFront()const{return SecondTask.front().packet;}
 };

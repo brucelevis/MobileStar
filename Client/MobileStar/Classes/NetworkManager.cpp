@@ -243,9 +243,7 @@ void NetworkManager::CarryOutFirstTask(int _packet){
                                 break;
                             
                             int MoveIndex = pTelegramMove->tileIndex;
-                            
-                            
-                            
+                             
                             //길을 생성한다.
                             pPlanner->CreatePathToPosition(MoveIndex);
                             
@@ -320,11 +318,11 @@ void NetworkManager::CarryOutSecondTask(int _packet){
                             
                             //현재 이동중이 아니라면 유닛을 이동시킨다. 만약 이동 중일 경우 아무 짓을 하지 않아도 자동으로 다음 작업을 수행한다.
                             if(pUnit->GetFSM()->CurrentState() != State_Move::Instance()){
-                                //유닛을 이동시킨다.
-                                pUnit->MoveToPathFront(iPacket);
-                                printf("이동");
                                 //이동 상태로 전환시킨다.
                                 pUnit->GetFSM()->ChangeState(State_Move::Instance());
+                                
+                                //유닛을 이동시킨다.
+                                pUnit->MoveToPathFront(iPacket);
                             }
                         }
                         

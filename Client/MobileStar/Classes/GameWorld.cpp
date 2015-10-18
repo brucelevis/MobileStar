@@ -42,44 +42,8 @@ GameWorld::GameWorld()
         m_Units[pMarine->GetID()] = pMarine;
     }
     
-    
-    {
-        auto pMarine = new Marine(this,1,105);
-        m_pCameraLayer->addChild(pMarine);
-        m_Units[pMarine->GetID()] = pMarine;
-    }
-    {
-        auto pMarine = new Marine(this,1,135);
-        m_pCameraLayer->addChild(pMarine);
-        m_Units[pMarine->GetID()] = pMarine;
-    }
-    {
-        auto pMarine = new Marine(this,1,164);
-        m_pCameraLayer->addChild(pMarine);
-        m_Units[pMarine->GetID()] = pMarine;
-    }
-    {
-        auto pMarine = new Marine(this,1,165);
-        m_pCameraLayer->addChild(pMarine);
-        m_Units[pMarine->GetID()] = pMarine;
-    }
-    {
-        auto pMarine = new Marine(this,1,163);
-        m_pCameraLayer->addChild(pMarine);
-        m_Units[pMarine->GetID()] = pMarine;
-    }
-    {
-        auto pMarine = new Marine(this,1,133);
-        m_pCameraLayer->addChild(pMarine);
-        m_Units[pMarine->GetID()] = pMarine;
-    }
-    {
-        auto pMarine = new Marine(this,1,103);
-        m_pCameraLayer->addChild(pMarine);
-        m_Units[pMarine->GetID()] = pMarine;
-    }
-    {
-        auto pMarine = new Marine(this,1,104);
+    for(int i=0;i<30;i++){
+        auto pMarine = new Marine(this,1,135+i);
         m_pCameraLayer->addChild(pMarine);
         m_Units[pMarine->GetID()] = pMarine;
     }
@@ -117,14 +81,14 @@ GameWorld::~GameWorld(){
 void GameWorld::onEnter(){
     Layer::onEnter();
     
-    auto listener = EventListenerTouchOneByOne::create();
+    auto listener = EventListenerTouchAllAtOnce::create();
     
-    listener->setSwallowTouches(true);
+
     
-    listener->onTouchBegan = CC_CALLBACK_2(GameWorld::TouchBegan, this);
-    listener->onTouchMoved = CC_CALLBACK_2(GameWorld::TouchMoved, this);
-    listener->onTouchCancelled = CC_CALLBACK_2(GameWorld::TouchCancelled, this);
-    listener->onTouchEnded = CC_CALLBACK_2(GameWorld::TouchEnded, this);
+    listener->onTouchesBegan = CC_CALLBACK_2(GameWorld::TouchesBegan, this);
+    listener->onTouchesMoved = CC_CALLBACK_2(GameWorld::TouchesMoved, this);
+    listener->onTouchesCancelled = CC_CALLBACK_2(GameWorld::TouchesCancelled, this);
+    listener->onTouchesEnded = CC_CALLBACK_2(GameWorld::TouchesEnded, this);
     
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
@@ -163,32 +127,37 @@ void GameWorld::updateNetwork(float eTime){
     
     //디버그용
     char buf[256];
-    sprintf(buf,"FirstPacket %d, SecondPacket %d\nFirstTaskSize %d, SecondTaskSize %d",
+    sprintf(buf,"FirstPacket %d, SecondPacket %d\nFirstTaskSize %d, SecondTaskSize %d\nFirstFront %d, SecondFront %d",
             NetMgr->GetFirstTaskPacket(),NetMgr->GetSecondTaskPacket(),
-            NetMgr->GetFirstTaskSize(),NetMgr->GetSecondTaskSize());
+            NetMgr->GetFirstTaskSize(),NetMgr->GetSecondTaskSize(),
+            NetMgr->GetFirstTaskPacket(),NetMgr->GetSecondTaskPacket());
     m_pDebugLabel->setString(buf);
 }
-bool GameWorld::TouchBegan(Touch* touch, Event* _event){
+bool GameWorld::TouchesBegan(const std::vector<Touch*>& touches, Event* _event){
+    
     for(auto pUnit : m_Units){
-        pUnit.second->TouchBegan(touch, _event);
+        for(auto pTouch : touches){
+            pUnit.second->TouchBegan(pTouch, _event);
+        }
+
     }
     
     return true;
 }
-void GameWorld::TouchMoved(Touch* touch, Event* _event){
+void GameWorld::TouchesMoved(const std::vector<Touch*>& touches, Event* _event){
     for(auto pUnit : m_Units){
-        pUnit.second->TouchMoved(touch, _event);
+        for(auto pTouch : touches){
+            pUnit.second->TouchMoved(pTouch, _event);
+        }
     }
 }
-void GameWorld::TouchCancelled(Touch* touch, Event* _event){
-    for(auto pUnit : m_Units){
-        pUnit.second->TouchCancelled(touch, _event);
-    }
-    
-    TouchEnded(touch, _event);
+void GameWorld::TouchesCancelled(const std::vector<Touch*>& touches, Event* _event){    
+    TouchesEnded(touches, _event);
 }
-void GameWorld::TouchEnded(Touch* touch, Event* _event){
+void GameWorld::TouchesEnded(const std::vector<Touch*>& touches, Event* _event){
     for(auto pUnit : m_Units){
-        pUnit.second->TouchEnded(touch, _event);
+        for(auto pTouch : touches){
+            pUnit.second->TouchEnded(pTouch, _event);
+        }
     }
 }

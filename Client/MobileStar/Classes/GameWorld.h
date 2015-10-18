@@ -39,10 +39,10 @@ public:
     
     void updateNetwork(float eTime);
     
-    bool TouchBegan(Touch* touch, Event* _event);
-    void TouchMoved(Touch* touch, Event* _event);
-    void TouchCancelled(Touch* touch, Event* _event);
-    void TouchEnded(Touch* touch, Event* _event);
+    bool TouchesBegan(const std::vector<Touch*>& touches, Event* _event);
+    void TouchesMoved(const std::vector<Touch*>& touches, Event* _event);
+    void TouchesCancelled(const std::vector<Touch*>& touches, Event* _event);
+    void TouchesEnded(const std::vector<Touch*>& touches, Event* _event);
     
     GameMap* GetMap()const{return m_pMap;}
     
