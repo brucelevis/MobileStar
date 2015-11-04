@@ -31,16 +31,20 @@ NetworkManager* NetworkManager::Instance(){
     return &instance;
 }
 void NetworkManager::SetupWhatPlayerFlag(){
-    int UserNo = GameClient::GetInstance().userInfo->userNo;
-    
-    //플레이어 A인가?
-    if(GameClient::GetInstance().gameUserInfo[1].userNo == UserNo){
+    if(PLAY_ALONE){
         m_iPlayerFlag = 0;
     }else{
-        m_iPlayerFlag = 1;
+        int UserNo = GameClient::GetInstance().userInfo->userNo;
+        
+        //플레이어 A인가?
+        if(GameClient::GetInstance().gameUserInfo[1].userNo == UserNo){
+            m_iPlayerFlag = 0;
+        }else{
+            m_iPlayerFlag = 1;
+        }
+        
+        LogMgr->Log("[0] : %lld, [1] : %lld, userNo : %d",GameClient::GetInstance().gameUserInfo[0].userNo,GameClient::GetInstance().gameUserInfo[1].userNo,UserNo);
     }
-    
-    LogMgr->Log("[0] : %lld, [1] : %lld, userNo : %d",GameClient::GetInstance().gameUserInfo[0].userNo,GameClient::GetInstance().gameUserInfo[1].userNo,UserNo);
 }
 //DispatchTask에 쌓인 Message를 서버로 보낸 후, Task에 전송한다.
 void NetworkManager::DispatchToServer(){
@@ -93,14 +97,19 @@ void NetworkManager::DispatchToServer(){
         }
         
         //서버로 buffer를 보낸다.
-        NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-        layer->handler->gameSendClientNotify(nextBuffer,buffer);
-        
-//        FetchFromServer(nextBuffer, buffer);
+        if(PLAY_ALONE) {
+            FetchFromServer(nextBuffer, buffer);
+        }else{
+            NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+            layer->handler->gameSendClientNotify(nextBuffer,buffer);
+        }
     }else{
-        NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-        layer->handler->gameSendClientNotify(0,buffer);
-//        FetchFromServer(0, buffer);
+        if(PLAY_ALONE) {
+            FetchFromServer(0, buffer);
+        }else{
+            NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+            layer->handler->gameSendClientNotify(0,buffer);
+        }
         
         //빈 메시지를 보낸다.
         FirstTask.push_back(TelegramWithPacket(FirstTaskPacket,NULL));
@@ -277,11 +286,19 @@ void NetworkManager::CarryOutFirstTask(int _packet){
 
 //상대방 컴퓨터의 일을 처리한다.
 void NetworkManager::CarryOutSecondTask(int _packet){
+    
+    
     while(SecondTask.empty() == false)
     {
         if(_packet == SecondTask.front().packet){
             Telegram* pTelegram = SecondTask.front().tel;
             int iPacket = SecondTask.front().packet;
+            
+            //혼자 실행용이면 그냥 빼고 컨티뉴
+            if(PLAY_ALONE){
+                SecondTask.pop_front();
+                continue;
+            }
             
             if(pTelegram != NULL){
                 

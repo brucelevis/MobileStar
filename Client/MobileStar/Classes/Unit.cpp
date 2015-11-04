@@ -16,7 +16,8 @@ Unit::Unit(GameWorld* pGame, int playerFlag, int tileIndex, float hp, float mp, 
 , m_fHpRegen(0.0f)
 , m_fMpRegen(0.0f)
 , m_vHeading(Vec2(0.0f,-1.0f))
-, m_iDir(Dir::Front)
+, m_iPrevDir(10)
+, m_iDir(10)
 , m_iAutoTaskPacket(-1)
 {
     //유한 상태 기계 초기화
@@ -49,14 +50,13 @@ void Unit::update(float eTime){
 
 	//방향 설정한다.
 	//dir : 0~360
-	int dir = static_cast<int>( (acos(m_vHeading.dot(Vec2(1,0)))) * 
+    m_iPrevDir = m_iDir;
+	float Angle = static_cast<float>( (acos(m_vHeading.dot(Vec2(1,0)))) *
 		180.0f / MathMgr->Pi *
 		m_vHeading.sign(Vec2(1, 0))) + 180;
-	
-	if( (dir > 0 && dir <= 45)  || dir > 315) m_iDir = Dir::Left;
-	if( dir >  45 && dir <  135) m_iDir = Dir::Back;
-	if( dir >=135 && dir <  225) m_iDir = Dir::Right;
-	if( dir >=225 && dir <= 315) m_iDir = Dir::Front;
+    
+    m_iDir = (int)(Angle / 22.5);
+    MathMgr->Clamp(m_iDir, 0, 15);
 	
 	//유닛이 맵 전체에서 나가지 못하게 한다.
 	//MathMgr->Clamp(_position.x,30,GAME_SCREEN_WIDTH-30);
@@ -74,7 +74,7 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     LogMgr->Log("Path Size : %d",Path.size());
     
     if(Path.empty()){
-        printf("취소");
+        LogMgr->Log("취소");
         m_pFSM->ChangeState(State_Idle::Instance());
         return false;
     }
@@ -112,14 +112,15 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     //다음 AutoTask를 먼저 등록한다.
     //본래 속도보다 TweakPacket 정도 더 빠르게 실행시킨다.
     
-    float Distance = Vec2Distance(PathFrontPosition, MyPosition) / 64.0f;
+    float Distance = Vec2Distance(PathFrontPosition, MyPosition) / (DIVIDE_NODE ? 32.0f : 64.0f);
     float Duration = Distance / GetSpeed();
     
     int TweakPacket = 1;
     int NextPacket = (int)(NETWORK_FPS * Duration) - TweakPacket;
-    
+    printf("NextPacket : %d\n",NextPacket);
     //만일 NextPacket이 0보다 작거나 같다면 다음 타일을 가져온다.
     if(NextPacket <= 0){
+        printf("AAaaaaaaaaaaaa\n");
         return MoveToPathFront(CurrentPacket);
     }
     

@@ -47,7 +47,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setOpenGLView(glview);
     }
     
-    glview->setDesignResolutionSize(DISPLAY_WIDTH, DISPLAY_HEIGHT, ResolutionPolicy::SHOW_ALL);
+    
 
     // turn on display FPS
     director->setDisplayStats(true);
@@ -59,28 +59,29 @@ bool AppDelegate::applicationDidFinishLaunching() {
     
     ///////////////////////////로그인 서버로 접속
     
-    GameClient::GetInstance().Initialize();
+    if(PLAY_ALONE) {
+        glview->setDesignResolutionSize(1280, 720, ResolutionPolicy::SHOW_ALL);
+        auto scene = GameWorld::createScene();
+        
+        // run
+        director->runWithScene(scene);
+    }else{
+        glview->setDesignResolutionSize(DISPLAY_WIDTH, DISPLAY_HEIGHT, ResolutionPolicy::SHOW_ALL);
+        GameClient::GetInstance().Initialize();
+        
+        auto networkBGLayer = NetworkLayer::create();
+        networkBGLayer->retain();
+        
+        auto scene = LoginScene::createScene();
+        scene->addChild(networkBGLayer, 0, TAG_NETWORK_LAYER);
+        director->runWithScene(scene);
+        
+        GameClient::GetInstance().currentScene = LOGIN_SCENE_NOW;
+    }
     
-    auto networkBGLayer = NetworkLayer::create();
-    networkBGLayer->retain();
-    
-    auto scene = LoginScene::createScene();
-    scene->addChild(networkBGLayer, 0, TAG_NETWORK_LAYER);
-    director->runWithScene(scene);
-    
-    GameClient::GetInstance().currentScene = LOGIN_SCENE_NOW;
     
     
-    
-////////////////////////////////// 게임 테스트용
-//    glview->setDesignResolutionSize(SCREEN_WIDTH, SCREEN_HEIGHT, ResolutionPolicy::SHOW_ALL);
-//    // create a scene. it's an autorelease object
-//    auto scene = GameWorld::createScene();
-//    
-//    // run
-//    director->runWithScene(scene);
-///////////////////////////////////
-    
+        
     return true;
 }
 

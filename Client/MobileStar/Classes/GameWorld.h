@@ -1,6 +1,6 @@
 #pragma once
 #include "StdHeader.h"
-#include "Marine.h"
+#include "Zergling.h"
 #include "AStarAlgorithm.h"
 #include "GameMap.h"
 #include <map>
@@ -23,8 +23,27 @@ private:
     //게임이 시작된 초
     float m_fStartFrame;
     
+    
+    //터치 상태
+    int m_iTouchCnt;
+    bool m_bDoubleTouch;
+
+    //터치를 시작한 포지션
+    Vec2 m_vTouchPosition;
+    Vec2 m_vFirstTouchPosition;
+    
+    //내가 현재 담고 있는 유닛
+    std::list<Unit*> m_TouchedUnits;
+    
+    //유닛을 선택할때 나오는 초록색 사각형
+    DrawNode* m_pSelectDrawNode;
+    Rect m_SelectRect;
+    
     //디버그용
     Label* m_pDebugLabel;
+    
+    
+    void Init();
 public:
     static cocos2d::Scene* createScene();
     
@@ -34,6 +53,8 @@ public:
     void onEnter();
     
     CREATE_FUNC(GameWorld);
+    
+
     
     void update(float eTime);
     

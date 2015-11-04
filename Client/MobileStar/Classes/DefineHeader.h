@@ -6,7 +6,10 @@
 #define TILE_WIDTH_SIZE 128
 #define TILE_HEIGHT_SIZE 64
 
-#define TILE_WIDTH_NUM 64
-#define TILE_HEIGHT_NUM 128
+#define TILE_WIDTH_NUM 100
+#define TILE_HEIGHT_NUM 100
 
 #define NETWORK_FPS 6
+
+#define PLAY_ALONE 1
+#define DIVIDE_NODE 0
