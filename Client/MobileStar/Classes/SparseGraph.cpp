@@ -1,4 +1,5 @@
 #include "SparseGraph.h"
+#include "DefineHeader.h"
 
 bool SparseGraph::IsNodePresent(int nd)
 {
@@ -120,23 +121,40 @@ void SparseGraph::RemoveEdge(int from, int to)
 
 //모든 노드가 존재하는 시점에서, 해당 함수를 실행하면 노드 8방향으로 엣지를 잇는다.
 void SparseGraph::AddAllEdgeFromPresentNode(){
-    for(int i=0;i<m_iTileY;i++){
-        for(int j=0;j<m_iTileX;j++){
-            int nodeIndex = i * m_iTileX + j;
-            UpdateEdgeFromNode(nodeIndex);
+    if(DIVIDE_NODE){
+        for(int i=0;i<m_iTileY*2;i++){
+            for(int j=0;j<m_iTileX*2;j++){
+                int nodeIndex = i * m_iTileX*2 + j;
+                UpdateEdgeFromNode(nodeIndex);
+            }
+        }
+    }else{
+        for(int i=0;i<m_iTileY;i++){
+            for(int j=0;j<m_iTileX;j++){
+                int nodeIndex = i * m_iTileX + j;
+                UpdateEdgeFromNode(nodeIndex);
+            }
         }
     }
 }
 //해당 노드로부터 8방향으로 엣지를 업데이트한다.
 void SparseGraph::UpdateEdgeFromNode(int nodeIndex){
     
+    int tileX = m_iTileX;
+    int tileY = m_iTileY;
+    
+    if(DIVIDE_NODE){
+        tileX *= 2;
+        tileY *= 2;
+    }
+    
     //만약 해당 노드가 비어있지 않으면 return한다.
     if( !GetNode(nodeIndex).IsEmpty() )
         return;
     
     //위
-    if( nodeIndex >= m_iTileX ){
-        int nodeUp = nodeIndex - m_iTileX;
+    if( nodeIndex >= tileX ){
+        int nodeUp = nodeIndex - tileX;
         if( GetNode(nodeUp).IsEmpty() ){
             GraphEdge newEdge(nodeIndex, nodeUp,71.552);
             AddEdge(newEdge);
@@ -144,7 +162,7 @@ void SparseGraph::UpdateEdgeFromNode(int nodeIndex){
     }
     
     //오른쪽
-    if( nodeIndex % m_iTileX < m_iTileX - 1){
+    if( nodeIndex % tileX < tileX - 1){
         int nodeRight = nodeIndex + 1;
         if( GetNode(nodeRight).IsEmpty() ){
             GraphEdge newEdge(nodeIndex, nodeRight,71.552);
@@ -153,7 +171,7 @@ void SparseGraph::UpdateEdgeFromNode(int nodeIndex){
     }
     
     //왼쪽
-    if( nodeIndex % m_iTileX > 0 ){
+    if( nodeIndex % tileX > 0 ){
         int nodeLeft = nodeIndex - 1;
         if( GetNode(nodeLeft).IsEmpty() ){
             GraphEdge newEdge(nodeIndex,nodeLeft,71.552);
@@ -162,8 +180,8 @@ void SparseGraph::UpdateEdgeFromNode(int nodeIndex){
     }
     
     //아래
-    if( nodeIndex / m_iTileX < m_iTileY - 1 ){
-        int nodeDown = nodeIndex + m_iTileX;
+    if( nodeIndex / tileX < tileY - 1 ){
+        int nodeDown = nodeIndex + tileX;
         if( GetNode(nodeDown).IsEmpty() ){
             GraphEdge newEdge(nodeIndex,nodeDown,71.552);
             AddEdge(newEdge);
@@ -171,8 +189,8 @@ void SparseGraph::UpdateEdgeFromNode(int nodeIndex){
     }
     
     //오른쪽 위
-    if( nodeIndex >= m_iTileX && nodeIndex % m_iTileX < m_iTileX -1){
-        int nodeUpRight = nodeIndex - m_iTileX + 1;
+    if( nodeIndex >= tileX && nodeIndex % tileX < tileX -1){
+        int nodeUpRight = nodeIndex - tileX + 1;
         if( GetNode(nodeUpRight).IsEmpty() ){
             GraphEdge newEdge(nodeIndex,nodeUpRight, 64);
             AddEdge(newEdge);
@@ -180,8 +198,8 @@ void SparseGraph::UpdateEdgeFromNode(int nodeIndex){
     }
     
     //오른쪽 아래
-    if(nodeIndex % m_iTileX < m_iTileX -1 && nodeIndex / m_iTileX < m_iTileY -1){
-        int nodeDownRight = nodeIndex + m_iTileX + 1;
+    if(nodeIndex % tileX < tileX -1 && nodeIndex / tileX < tileY -1){
+        int nodeDownRight = nodeIndex + tileX + 1;
         if( GetNode(nodeDownRight).IsEmpty() ){
             GraphEdge newEdge(nodeIndex,nodeDownRight, 128);
             AddEdge(newEdge);
@@ -189,8 +207,8 @@ void SparseGraph::UpdateEdgeFromNode(int nodeIndex){
     }
     
     //왼쪽 위
-    if( nodeIndex >= m_iTileX && nodeIndex % m_iTileX > 0){
-        int nodeUpLeft = nodeIndex - m_iTileX - 1;
+    if( nodeIndex >= tileX && nodeIndex % tileX > 0){
+        int nodeUpLeft = nodeIndex - tileX - 1;
         if( GetNode(nodeUpLeft).IsEmpty() ){
             GraphEdge newEdge(nodeIndex,nodeUpLeft, 128);
             AddEdge(newEdge);
@@ -198,15 +216,13 @@ void SparseGraph::UpdateEdgeFromNode(int nodeIndex){
     }
     
     //왼쪽 아래
-    if( nodeIndex % m_iTileX > 0 && nodeIndex / m_iTileX < m_iTileY - 1){
-        int nodeDownLeft = nodeIndex + m_iTileX - 1;
+    if( nodeIndex % tileX > 0 && nodeIndex / tileX < tileY - 1){
+        int nodeDownLeft = nodeIndex + tileX - 1;
         if( GetNode(nodeDownLeft).IsEmpty() ){
             GraphEdge newEdge(nodeIndex,nodeDownLeft, 64);
             AddEdge(newEdge);
         }
     }
-
-    
 }
 
 //노드를 추가한다.

@@ -16,7 +16,8 @@ Unit::Unit(GameWorld* pGame, int playerFlag, int tileIndex, float hp, float mp, 
 , m_fHpRegen(0.0f)
 , m_fMpRegen(0.0f)
 , m_vHeading(Vec2(0.0f,-1.0f))
-, m_iDir(Dir::Front)
+, m_iPrevDir(10)
+, m_iDir(10)
 , m_iAutoTaskPacket(-1)
 {
     //유한 상태 기계 초기화
@@ -31,37 +32,36 @@ Unit::~Unit(){
     delete m_pFSM;
 }
 void Unit::update(float eTime){
-	Thing::update(eTime);
-
-	//Status가 살아있고, HP가 0보다 작을 때, 죽은 상태로 전환한다.
-	if( GetHp() <= 0 && IsAlive() ){
-		SetDead();
-	}
+    Thing::update(eTime);
+    
+    //Status가 살아있고, HP가 0보다 작을 때, 죽은 상태로 전환한다.
+    if( GetHp() <= 0 && IsAlive() ){
+        SetDead();
+    }
     
     //유한 상태 기계
     m_pFSM->Update(eTime);
-
-	//체력, 마나 리젠
-	m_fHp += m_fHpRegen * eTime;
-	m_fMp += m_fMpRegen * eTime;
-	MathMgr->Clamp(m_fHp,0,m_fMaxHp);
-	MathMgr->Clamp(m_fMp, 0, m_fMaxMp);
-
-	//방향 설정한다.
-	//dir : 0~360
-	int dir = static_cast<int>( (acos(m_vHeading.dot(Vec2(1,0)))) * 
-		180.0f / MathMgr->Pi *
-		m_vHeading.sign(Vec2(1, 0))) + 180;
-	
-	if( (dir > 0 && dir <= 45)  || dir > 315) m_iDir = Dir::Left;
-	if( dir >  45 && dir <  135) m_iDir = Dir::Back;
-	if( dir >=135 && dir <  225) m_iDir = Dir::Right;
-	if( dir >=225 && dir <= 315) m_iDir = Dir::Front;
-	
-	//유닛이 맵 전체에서 나가지 못하게 한다.
-	//MathMgr->Clamp(_position.x,30,GAME_SCREEN_WIDTH-30);
-	//MathMgr->Clamp(_position.y, 30, GAME_SCREEN_HEIGHT - 30);
-
+    
+    //체력, 마나 리젠
+    m_fHp += m_fHpRegen * eTime;
+    m_fMp += m_fMpRegen * eTime;
+    MathMgr->Clamp(m_fHp,0,m_fMaxHp);
+    MathMgr->Clamp(m_fMp, 0, m_fMaxMp);
+    
+    //방향 설정한다.
+    //dir : 0~360
+    m_iPrevDir = m_iDir;
+    float Angle = static_cast<float>( (acos(m_vHeading.dot(Vec2(1,0)))) *
+                                     180.0f / MathMgr->Pi *
+                                     m_vHeading.sign(Vec2(1, 0))) + 180;
+    
+    m_iDir = (int)(Angle / 22.5);
+    MathMgr->Clamp(m_iDir, 0, 15);
+    
+    //유닛이 맵 전체에서 나가지 못하게 한다.
+    //MathMgr->Clamp(_position.x,30,GAME_SCREEN_WIDTH-30);
+    //MathMgr->Clamp(_position.y, 30, GAME_SCREEN_HEIGHT - 30);
+    
 }
 
 //현재 Path.front에 저장되어 있는 타일 인덱스로 이동한다. 만약 Path가 비어있으면 false를 반환한다.
@@ -71,10 +71,10 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     auto pMap = m_pGameWorld->GetMap();
     auto& Graph = pMap->GetNavGraph();
     
-    LogMgr->Log("Path Size : %d",Path.size());
+    //LogMgr->Log("Path Size : %d",Path.size());
     
     if(Path.empty()){
-        printf("취소");
+        //LogMgr->Log("취소");
         m_pFSM->ChangeState(State_Idle::Instance());
         return false;
     }
@@ -111,8 +111,7 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     
     //다음 AutoTask를 먼저 등록한다.
     //본래 속도보다 TweakPacket 정도 더 빠르게 실행시킨다.
-    
-    float Distance = Vec2Distance(PathFrontPosition, MyPosition) / 64.0f;
+    float Distance = Vec2Distance(PathFrontPosition, MyPosition) / (DIVIDE_NODE ? 32.0f : 64.0f);
     float Duration = Distance / GetSpeed();
     
     int TweakPacket = 1;
@@ -136,7 +135,7 @@ bool Unit::MoveToPathFront(int CurrentPacket){
 }
 
 void Unit::SetHeading(Vec2 new_heading){
-	m_vHeading = Vec2Normalize(new_heading);
+    m_vHeading = Vec2Normalize(new_heading);
 }
 bool Unit::TouchBegan(Touch* touch, Event* _event){
     m_pFSM->TouchBegan(touch, _event);

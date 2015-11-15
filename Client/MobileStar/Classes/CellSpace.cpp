@@ -111,8 +111,10 @@ int CellSpace<Entity>::PositionToIndex(const Vec2& pos)const{
  --------------------------------------------------------------------------------*/
 template<class Entity>
 void CellSpace<Entity>::AddObject(Entity object){
-    
-    int idx = PositionToIndex(object->getPosition());
+    Vec2 pos = object->getPosition();
+    MathMgr->Clamp(pos.x, 0, m_fSpaceWidth);
+    MathMgr->Clamp(pos.y, 0, m_fSpaceHeight);
+    int idx = PositionToIndex(pos);
     m_Cells[idx].Members.push_back(object);
 }
 

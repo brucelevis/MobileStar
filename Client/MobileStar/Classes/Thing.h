@@ -30,6 +30,8 @@ protected:
     
 	//해당 유닛을 지워야 하나?
 	bool m_bErase;
+    
+    Sprite* m_pSprite;
 public:
 	Thing(GameWorld* pGame, Object_Type type, int playerFlag, int tileIndex);
 	virtual ~Thing();

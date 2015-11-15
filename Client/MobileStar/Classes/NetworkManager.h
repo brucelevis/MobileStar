@@ -33,11 +33,17 @@ private:
     //네트워크 메시지 업데이트 처리 횟수
     int m_iCntCarryOutMessages;
     
+    //시간초 동기화 업데이트 처리 횟수
+    int m_iCntSynchTime;
+    
     //해당 패킷의 내 컴퓨터의 일을 처리한다.
     void CarryOutFirstTask(int _packet);
     
     //해당 패킷의 상대방 컴퓨터의 일을 처리한다.
     void CarryOutSecondTask(int _packet);
+    
+    //메인 메시지 일 처리 함수
+    void CarryOutTask(Telegram* pTel,int iPacket);
     
     //AutoTask의 일들을 처리한다.
     void CarryOutAutoTask(int _packet);
@@ -63,6 +69,9 @@ public:
     //서버에서 상대방 클라이언트의 Message를 받은 후, Task에 전송한다.
     void FetchFromServer(int length, const char* str);
     
+    //시간초를 동기화 해주는 함수
+    void SynchTime();
+    
     //Task에 쌓인 메시지들을 모두 수행한다.
     void CarryOutMessages();
     
@@ -74,6 +83,12 @@ public:
     
     //네트워크 메시지 업데이트 처리 횟수
     int GetCntCarryOutMessages()const{return m_iCntCarryOutMessages;}
+    
+    //시간초 동기화 업데이트 처리 횟수
+    int GetCntSynchTime()const{return m_iCntSynchTime;}
+    
+    //통신 두절 상태이냐?
+    bool IsCommunicate()const;
     
     //게터 세터
     int GetFirstTaskPacket()const{return FirstTaskPacket;}

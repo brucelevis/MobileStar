@@ -53,12 +53,49 @@ bool GameMap::LoadMap(int tileX,int tileY)
     }
     
     //노드 생성
-    for(int i=0;i<m_iTileY;i++){
-        for(int j=0;j<m_iTileX;j++){
-            NavGraphNode node;
-            node.setPosition(Vec2((j-i) * TILE_WIDTH_SIZE / 2,(j+i) * TILE_HEIGHT_SIZE / 2));
-            m_pNavGraph->AddNode(node);
+    if(DIVIDE_NODE){
+        for(int i=0;i<m_iTileY*2;i++){
+            for(int j=0;j<m_iTileX*2;j++){
+                NavGraphNode node;
+                node.setPosition(Vec2((j-i) * (TILE_WIDTH_SIZE/2) / 2,(j+i) * (TILE_HEIGHT_SIZE/2) / 2 - TILE_HEIGHT_SIZE / 4));
+                m_pNavGraph->AddNode(node);
+            }
         }
+    }else{
+        for(int i=0;i<m_iTileY;i++){
+            for(int j=0;j<m_iTileX;j++){
+                NavGraphNode node;
+                node.setPosition(Vec2((j-i) * TILE_WIDTH_SIZE / 2,(j+i) * TILE_HEIGHT_SIZE / 2));
+                m_pNavGraph->AddNode(node);
+            }
+        }
+    }
+    //임시 타일 스프라이트
+    for(int i=0;i<2;i++){
+        for(int j=0;j<2;j++){
+            auto pTile = Sprite::create("Texture/TileW.png");
+            pTile->setAnchorPoint(Vec2(0.5f,0));
+            pTile->setPosition(Vec2((j-i) * 1280 / 2,(j+i) * 640 / 2) + Vec2(0,-32));
+            addChild(pTile);
+        }
+    }
+    if(DIVIDE_NODE) {
+        //        for(int i=0;i<m_iTileY*2;i++){
+        //            for(int j=0;j<m_iTileX*2;j++){
+        //                auto pTile = Sprite::create("Texture/DivideTile.png");
+        //                pTile->setPosition(m_pNavGraph->GetNode(i*m_iTileX*2 + j).getPosition());
+        //
+        //                addChild(pTile);
+        //            }
+        //        }
+    }else{
+        //        for(int i=0;i<m_iTileY;i++){
+        //            for(int j=0;j<m_iTileX;j++){
+        //                auto pTile = Sprite::create("Texture/Tile.png");
+        //                pTile->setPosition(m_pNavGraph->GetNode(i*m_iTileX + j).getPosition());
+        //                addChild(pTile);
+        //            }
+        //        }
     }
     
     m_pNavGraph->AddAllEdgeFromPresentNode();
@@ -81,16 +118,29 @@ GameMap::CalculateCostToTravelBetweenNodes(int nd1, int nd2)const
 
 
 int GameMap::GetTileIndexFromPosition(const Vec2& position){
-    Vec2 MovePos = position + Vec2(0,TILE_HEIGHT_SIZE/2);
-    int tileX = (MovePos.x / (TILE_WIDTH_SIZE/2) + MovePos.y / (TILE_HEIGHT_SIZE/2)) / 2;
-    int tileY = (MovePos.y / (TILE_HEIGHT_SIZE/2) - (MovePos.x / (TILE_WIDTH_SIZE/2))) / 2;
-    
-    int Index = tileY * m_iTileX + tileX;
-    
-    if(Index < 0 || Index >= m_pNavGraph->NumNodes())
-        return -1;
-    else
-        return Index;
+    if(DIVIDE_NODE){
+        Vec2 MovePos = position;
+        int tileX = (MovePos.x / (TILE_WIDTH_SIZE/4) + MovePos.y / (TILE_HEIGHT_SIZE/4)) / 2;
+        int tileY = ((MovePos.y / (TILE_HEIGHT_SIZE/4) - (MovePos.x / (TILE_WIDTH_SIZE/4))) / 2 + 1);
+        
+        int Index = tileY * (m_iTileX*2) + tileX;
+        Index++;
+        if(Index < 0 || Index >= m_pNavGraph->NumNodes())
+            return -1;
+        else
+            return Index;
+    }else{
+        Vec2 MovePos = position + Vec2(0,TILE_HEIGHT_SIZE/2);
+        int tileX = (MovePos.x / (TILE_WIDTH_SIZE/2) + MovePos.y / (TILE_HEIGHT_SIZE/2)) / 2;
+        int tileY = (MovePos.y / (TILE_HEIGHT_SIZE/2) - (MovePos.x / (TILE_WIDTH_SIZE/2))) / 2;
+        
+        int Index = tileY * m_iTileX + tileX;
+        
+        if(Index < 0 || Index >= m_pNavGraph->NumNodes())
+            return -1;
+        else
+            return Index;
+    }
 }
 
 //해당 위치로부터 가장 가까운 유효화된 노드 인덱스를 구한다.

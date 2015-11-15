@@ -4,6 +4,7 @@
 struct TelegramType{
     enum {
         Null,   //빈 메시지
+        Time,
         Move,
         Attack,
         Create,
@@ -32,9 +33,9 @@ struct TelegramMove : public Telegram{
     //현재 subject에 저장된 유닛 수
     int8_t currentSize;
     uint16_t subject[12];
-    int16_t tileIndex;
+    int32_t tileIndex;
     
-    TelegramMove(int16_t _tileIndex)
+    TelegramMove(int32_t _tileIndex)
     : Telegram(TelegramType::Move)
     , currentSize(0)
     , tileIndex(_tileIndex)
