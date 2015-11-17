@@ -7,6 +7,7 @@
 #include "NetworkManager.h"
 #include "IDManager.h"
 #include "LogManager.h"
+#include "StringManager.h"
 
 USING_NS_CC;
 

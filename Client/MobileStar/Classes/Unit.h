@@ -16,15 +16,28 @@ protected:
 	//유닛의 방향 구조체
 	struct Dir{
 		enum{
-			Front,
 			Left,
-			Back,
-			Right
+			LeftLeftUp,
+			LeftUp,
+			LeftUpUp,
+            Up,
+            RightUpUp,
+            RightUp,
+            RightRightUp,
+            Right,
+            RightRightDown,
+            RightDown,
+            RightDownDown,
+            Down,
+            LeftDownDown,
+            LeftDown,
+            LeftLeftDown
 		};
 	};
 
 public:
 	//유닛의 방향을 담은 변수
+    int m_iPrevDir;
 	int m_iDir;
 protected:
 	Status	m_Status;			//유닛이 죽었나 살았나?
@@ -60,6 +73,10 @@ protected:
     int m_iAutoTaskPacket;
     
     /*-----------------------------------------------------------------------------------*/
+    
+    Sprite* m_pSprite;
+    
+    Animation m_pAnimation[16];
 
 public:
 	Unit(GameWorld* pGame, int playerFlag, int tileIndex, float hp, float mp, float speed, float attackSpeed, float dmg, float armor);
@@ -137,6 +154,9 @@ public:
     StateMachine<Unit>* GetFSM()const{return m_pFSM;}
     
     PathPlanner* GetPathPlanner()const{return m_pPathPlanner; }
+    
+    friend class State_Idle;
+    friend class State_Move;
 
 };
 
