@@ -41,7 +41,7 @@ bool UserListLayer::init()
     {
         UserInfoLayer * userInfoLayer = UserInfoLayer::create();
         userInfoLayer->retain();
-        userInfoLayer->SetUserInfo(INVALID_USER_NO, 0, NULL);
+        userInfoLayer->SetUserInfo(0, NULL);
         userInfoLayer->setAnchorPoint(Vec2(0, 0));
         userInfoLayerList.push_back(userInfoLayer);
     }
@@ -64,11 +64,11 @@ bool UserListLayer::init()
     return true;
 }
 
-void UserListLayer::addUserViewInfo(int64_t userNo, int nickNameLen, const char* nickName)
+void UserListLayer::addUserViewInfo(int nickNameLen, const char* nickName)
 {
     UserInfoLayer * userInfoLayer = userInfoLayerList.front();
     userInfoLayerList.erase(userInfoLayerList.begin());
-    userInfoLayer->SetUserInfo(userNo, nickNameLen, nickName);
+    userInfoLayer->SetUserInfo(nickNameLen, nickName);
 //    userInfoLayer->setScale(((float)SCREEN_WIDTH / 4) / SCREEN_WIDTH, ((float)SCREEN_HEIGHT / 10) / SCREEN_HEIGHT);
     userInfoLayer->setPosition(Vec2(DISPLAY_WIDTH / 2, CONTAINER_HEIGHT - 128 - (nextAddUserNumber * (SCREEN_HEIGHT / 10))));
     
@@ -85,32 +85,32 @@ void UserListLayer::addUserViewInfo(int64_t userNo, int nickNameLen, const char*
     
 //    this->removeChildByTag(nextAddUserNumber);
     
-    scrollView->addChild(userInfoLayer, 1, (int)userNo);
+    scrollView->addChild(userInfoLayer, 1);
 //    this->addChild(userInfoLayer, 1, (int)userNo);
     
     nextAddUserNumber++;
 }
 
-void UserListLayer::removeUserViewInfo(int64_t userNo)
+void UserListLayer::removeUserViewInfo(int nickNameLen, const char* nickName)
 {
     std::vector<UserInfoLayer*>::iterator itr = userInfoLayerList.begin();
     
-    UserInfoLayer* userInfoLayer = (UserInfoLayer*)scrollView->getChildByTag((int)userNo);
-    if(userInfoLayer->userNo == userNo)
-    {
-        userInfoLayerList.push_back(userInfoLayer);
-        scrollView->removeChild(userInfoLayer);
-    }
-    
-    nextAddUserNumber--;
-    
-    const Vector<Node*> childVector = scrollView->getChildren();
-    
-    for(int i = 0; i < nextAddUserNumber; i++)
-    {
-        ((UserInfoLayer*)childVector.at(i))->setPosition(Vec2(DISPLAY_WIDTH / 2, CONTAINER_HEIGHT - 128 - (i * (SCREEN_HEIGHT / 10))));
-        ((UserInfoLayer*)childVector.at(i))->layerPosition = i;
-    }
+//    UserInfoLayer* userInfoLayer = (UserInfoLayer*)scrollView->getChildByTag((int)userNo);
+//    if(userInfoLayer->userNo == userNo)
+//    {
+//        userInfoLayerList.push_back(userInfoLayer);
+//        scrollView->removeChild(userInfoLayer);
+//    }
+//    
+//    nextAddUserNumber--;
+//    
+//    const Vector<Node*> childVector = scrollView->getChildren();
+//    
+//    for(int i = 0; i < nextAddUserNumber; i++)
+//    {
+//        ((UserInfoLayer*)childVector.at(i))->setPosition(Vec2(DISPLAY_WIDTH / 2, CONTAINER_HEIGHT - 128 - (i * (SCREEN_HEIGHT / 10))));
+//        ((UserInfoLayer*)childVector.at(i))->layerPosition = i;
+//    }
 }
 
 

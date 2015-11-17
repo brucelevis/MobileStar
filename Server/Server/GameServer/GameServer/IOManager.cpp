@@ -668,3 +668,27 @@ void IOManager::clientHandleMoveLobbyOk(ConnectInfo* connectInfo, const char* bo
     connectInfo->userData = NULL;
 }
 
+
+void IOManager::clientHandleReconnectReq(ConnectInfo* connectInfo, const char* body, int bodySize)
+{
+    ClientGamePacket::ReconnectReqPacket packet;
+    
+    memcpy(&packet.sid, body, sizeof(packet.sid));
+    
+    
+    User* user = GameServer::getInstance()->userMgr->getUserBySessionId(&packet.sid);
+    
+    if(user == NULL)
+    {
+        ErrorLog("not exist");
+        return ;
+    }
+    
+    connectInfo->userData = (void*)user;
+    user->setSid(packet.sid);
+    
+    ClientGamePacket::ReconnectResPacket sendPacket;
+    
+    GameServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+}
+

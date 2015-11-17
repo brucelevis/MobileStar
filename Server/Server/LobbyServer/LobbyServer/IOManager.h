@@ -18,7 +18,18 @@ public:
     void connected(ConnectInfo* connectInfo);
     void disconnected(ConnectInfo* connectInfo);
     void receiveData(ConnectInfo* connectInfo, const char* data, int dataSize);
+
     
+    //////////////////////////////////////// cache recv
+    
+    void cacheReceiveData(ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize);
+    void cacheSessionIn(ConnectInfo* connectInfo);
+    void cacheSessionOut(ConnectInfo* connectInfo);
+    
+    void cacheHandleFirstConnectRes(ConnectInfo* connectInfo, const char* body, const int bodySize);
+    void cacheHandleLoginUserRes(ConnectInfo* connectInfo, const char* body, int bodySize);
+//    void frontHandleEnterClientOk(ConnectInfo* connectInfo, const char* body, int bodySize);
+//    void frontHandleEnterClientOut(ConnectInfo* connectInfo, const char* body, int bodySize);
     
     //////////////////////////////////////// front recv
     

@@ -20,6 +20,15 @@ bool ServerInfoManager::initialize()
     return true;
 }
 
+bool ServerInfoManager::addCacheServer(ConnectInfo* connectInfo)
+{
+    cacheServerInfo = new CacheServerInfo();
+    
+    cacheServerInfo->connectInfo = connectInfo;
+    connectInfo->userData = (void*)cacheServerInfo;
+    
+    return true;
+}
 
 bool ServerInfoManager::addChattingServer(ConnectInfo* connectInfo, char* clientIp, uint16_t clientPort)
 {
@@ -52,6 +61,8 @@ bool ServerInfoManager::addGameServer(ConnectInfo* connectInfo, char* clientIp, 
     
     memcpy(gameServerInfo->clientIp, clientIp, MAX_IP_ADDRESS_LEN);
     gameServerInfo->clientPort = clientPort;
+    
+    gameServerInfo->roomCount = 0;
     
     gameServerInfo->connectInfo = connectInfo;
     connectInfo->userData = (void*)gameServerInfo;
@@ -96,4 +107,48 @@ GameServerInfo* ServerInfoManager::getGameServerInfo(int gameServerNo)
 }
 
 
+GameServerInfo* ServerInfoManager::getFreeGameServerInfo()
+{
+    GameServerInfo* gameServerInfo1 = gameServerInfoList[0];
+    GameServerInfo* gameServerInfo2 = NULL;
+    
+    for(gameServerInfoListItr = gameServerInfoList.begin(); gameServerInfoListItr != gameServerInfoList.end(); gameServerInfoListItr++)
+    {
+        gameServerInfo2 = *gameServerInfoListItr;
+        
+        if(gameServerInfo2->roomCount < gameServerInfo1->roomCount)
+        {
+            gameServerInfo1 = gameServerInfo2;
+        }
+    }
+    
+    return gameServerInfo1;
+}
 
+
+void ServerInfoManager::increaseGameServerRoomCount(int gameServerNo)
+{
+    for(gameServerInfoListItr = gameServerInfoList.begin(); gameServerInfoListItr != gameServerInfoList.end(); gameServerInfoListItr++)
+    {
+        GameServerInfo* gameServerInfo = *gameServerInfoListItr;
+        
+        if(gameServerInfo->gameServerNo == gameServerNo)
+        {
+            gameServerInfo->roomCount++;
+        }
+    }
+}
+
+
+void ServerInfoManager::decreaseGameServerRoomCount(int gameServerNo)
+{
+    for(gameServerInfoListItr = gameServerInfoList.begin(); gameServerInfoListItr != gameServerInfoList.end(); gameServerInfoListItr++)
+    {
+        GameServerInfo* gameServerInfo = *gameServerInfoListItr;
+        
+        if(gameServerInfo->gameServerNo == gameServerNo)
+        {
+            gameServerInfo->roomCount--;
+        }
+    }
+}

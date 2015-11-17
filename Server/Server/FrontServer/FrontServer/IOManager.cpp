@@ -8,8 +8,12 @@
 #include "ClientFrontPacket.h"
 #include "LobbyFrontPacket.h"
 #include "GameFrontPacket.h"
+#include "FrontCachePacket.h"
 #include "User.h"
 #include "ServerInfo.h"
+
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid.hpp>
 
 
 IOManager::IOManager()
@@ -29,6 +33,9 @@ void IOManager::connected(ConnectInfo* connectInfo)
     
     switch (connectInfo->serverModule)
     {
+        case SERVER_MODULE_CACHE_SERVER:
+            cacheSessionIn(connectInfo);
+            break;
         case SERVER_MODULE_LOBBY_SERVER:
             lobbySessionIn(connectInfo);
             break;
@@ -61,6 +68,9 @@ void IOManager::disconnected(ConnectInfo* connectInfo)
 
     switch (connectInfo->serverModule)
     {
+        case SERVER_MODULE_CACHE_SERVER:
+            cacheSessionOut(connectInfo);
+            break;
         case SERVER_MODULE_LOBBY_SERVER:
             lobbySessionOut(connectInfo);
             break;
@@ -104,6 +114,9 @@ void IOManager::receiveData(ConnectInfo* connectInfo, const char* data, int data
     
     switch (connectInfo->serverModule)
     {
+        case SERVER_MODULE_CACHE_SERVER:
+            cacheReceiveData(connectInfo, cmd, pData, pDataSize);
+            break;
         case SERVER_MODULE_LOBBY_SERVER:
             lobbyReceiveData(connectInfo, cmd, pData, pDataSize);
             break;
@@ -121,6 +134,142 @@ void IOManager::receiveData(ConnectInfo* connectInfo, const char* data, int data
             ErrorLog("invalid server module - %d", connectInfo->serverModule);
             break;
     }
+}
+
+void IOManager::cacheSessionIn(ConnectInfo* connectInfo)
+{
+    DebugLog("cache server session in");
+    FrontCachePacket::FirstConnectReqPacket packet;
+    FrontServer::getInstance()->network->sendPacket(connectInfo, (char*)&packet, sizeof(packet));
+}
+
+void IOManager::cacheSessionOut(ConnectInfo* connectInfo)
+{
+    DebugLog("cache server session out");
+}
+
+void IOManager::cacheReceiveData(ConnectInfo* connectInfo, command_t cmd, const char* data, int dataSize)
+{
+    switch(cmd)
+    {
+        case FrontCachePacket::FIRST_CONNECT_RES:
+            cacheHandleFirstConnectRes(connectInfo, data, dataSize);
+            break;
+            
+        case FrontCachePacket::LOGIN_USER_RES:
+            cacheHandleLoginUserRes(connectInfo, data, dataSize);
+            break;
+            
+        case FrontCachePacket::LOGIN_USER_FAIL:
+            cacheHandleLoginUserFail(connectInfo, data, dataSize);
+            break;
+            
+        case FrontCachePacket::CREATE_USER_RES:
+            cacheHandleCreateUserRes(connectInfo, data, dataSize);
+            break;
+            
+            
+        default:
+            ErrorLog("invalid command - type = %d", cmd);
+            return ;
+    }
+}
+
+void IOManager::cacheHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    FrontCachePacket::FirstConnectResPacket packet;
+    memcpy(packet.lobbyIp, data, MAX_IP_ADDRESS_LEN);
+    memcpy(&packet.lobbyPort, data + MAX_IP_ADDRESS_LEN, sizeof(packet.lobbyPort));
+    
+    DebugLog("cache lobby connect %s %d", packet.lobbyIp, packet.lobbyPort);
+    
+    if(FrontServer::getInstance()->serverInfoMgr->addCacheServer(connectInfo, packet.lobbyIp, packet.lobbyPort) == false)
+    {
+        ErrorLog("??");
+        return ;
+    }
+}
+
+void IOManager::cacheHandleLoginUserRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    FrontCachePacket::LoginUserResPacket packet;
+    memcpy(&packet.sid, data, sizeof(packet.sid));
+    memcpy(&packet.userNo, data + sizeof(packet.sid), sizeof(packet.userNo));
+    
+    FrontServer::getInstance()->userMgr->addConnectedUser(&packet.sid, packet.userNo);
+    
+    User* user = FrontServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
+    
+    if(user == NULL)
+    {
+        DebugLog("leave already");
+        return ;
+    }
+    
+    //////////////////////////////////////
+    
+    ClientFrontPacket::LoginResPacket sendPacket;
+    
+    sendPacket.loginInfo = ClientFrontPacket::LOGIN_RESULT_SUCCESS;
+    
+    FrontServer::getInstance()->network->sendPacket(user->getConnectInfo(), (char*)&sendPacket, sizeof(sendPacket));
+}
+
+void IOManager::cacheHandleLoginUserFail(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    FrontCachePacket::FailPacket packet;
+    memcpy(&packet.sid, data, sizeof(packet.sid));
+    memcpy(&packet.failReason, data + sizeof(packet.sid), sizeof(packet.failReason));
+    
+    User* user = FrontServer::getInstance()->userMgr->getUnConnectedUser(&packet.sid);
+    
+    if(user == NULL)
+    {
+        DebugLog("leave already");
+        return ;
+    }
+    
+    //////////////////////////////////////
+    
+    ClientFrontPacket::LoginResPacket sendPacket;
+    
+    if(packet.failReason == FrontCachePacket::EXIST_USER)
+    {
+        sendPacket.loginInfo = ClientFrontPacket::LOGIN_RESULT_NOT_EXIST_USER_ID;
+    }
+    else
+    {
+        ErrorLog("??");
+        return ;
+    }
+    
+    
+    FrontServer::getInstance()->network->sendPacket(user->getConnectInfo(), (char*)&sendPacket, sizeof(sendPacket));
+}
+
+void IOManager::cacheHandleCreateUserRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    FrontCachePacket::CreateUserResPacket packet;
+    memcpy(&packet.sid, data, sizeof(packet.sid));
+    memcpy(&packet.userNo, data + sizeof(packet.sid), sizeof(packet.userNo));
+    
+    FrontServer::getInstance()->userMgr->addConnectedUser(&packet.sid, packet.userNo);
+    
+    User* user = FrontServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
+    
+    if(user == NULL)
+    {
+        DebugLog("leave already");
+        return ;
+    }
+    
+    //////////////////////////////////////
+    
+    ClientFrontPacket::CreateAccountResPacket sendPacket;
+    
+    sendPacket.isSuccess = ClientFrontPacket::CREATE_ACCOUNT_RESULT_SUCCESS;
+    
+    FrontServer::getInstance()->network->sendPacket(user->getConnectInfo(), (char*)&sendPacket, sizeof(sendPacket));
 }
 
 ///////////////////////////lobby recv
@@ -321,24 +470,31 @@ void IOManager::clientSessionOut(ConnectInfo* connectInfo)
     
     if(user != NULL)
     {
-        if(user->getUserState() == USER_STATE_MOVING_LOBBY)
+        if(user->getUserState() == USER_STATE_NOT_LOGIN)
         {
-            ///////////// send req to lobby
-            
-            LobbyFrontPacket::EnterClientOutPacket sendPacket;
-            
-            sendPacket.userNo = user->getUserNo();
-            
-            int lobbyNo = user->getLobbyNo();
-            
-            LobbyServerInfo* lobbyServerInfo = FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo(lobbyNo);
-            
-            FrontServer::getInstance()->network->sendPacket(lobbyServerInfo->connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+            //TODO.remove user in unconnectedUser
         }
-        
-        FrontServer::getInstance()->userMgr->removeUser(user);
-        
-        connectInfo->userData = NULL;
+        else
+        {
+            if(user->getUserState() == USER_STATE_MOVING_LOBBY)
+            {
+                ///////////// send req to lobby
+                
+                LobbyFrontPacket::EnterClientOutPacket sendPacket;
+                
+                sendPacket.userNo = user->getUserNo();
+                
+                int lobbyNo = user->getLobbyNo();
+                
+                LobbyServerInfo* lobbyServerInfo = FrontServer::getInstance()->serverInfoMgr->getLobbyServerInfo(lobbyNo);
+                
+                FrontServer::getInstance()->network->sendPacket(lobbyServerInfo->connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+            }
+            
+            FrontServer::getInstance()->userMgr->removeUser(user);
+            
+            connectInfo->userData = NULL;
+        }
     }
 }
 
@@ -349,6 +505,14 @@ void IOManager::clientReceiveData(ConnectInfo* connectInfo, command_t cmd, const
     {
         case ClientFrontPacket::FIRST_CONNECT_REQ:
             clientHandleFirstConnectReq(connectInfo, data, dataSize);
+            break;
+            
+        case ClientFrontPacket::LOGIN_REQ:
+            clientHandleLoginReq(connectInfo, data, dataSize);
+            break;
+            
+        case ClientFrontPacket::CREATE_ACCOUNT_REQ:
+            clientHandleCreateAccountReq(connectInfo, data, dataSize);
             break;
             
         case ClientFrontPacket::ENTER_LOBBY_REQ:
@@ -370,50 +534,118 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
     DebugLog("clientHandleFirstConnectReq");
     ClientFrontPacket::FirstConnectReqPacket packet;
     
-    const char* pData = data;
+    memcpy(&packet.packetVersion, data, sizeof(packet.packetVersion));
     
-    memcpy(&packet.sessionId, pData, sizeof(packet.sessionId));
-    pData += sizeof(packet.sessionId);
+    //TODO. packet version check
     
-    /////////////todo recv info from login server
+    SessionId_t sessionId;
     
-    UserInfo userInfo;
-    userInfo.userNo = createUserNo++;
-    memset(userInfo.nickName, 0, MAX_NICK_NAME_LEN);
-    sprintf(userInfo.nickName, "%s%d", "test", createUserNo);
-    userInfo.nickNameLen = strlen(userInfo.nickName);
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
     
+    memcpy(&sessionId, &uuid, sizeof(uuid));
     
-    FrontServer::getInstance()->userMgr->addUnconnectedUser(&userInfo, &packet.sessionId);
+    FrontServer::getInstance()->userMgr->addUnconnectedUser(&sessionId, connectInfo);
     
     
     
     
     ///////////////////////////////
     
-    if(FrontServer::getInstance()->userMgr->addConnectedUser(&packet.sessionId, connectInfo) != SUCCESS)
+    ClientFrontPacket::FirstConnectResPacket sendPacket;
+    
+    memcpy(&sendPacket.sessionId, &sessionId, sizeof(sessionId));
+    
+    FrontServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+}
+
+void IOManager::clientHandleLoginReq(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    ClientFrontPacket::LoginReqPacket packet;
+    memcpy(&packet.userIdLen, data, sizeof(packet.userIdLen));
+    data += sizeof(packet.userIdLen);
+    
+    memcpy(packet.userId, data, packet.userIdLen);
+    
+    User* user = (User*)connectInfo->userData;
+    
+    if(user == NULL)
     {
         ErrorLog("??");
         return ;
     }
     
-    ClientFrontPacket::FirstConnectResPacket sendPacket;
+    FrontCachePacket::LoginUserReqPacket sendPacket;
     
-    sendPacket.userInfo.userNo = userInfo.userNo;
-    sendPacket.userInfo.nickNameLen = userInfo.nickNameLen;
-    memcpy(sendPacket.userInfo.nickName, userInfo.nickName, userInfo.nickNameLen);
-    memcpy(&sendPacket.userInfo, &userInfo, sizeof(userInfo));
-    
+    memcpy(&sendPacket.sid, user->getSid(), sizeof(sendPacket.sid));
+    sendPacket.userIdLen = packet.userIdLen;
+    memcpy(sendPacket.userId, packet.userId, packet.userIdLen);
     
     char* pSendBuffer = sendBuffer;
     
     memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
     pSendBuffer += sizeof(sendPacket.cmd);
     
-    memcpy(pSendBuffer, &sendPacket.userInfo, sizeof(sendPacket.userInfo));
-    pSendBuffer += sizeof(sendPacket.userInfo);
+    memcpy(pSendBuffer, &sendPacket.sid, sizeof(sendPacket.sid));
+    pSendBuffer += sizeof(sendPacket.sid);
     
-    FrontServer::getInstance()->network->sendPacket(connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
+    memcpy(pSendBuffer, &sendPacket.userIdLen, sizeof(sendPacket.userIdLen));
+    pSendBuffer += sizeof(sendPacket.userIdLen);
+    
+    memcpy(pSendBuffer, sendPacket.userId, sendPacket.userIdLen);
+    pSendBuffer += sendPacket.userIdLen;
+    
+    FrontServer::getInstance()->network->sendPacket(FrontServer::getInstance()->serverInfoMgr->getCacheServerInfo()->connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
+}
+
+void IOManager::clientHandleCreateAccountReq(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    ClientFrontPacket::CreateAccountReqPacket packet;
+    memcpy(&packet.userIdLen, data, sizeof(packet.userIdLen));
+    data += sizeof(packet.userIdLen);
+    memcpy(packet.userId, data, packet.userIdLen);
+    data += packet.userIdLen;
+    memcpy(&packet.nickNameLen, data, sizeof(packet.nickNameLen));
+    data += sizeof(packet.nickNameLen);
+    memcpy(packet.nickName, data, packet.nickNameLen);
+    data += packet.nickNameLen;
+    
+    User* user = (User*)connectInfo->userData;
+    
+    if(user == NULL)
+    {
+        ErrorLog("??");
+        return ;
+    }
+    
+    FrontCachePacket::CreateUserReqPacket sendPacket;
+    
+    memcpy(&sendPacket.sid, user->getSid(), sizeof(sendPacket.sid));
+    sendPacket.userIdLen = packet.userIdLen;
+    memcpy(sendPacket.userId, packet.userId, packet.userIdLen);
+    sendPacket.nickNameLen = packet.nickNameLen;
+    memcpy(sendPacket.nickName, packet.nickName, packet.nickNameLen);
+    
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
+    pSendBuffer += sizeof(sendPacket.cmd);
+    
+    memcpy(pSendBuffer, &sendPacket.sid, sizeof(sendPacket.sid));
+    pSendBuffer += sizeof(sendPacket.sid);
+    
+    memcpy(pSendBuffer, &sendPacket.userIdLen, sizeof(sendPacket.userIdLen));
+    pSendBuffer += sizeof(sendPacket.userIdLen);
+    
+    memcpy(pSendBuffer, sendPacket.userId, sendPacket.userIdLen);
+    pSendBuffer += sendPacket.userIdLen;
+    
+    memcpy(pSendBuffer, &sendPacket.nickNameLen, sizeof(sendPacket.nickNameLen));
+    pSendBuffer += sizeof(sendPacket.nickNameLen);
+    
+    memcpy(pSendBuffer, sendPacket.nickName, sendPacket.nickNameLen);
+    pSendBuffer += sendPacket.nickNameLen;
+    
+    FrontServer::getInstance()->network->sendPacket(FrontServer::getInstance()->serverInfoMgr->getCacheServerInfo()->connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
 }
 
 
@@ -422,6 +654,12 @@ void IOManager::clientHandleEnterLobbyReq(ConnectInfo* connectInfo, const char* 
     DebugLog("clientHandleEnterLobbyReq");
     
     User* user = (User*)connectInfo->userData;
+    
+    if(user == NULL)
+    {
+        DebugLog("not exist user");
+        return ;
+    }
     
     if(user->getUserState() == USER_STATE_MOVING_LOBBY)
     {
@@ -441,10 +679,7 @@ void IOManager::clientHandleEnterLobbyReq(ConnectInfo* connectInfo, const char* 
     
     memcpy(&sendPacket.sid, user->getSid(), sizeof(SessionId_t));
     
-    sendPacket.userInfo.userNo = user->getUserNo();
-    sendPacket.userInfo.nickNameLen = user->getNickNameLen();
-    memcpy(sendPacket.userInfo.nickName, user->getNickName(), user->getNickNameLen());
-    //////////////TODO. all userInfo copy
+    sendPacket.userNo = user->getUserNo();
     
     FrontServer::getInstance()->network->sendPacket(lobbyServerInfo->connectInfo, (char*)&sendPacket, sizeof(sendPacket));
     

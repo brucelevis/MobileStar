@@ -2,6 +2,9 @@
 #include "DefineHeader.h"
 #include "GameDefines.h"
 
+#define BUTTON_COUNT 9
+#define INVALID_BUTTON_INDEX -1
+
 bool ControlLayer::init()
 {
     if ( !Layer::init() )
@@ -61,6 +64,9 @@ void ControlLayer::onTouchesBegan(const std::vector<Touch*>& touches, Event* eve
             {
                 isButtonesTouched = true;
                 pButtonesTouch = touch;
+                
+                //find button index
+                buttonIndex = findButtonIndexByPosition(x, y);
             }
             else
             {
@@ -111,7 +117,7 @@ void ControlLayer::onTouchesMoved(const std::vector<Touch*>& touches, Event* eve
         {
             CCLOG("onTouchesMoved : miniMap");
         }
-        else if(touch == pButtonesTouch || touch == pInfoViewTouch || touch == pMiniMapTouch)
+        else if(touch == pButtonesTouch || touch == pInfoViewTouch || touch == pMiniMapTouch || touch == pMenuTouch)
         {
             
         }
@@ -145,7 +151,14 @@ void ControlLayer::onTouchesEnded(const std::vector<Touch*>& touches, Event* eve
             {
                 CCLOG("onTouchesEnded : buttones");
                 
-                //
+                int bi = findButtonIndexByPosition(x, y);
+                
+                if(bi == buttonIndex && buttonIndex != INVALID_BUTTON_INDEX)
+                {
+                    CCLOG("touch button - %d", buttonIndex);
+                }
+                
+                buttonIndex = INVALID_BUTTON_INDEX;
             }
             else
             {
@@ -202,10 +215,55 @@ void ControlLayer::onTouchesCancelled(const std::vector<Touch*>& touches, Event*
     
     isMenuTouched = false;
     pMenuTouch = NULL;
+    
+    buttonIndex = INVALID_BUTTON_INDEX;
 }
 
 
-
+int ControlLayer::findButtonIndexByPosition(float x, float y)
+{
+    if(x > SCREEN_WIDTH - 240 && x < SCREEN_WIDTH - 160 && y > 160 && y < 240)
+    {
+        return 0;
+    }
+    else if(x > SCREEN_WIDTH - 160 && x < SCREEN_WIDTH - 80 && y > 160 && y < 240)
+    {
+        return 1;
+    }
+    else if(x > SCREEN_WIDTH - 80 && x < SCREEN_WIDTH && y > 160 && y < 240)
+    {
+        return 2;
+    }
+    else if(x > SCREEN_WIDTH - 240 && x < SCREEN_WIDTH - 160 && y > 80 && y < 160)
+    {
+        return 3;
+    }
+    else if(x > SCREEN_WIDTH - 160 && x < SCREEN_WIDTH - 80 && y > 80 && y < 160)
+    {
+        return 4;
+    }
+    else if(x > SCREEN_WIDTH - 80 && x < SCREEN_WIDTH && y > 80 && y < 160)
+    {
+        return 5;
+    }
+    else if(x > SCREEN_WIDTH - 240 && x < SCREEN_WIDTH - 160 && y > 0 && y < 80)
+    {
+        return 6;
+    }
+    else if(x > SCREEN_WIDTH - 160 && x < SCREEN_WIDTH - 80 && y > 0 && y < 80)
+    {
+        return 7;
+    }
+    else if(x > SCREEN_WIDTH - 80 && x < SCREEN_WIDTH && y > 0 && y < 80)
+    {
+        return 8;
+    }
+    else
+    {
+        return INVALID_BUTTON_INDEX;
+    }
+    
+}
 
 ControlLayer::~ControlLayer()
 {

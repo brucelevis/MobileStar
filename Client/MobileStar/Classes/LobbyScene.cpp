@@ -356,14 +356,14 @@ void LobbyScene::changeLobbyLayer(int layerNumber)
 
 
 
-void LobbyScene::addUserInfo(int64_t userNo, int nickNameLen, const char* nickName)
+void LobbyScene::addUserInfo(int nickNameLen, const char* nickName)
 {
-    lobbyChannelLayer->userListLayer->addUserViewInfo(userNo, nickNameLen, nickName);
+    lobbyChannelLayer->userListLayer->addUserViewInfo(nickNameLen, nickName);
 }
 
-void LobbyScene::removeUserInfo(int64_t userNo)
+void LobbyScene::removeUserInfo(int nickNameLen, const char* nickName)
 {
-    lobbyChannelLayer->userListLayer->removeUserViewInfo(userNo);
+    lobbyChannelLayer->userListLayer->removeUserViewInfo(nickNameLen, nickName);
 }
 
 

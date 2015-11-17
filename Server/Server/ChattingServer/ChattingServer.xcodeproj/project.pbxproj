@@ -39,17 +39,13 @@
 		6F2DF0171BA2DA7A002A5D43 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6F2DF0A31BA2F7EF002A5D43 /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = "../../../../boost_1_55_0/bin.v2/libs/system/build/darwin-4.2.1/debug/address-model-32/threading-multi/libboost_system.dylib"; sourceTree = "<group>"; };
 		6F2DF0A61BA2F7FE002A5D43 /* BasicPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicPacket.h; sourceTree = "<group>"; };
-		6F2DF0A71BA2F7FE002A5D43 /* CenterCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CenterCachePacket.h; sourceTree = "<group>"; };
 		6F2DF0A81BA2F7FE002A5D43 /* ClientFrontPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientFrontPacket.h; sourceTree = "<group>"; };
 		6F2DF0A91BA2F7FE002A5D43 /* ClientGamePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientGamePacket.h; sourceTree = "<group>"; };
 		6F2DF0AA1BA2F7FE002A5D43 /* ClientLobbyPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientLobbyPacket.h; sourceTree = "<group>"; };
 		6F2DF0AB1BA2F7FE002A5D43 /* FrontCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontCachePacket.h; sourceTree = "<group>"; };
-		6F2DF0AC1BA2F7FE002A5D43 /* FrontCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontCenterPacket.h; sourceTree = "<group>"; };
 		6F2DF0AE1BA2F7FE002A5D43 /* GameCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameCachePacket.h; sourceTree = "<group>"; };
-		6F2DF0AF1BA2F7FE002A5D43 /* GameCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameCenterPacket.h; sourceTree = "<group>"; };
 		6F2DF0B01BA2F7FE002A5D43 /* GameLobbyPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameLobbyPacket.h; sourceTree = "<group>"; };
 		6F2DF0B11BA2F7FE002A5D43 /* LobbyCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyCachePacket.h; sourceTree = "<group>"; };
-		6F2DF0B21BA2F7FE002A5D43 /* LobbyCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyCenterPacket.h; sourceTree = "<group>"; };
 		6F2DF0BC1BA2F807002A5D43 /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml2.cpp; sourceTree = "<group>"; };
 		6F2DF0BD1BA2F807002A5D43 /* tinyxml2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml2.h; sourceTree = "<group>"; };
 		6F2DF0BF1BA2F807002A5D43 /* aop_x86_64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aop_x86_64.h; sourceTree = "<group>"; };
@@ -143,17 +139,13 @@
 				6FD8FC951BCB8DAC0029BD4A /* ChattingFrontPacket.h */,
 				6FD8FC961BCB8DAC0029BD4A /* ClientChattingPacket.h */,
 				6FD8FC971BCB8DAC0029BD4A /* LobbyChattingPacket.h */,
-				6F2DF0A71BA2F7FE002A5D43 /* CenterCachePacket.h */,
 				6F2DF0A81BA2F7FE002A5D43 /* ClientFrontPacket.h */,
 				6F2DF0A91BA2F7FE002A5D43 /* ClientGamePacket.h */,
 				6F2DF0AA1BA2F7FE002A5D43 /* ClientLobbyPacket.h */,
 				6F2DF0AB1BA2F7FE002A5D43 /* FrontCachePacket.h */,
-				6F2DF0AC1BA2F7FE002A5D43 /* FrontCenterPacket.h */,
 				6F2DF0AE1BA2F7FE002A5D43 /* GameCachePacket.h */,
-				6F2DF0AF1BA2F7FE002A5D43 /* GameCenterPacket.h */,
 				6F2DF0B01BA2F7FE002A5D43 /* GameLobbyPacket.h */,
 				6F2DF0B11BA2F7FE002A5D43 /* LobbyCachePacket.h */,
-				6F2DF0B21BA2F7FE002A5D43 /* LobbyCenterPacket.h */,
 			);
 			name = Packet;
 			path = ../Packet;

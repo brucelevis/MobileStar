@@ -110,6 +110,23 @@ User* UserManager::getUserByUserNo(int64_t userNo)
 	return iter->second;
 }
 
+User* UserManager::getUserBySessionId(SessionId_t* sessionId)
+{
+    User* user;
+    boost::unordered_map< int64_t, User* >::iterator iter;
+    
+    for(iter = userMap.begin(); iter != userMap.end(); iter++)
+    {
+        user = iter->second;
+        if (memcmp(user->getSid(), sessionId, sizeof(SessionId_t)) == 0)
+        {
+            return user;
+        }
+    }
+    
+    return NULL;
+}
+
 bool UserManager::removeUser(User* user)
 {
 	if (userMap.erase(user->userInfo.userNo) != 1)

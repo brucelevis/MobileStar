@@ -31,13 +31,14 @@ NetworkManager* NetworkManager::Instance(){
     return &instance;
 }
 void NetworkManager::SetupWhatPlayerFlag(){
+
     if(PLAY_ALONE){
         m_iPlayerFlag = 0;
     }else{
         int UserNo = GameClient::GetInstance().userInfo->userNo;
         
         //플레이어 A인가?
-        if(GameClient::GetInstance().gameUserInfo[1].userNo == UserNo){
+        if(GameClient::GetInstance().myGameIndex == 0){
             m_iPlayerFlag = 0;
         }else{
             m_iPlayerFlag = 1;

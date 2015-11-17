@@ -12,6 +12,14 @@
 #include "Network.h"
 
 
+struct CacheServerInfo
+{
+    ConnectInfo* connectInfo;
+    char lobbyIp[MAX_IP_ADDRESS_LEN];
+    uint16_t lobbyPort;
+};
+
+
 struct ChattingServerInfo
 {
     ConnectInfo* connectInfo;
@@ -48,10 +56,13 @@ class ServerInfoManager
 public:
 	ServerInfoManager();
 	bool initialize();
+    bool addCacheServer(ConnectInfo* connectInfo, char* _lobbyIp, uint16_t lobbyPort);
     bool addChattingServer(ConnectInfo* connectInfo, char* _lobbyIp, uint16_t lobbyPort, char* _gameIp, uint16_t gamePort, char* _clientIp, uint16_t clientPort);
     bool addLobbyServer(ConnectInfo* connectInfo, char* _gameIp, uint16_t gamePort, char* _clientIp, uint16_t clientPort);
+    
     //bool AddChattingServer(char* _clientIp, uint16_t clientPort);
     
+    CacheServerInfo* getCacheServerInfo() { return cacheServerInfo; }
     ChattingServerInfo* getChattingServerInfo() { return chattingServerInfo; }
     LobbyServerInfo* getRandomLobbyServerInfo() { return lobbyServerInfoList[0]; }
     LobbyServerInfo* getLobbyServerInfo(int lobbyNo);
@@ -62,6 +73,7 @@ public:
 	~ServerInfoManager();
 
 private:
+    CacheServerInfo* cacheServerInfo;
     ChattingServerInfo* chattingServerInfo;
     std::vector<LobbyServerInfo*> lobbyServerInfoList;
     std::vector<GameServerInfo*> gameServerInfoList;

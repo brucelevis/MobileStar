@@ -52,6 +52,9 @@ public:
     
     bool isConnectedWithChattingServer;
     bool isConnectedWithLobbyServer;
+    
+    char gameServerIp[MAX_IP_ADDRESS_LEN];
+    uint16_t gameServerPort;
 };
 
 #endif //__GAME_CLIENT_H__

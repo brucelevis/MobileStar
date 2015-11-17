@@ -159,6 +159,13 @@ public:
 
         char chattingIp[MAX_IP_ADDRESS_LEN];
         int16_t chattingPort;
+        
+        UserInfo userInfo;
+        
+        int8_t friendCount;
+        NickNameInfoWithOnline nickNameInfoWithOnlineList[MAX_FRIEND_COUNT];
+        
+        ClanInfo clanInfo;
 	};
     
     struct FirstConnectOkPacket : public Packet
@@ -212,14 +219,14 @@ public:
         GetUserListResPacket() { cmd = GET_USER_LIST_RES; }
         
         uint8_t userCount;
-        UserViewInfo userViewInfoList[MAX_USER_COUNT_IN_CHANNEL];
+        NickNameInfo nickNameInfoList[MAX_USER_COUNT_IN_CHANNEL];
     };
 
     struct GetUserInfoReqPacket : public Packet
     {
         GetUserInfoReqPacket() { cmd = GET_USER_INFO_REQ; }
         
-        int64_t userNo;
+        NickNameInfo nickNameInfo;
     };
 
     struct GetUserInfoResPacket : public Packet
@@ -238,7 +245,7 @@ public:
         char channelName[MAX_CHANNEL_NAME_LEN];
         
         uint8_t userCount;
-        UserViewInfo userViewInfoList[MAX_USER_COUNT_IN_CHANNEL];
+        NickNameInfo nickNameInfoList[MAX_USER_COUNT_IN_CHANNEL];
     };
     
     
@@ -246,14 +253,14 @@ public:
     {
         EnterUserInChannelNotifyPacket() { cmd = ENTER_USER_IN_CHANNEL_NOTIFY; }
     
-        UserViewInfo userViewInfo;
+        NickNameInfo nickNameInfo;
     };
 
     struct LeaveUserInChannelNotifyPacket : public Packet
     {
         LeaveUserInChannelNotifyPacket() { cmd = LEAVE_USER_IN_CHANNEL_NOTIFY; }
         
-        int64_t userNo;
+        NickNameInfo nickNameInfo;
     };
     
     
@@ -261,7 +268,7 @@ public:
     {
         RequestGameReqPacket() { cmd = REQUEST_GAME_REQ; }
         
-        int64_t userNo;
+        NickNameInfo nickNameInfo;
     };
     
     struct RequestGameResPacket : public Packet
@@ -275,7 +282,7 @@ public:
     {
         RequestGameNotifyPacket() { cmd = REQUEST_GAME_NOTIFY; }
         
-        int64_t userNo;
+        NickNameInfo nickNameInfo;
     };
     
     
@@ -295,7 +302,7 @@ public:
     {
         ResponseGameYesReqPacket() { cmd = RESPONSE_GAME_YES_REQ; }
         
-        int64_t userNo;
+        NickNameInfo nickNameInfo;
     };
    
     
@@ -310,7 +317,7 @@ public:
     {
         ResponseGameNoReqPacket() { cmd = RESPONSE_GAME_NO_REQ; }
         
-        int64_t userNo;
+        NickNameInfo nickNameInfo;
     };
     
     

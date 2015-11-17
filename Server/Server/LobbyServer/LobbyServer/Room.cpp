@@ -382,6 +382,8 @@ int Room::startGame()
     
     LobbyServer::getInstance()->network->sendPacket(gameServerInfo->connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
     
+    gameServerInfo->roomCount++;
+    
     gameServerNo = gameServerInfo->gameServerNo;
     
     return SUCCESS;
@@ -399,7 +401,8 @@ int Room::startGameNotify(GameServerInfo* gameServerInfo)
     {
         if(roomSlotList[i].isOpen == 1 && roomSlotList[i].isExistUser == 1)
         {
-            sendPacket.gameUserInfo[userCnt].userNo = roomSlotList[i].user->getUserNo();
+            sendPacket.gameUserInfo[userCnt].nickNameInfo.nickNameLen = roomSlotList[i].user->getNickNameLen();
+            memcpy(sendPacket.gameUserInfo[userCnt].nickNameInfo.nickName, roomSlotList[i].user->getNickName(), roomSlotList[i].user->getNickNameLen());
             sendPacket.gameUserInfo[userCnt].tribe = roomSlotList[i].tribe;
             userCnt++;
         }
@@ -426,8 +429,11 @@ int Room::startGameNotify(GameServerInfo* gameServerInfo)
     
     for(int i = 0; i < sendPacket.userCount; i++)
     {
-        memcpy(pSendBuffer, &sendPacket.gameUserInfo[i].userNo, sizeof(sendPacket.gameUserInfo[i].userNo));
-        pSendBuffer += sizeof(sendPacket.gameUserInfo[i].userNo);
+        memcpy(pSendBuffer, &sendPacket.gameUserInfo[i].nickNameInfo.nickNameLen, sizeof(sendPacket.gameUserInfo[i].nickNameInfo.nickNameLen));
+        pSendBuffer += sizeof(sendPacket.gameUserInfo[i].nickNameInfo.nickNameLen);
+        
+        memcpy(pSendBuffer, sendPacket.gameUserInfo[i].nickNameInfo.nickName, sendPacket.gameUserInfo[i].nickNameInfo.nickNameLen);
+        pSendBuffer += sendPacket.gameUserInfo[i].nickNameInfo.nickNameLen;
         
         memcpy(pSendBuffer, &sendPacket.gameUserInfo[i].tribe, sizeof(sendPacket.gameUserInfo[i].tribe));
         pSendBuffer += sizeof(sendPacket.gameUserInfo[i].tribe);
@@ -525,7 +531,7 @@ void Room::finishGame() // ToDo. 보상 받으면 줘야됨.
         {
             user = roomSlotList[i].user;
             
-            if(LobbyServer::getInstance()->userMgr->addUnconnectedUser(user->getUserInfo(), user->getSid()) != SUCCESS)
+            if(LobbyServer::getInstance()->userMgr->addUnconnectedUser(user->getSid(), user->getUserNo()) != SUCCESS)
             {
                 ErrorLog("???");
                 return ;
@@ -611,6 +617,7 @@ int RoomManager::destroyRoom(int16_t roomNo)
         room = *itr;
         if(room->getRoomNo() == roomNo)
         {
+            LobbyServer::getInstance()->serverInfoMgr->decreaseGameServerRoomCount(room->gameServerNo);
             roomList.erase(itr);
             delete room;
             return SUCCESS;

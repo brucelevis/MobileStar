@@ -2,7 +2,6 @@
 #define __FRONT_CACHE_PACKET_H__
 
 #include "BasicPacket.h"
-#include "NetworkDefines.h"
 
 class FrontCachePacket
 {
@@ -14,9 +13,9 @@ public:
 
 	enum EnumCommand // start number is at least 3.
 	{
-		PACKET_VERSION_REQ = 10,
-		PACKET_VERSION_RES,
-		PACKET_VERSION_FAIL,
+        FIRST_CONNECT_REQ = 10,
+        FIRST_CONNECT_RES,
+        FIRST_CONNECT_FAIL,
 
 		CREATE_USER_REQ,
 		CREATE_USER_RES,
@@ -27,126 +26,81 @@ public:
 		LOGIN_USER_FAIL,
 
 		LOGOUT_USER_REQ,
-
-		DELETE_USER_REQ,
-		DELETE_USER_RES,
-		DELETE_USER_FAIL,
 	};
 
 	enum EnumFailReason
 	{
 		PACKET_VERSION_INCORRECT = 1,
 		SERVER_ERROR,
-		EXIST_EMAIL,
+		EXIST_USER,
 		EXIST_NICK_NAME,
-		NOT_EXIST_EMAIL,
+		NOT_EXIST_USER,
 		PASSWORD_INCORRECT,
 	};
 
 	///////////////////////////////////
 
-	struct UserInfo
-	{
-		int64_t userNo;
-		int8_t nickNameLen;
-		char nickName[MAX_NICK_NAME_LEN + 1];
-		int32_t gold;
-		int8_t memoLen;
-		char memo[MAX_MEMO_LEN + 1];
-		int16_t commonWin;
-		int16_t commonLose;
-		int16_t commonDiss;
-		int16_t rankWin;
-		int16_t rankLose;
-		int16_t rankDiss;
-		int8_t grade;
-		int8_t gradeReachedCount;
-		int8_t point;
-		int8_t icon;
-	};
 
 #pragma pack(push, 1)
 
 	///////////////////////////////////
 
 
-	struct PacketVersionReqPacket
-	{
-		int32_t packetVersion;
-	};
+    struct FirstConnectReqPacket : public Packet
+    {
+        FirstConnectReqPacket() { cmd = FIRST_CONNECT_REQ; }
+        
+    };
+    
+    struct FirstConnectResPacket : public Packet
+    {
+        FirstConnectResPacket() { cmd = FIRST_CONNECT_RES; }
+        
+        char lobbyIp[MAX_IP_ADDRESS_LEN];
+        int16_t lobbyPort;
+    };
 
-	struct PacketVersionResPacket
+	struct CreateUserReqPacket : public Packet
 	{
+        CreateUserReqPacket() { cmd = CREATE_USER_REQ; }
 
-	};
-
-	struct CreateUserReqPacket
-	{
 		SessionId_t sid;
 
-		int8_t emailLen;
-		char email[MAX_EMAIL_LEN + 1];
-		int8_t passwordLen;
-		char password[MAX_PASSWORD_LEN + 1];
+		int16_t userIdLen;
+		char userId[MAX_USER_ID_LEN];
 		int8_t nickNameLen;
-		char nickName[MAX_NICK_NAME_LEN + 1];
+		char nickName[MAX_NICK_NAME_LEN];
 	};
 
-	struct CreateUserResPacket
+	struct CreateUserResPacket : public Packet
 	{
+        CreateUserResPacket() { cmd = CREATE_USER_RES; }
+
 		SessionId_t sid;
+        
+        int64_t userNo;
 	};
 
-	struct LoginUserReqPacket
+	struct LoginUserReqPacket : public Packet
 	{
-		SessionId_t sid;
+        LoginUserReqPacket() { cmd = LOGIN_USER_REQ; }
 
-		int8_t emailLen;
-		char email[MAX_EMAIL_LEN + 1];
-		int8_t passwordLen;
-		char password[MAX_PASSWORD_LEN + 1];
-	};
-
-	struct LoginUserResPacket
-	{
 		SessionId_t sid;
 
-		int64_t userNo;
-		int8_t nickNameLen;
-		char nickName[MAX_NICK_NAME_LEN + 1];
-		int32_t gold;
-		int8_t memoLen;
-		char memo[MAX_MEMO_LEN + 1];
-		int16_t commonWin;
-		int16_t commonLose;
-		int16_t commonDiss;
-		int16_t rankWin;
-		int16_t rankLose;
-		int16_t rankDiss;
-		int8_t grade;
-		int8_t gradeReachedCount;
-		int8_t point;
-		int8_t icon;
+        int16_t userIdLen;
+        char userId[MAX_USER_ID_LEN];
 	};
 
-	struct LogoutUserReqPacket
+	struct LoginUserResPacket : public Packet
 	{
-		int64_t userNo;
-	};
+        LoginUserResPacket() { cmd = LOGIN_USER_RES; }
 
-	struct DeleteUserReqPacket
-	{
 		SessionId_t sid;
 
 		int64_t userNo;
 	};
 
-	struct DeleteUserResPacket
-	{
-		SessionId_t sid;
-	};
-
-	struct FailPacket
+	struct FailPacket : public Packet
 	{
 		SessionId_t sid;
 

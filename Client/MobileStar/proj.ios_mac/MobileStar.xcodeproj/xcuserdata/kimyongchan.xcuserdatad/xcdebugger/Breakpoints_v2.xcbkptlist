@@ -9,13 +9,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ios/MyObject.mm"
-            timestampString = "466150889.237841"
+            filePath = "../Classes/LoginScene.cpp"
+            timestampString = "469483849.176405"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "28"
-            endingLineNumber = "28"
-            landmarkName = "-doSomethingWith:"
+            startingLineNumber = "116"
+            endingLineNumber = "116"
+            landmarkName = "LoginScene::createAccountFail(int failReason)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -25,13 +25,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ios/MyObject.mm"
-            timestampString = "466150890.874895"
+            filePath = "../Classes/NetworkLayer.cpp"
+            timestampString = "469481100.269544"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "29"
-            endingLineNumber = "29"
-            landmarkName = "-doSomethingWith:"
+            startingLineNumber = "473"
+            endingLineNumber = "473"
+            landmarkName = "NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -41,13 +41,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../Classes/LobbyChannelLayer.cpp"
-            timestampString = "466418085.133794"
+            filePath = "../Classes/NetworkLayer.cpp"
+            timestampString = "469481100.269544"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "151"
-            endingLineNumber = "151"
-            landmarkName = "LobbyChannelLayer::notifyChatting(char* nickName, int nickNameLen, char* chatting, int chattingLen)"
+            startingLineNumber = "467"
+            endingLineNumber = "467"
+            landmarkName = "NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

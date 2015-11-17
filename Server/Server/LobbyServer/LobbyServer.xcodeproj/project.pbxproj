@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		6F0118881BB13155006898A2 /* QuickPlay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F0118861BB13155006898A2 /* QuickPlay.cpp */; settings = {ASSET_TAGS = (); }; };
 		6F01188E1BB13C64006898A2 /* TimerList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F01188C1BB13C64006898A2 /* TimerList.cpp */; settings = {ASSET_TAGS = (); }; };
+		6F08C34F1BF9F8C500A911A3 /* Clan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F08C34D1BF9F8C500A911A3 /* Clan.cpp */; settings = {ASSET_TAGS = (); }; };
 		6F2DEF261BA0DB3C002A5D43 /* libboost_system.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F2DEF251BA0DB3C002A5D43 /* libboost_system.dylib */; };
 		6F2DEF491BA0DBBE002A5D43 /* Channel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DEF2F1BA0DBBE002A5D43 /* Channel.cpp */; };
 		6F2DEF501BA0DBBE002A5D43 /* LobbyData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DEF3E1BA0DBBE002A5D43 /* LobbyData.cpp */; };
@@ -43,6 +44,9 @@
 		6F0118871BB13155006898A2 /* QuickPlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QuickPlay.h; sourceTree = "<group>"; };
 		6F01188C1BB13C64006898A2 /* TimerList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimerList.cpp; sourceTree = "<group>"; };
 		6F01188D1BB13C64006898A2 /* TimerList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimerList.h; sourceTree = "<group>"; };
+		6F08C34C1BF927BE00A911A3 /* LobbyCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LobbyCachePacket.h; path = ../Packet/LobbyCachePacket.h; sourceTree = "<group>"; };
+		6F08C34D1BF9F8C500A911A3 /* Clan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Clan.cpp; sourceTree = "<group>"; };
+		6F08C34E1BF9F8C500A911A3 /* Clan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clan.h; sourceTree = "<group>"; };
 		6F2DEF1B1BA0D9CA002A5D43 /* LobbyServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LobbyServer; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F2DEF251BA0DB3C002A5D43 /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = "../../../../boost_1_55_0/bin.v2/libs/system/build/darwin-4.2.1/debug/address-model-32/threading-multi/libboost_system.dylib"; sourceTree = "<group>"; };
 		6F2DEF2F1BA0DBBE002A5D43 /* Channel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Channel.cpp; sourceTree = "<group>"; };
@@ -116,6 +120,8 @@
 		6F2DEF1D1BA0D9CA002A5D43 /* LobbyServer */ = {
 			isa = PBXGroup;
 			children = (
+				6F08C34D1BF9F8C500A911A3 /* Clan.cpp */,
+				6F08C34E1BF9F8C500A911A3 /* Clan.h */,
 				6FD8FCA11BCCEC840029BD4A /* Makefile */,
 				6F01188C1BB13C64006898A2 /* TimerList.cpp */,
 				6F01188D1BB13C64006898A2 /* TimerList.h */,
@@ -146,6 +152,7 @@
 			isa = PBXGroup;
 			children = (
 				6F2DEF6C1BA1648C002A5D43 /* BasicPacket.h */,
+				6F08C34C1BF927BE00A911A3 /* LobbyCachePacket.h */,
 				6FD8FC9C1BCBD1C70029BD4A /* LobbyChattingPacket.h */,
 				6F2DEF6D1BA1648C002A5D43 /* ClientLobbyPacket.h */,
 				6FE7A35D1BAC4B8B00C589D0 /* LobbyFrontPacket.h */,
@@ -268,6 +275,7 @@
 				6F2DEF521BA0DBBE002A5D43 /* User.cpp in Sources */,
 				6F2DEF511BA0DBBE002A5D43 /* LobbyServer.cpp in Sources */,
 				6F2DEF501BA0DBBE002A5D43 /* LobbyData.cpp in Sources */,
+				6F08C34F1BF9F8C500A911A3 /* Clan.cpp in Sources */,
 				6F0118881BB13155006898A2 /* QuickPlay.cpp in Sources */,
 				6F2DEF931BA2A426002A5D43 /* Network.cpp in Sources */,
 			);

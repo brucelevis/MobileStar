@@ -5,7 +5,7 @@
 #include "Network.h"
 
 static const char* IP_ADDRESS = "1.234.65.217";
-static const unsigned short PORT = 10400;
+static const unsigned short PORT = 20400;
 
 enum SERVER_MODULE
 {
@@ -29,6 +29,8 @@ public:
     ////front
     
     void frontHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void frontHandleLoginRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void frontHandleCreateAccountRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     void frontHandleEnterLobbyRes(ConnectInfo* connectInfo, const char* data, int dataSize);
 
     ////lobby
@@ -69,6 +71,7 @@ public:
     void gameHandleStartGameNotify(ConnectInfo* connectInfo, const char* data, int dataSize);
     void gameHandleClientNotify(ConnectInfo* connectInfo, const char* data, int dataSize);
     void gameHandleFinishGameRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void gameHandleReconnectRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     
     ////chatting
     
@@ -81,6 +84,8 @@ public:
     
     
     void frontSendFirstConnectReq();
+    void frontSendLoginReq(const char* userId, int16_t userIdLen);
+    void frontSendCreateAccountReq(const char* userId, int16_t userIdLen, const char* nickName, int8_t nickNameLen);
     void frontSendEnterLobbyReq();
     void frontSendEnterLobbyOk();
     
@@ -89,11 +94,11 @@ public:
     void lobbySendGetChannelListReq();
     void lobbySendMoveChannelReq(int channelNo);
     
-    void lobbySendGetUserInfoReq(int64_t userNo);
-    void lobbySendRequestGameReq(int64_t userNo);
+    void lobbySendGetUserInfoReq(const char* nickName, int8_t nickNameLen);
+    void lobbySendRequestGameReq(const char* nickName, int8_t nickNameLen);
     void lobbySendRequestGameCancelReq();
-    void lobbySendResponseGameYesReq(int64_t userNo);
-    void lobbySendResponseGameNoReq(int64_t userNo);
+    void lobbySendResponseGameYesReq(const char* nickName, int8_t nickNameLen);
+    void lobbySendResponseGameNoReq(const char* nickName, int8_t nickNameLen);
     
 
     
@@ -111,6 +116,7 @@ public:
     void gameSendClientNotify(int bufferLen, const char* clientSendBuffer);
     void gameSendFinishGameReq();
     void gameSendMoveLobbyOk();
+    void gameSendReconnectReq();
     
     void chattingSendFirstConnectReq();
     void chattingSendMoveLocationReq(int32_t loNo);

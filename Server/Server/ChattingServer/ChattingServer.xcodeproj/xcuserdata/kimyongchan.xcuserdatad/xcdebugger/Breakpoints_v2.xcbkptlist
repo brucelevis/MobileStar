@@ -26,12 +26,28 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ChattingServer/IOManager.cpp"
-            timestampString = "466354199.794243"
+            timestampString = "469481815.69387"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "359"
-            endingLineNumber = "359"
-            landmarkName = "IOManager::clientHandleMoveLocationReq(ConnectInfo* connectInfo, const char* body, int bodySize)"
+            startingLineNumber = "405"
+            endingLineNumber = "405"
+            landmarkName = "IOManager::clientHandleSendChattingReq(ConnectInfo* connectInfo, const char* body, int bodySize)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ChattingServer/IOManager.cpp"
+            timestampString = "469482021.019021"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "187"
+            endingLineNumber = "187"
+            landmarkName = "IOManager::lobbyHandleEnterClientReq(ConnectInfo* connectInfo, const char* body, int bodySize)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

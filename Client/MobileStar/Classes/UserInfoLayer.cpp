@@ -50,9 +50,8 @@ UserInfoLayer::~UserInfoLayer()
     
 }
 
-void UserInfoLayer::SetUserInfo(int64_t _userNo, int _nickNameLen, const char* _nickName)
+void UserInfoLayer::SetUserInfo(int _nickNameLen, const char* _nickName)
 {
-    userNo = _userNo;
     nickName = std::string(_nickName, _nickNameLen);
     
     auto nickNameLabel = Label::create(nickName, "fonts/arial.ttf", 48);

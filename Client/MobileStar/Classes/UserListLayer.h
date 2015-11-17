@@ -15,8 +15,8 @@ class UserListLayer : public cocos2d::Layer
 public:
     virtual bool init();
     
-    void addUserViewInfo(int64_t userNo, int nickNameLen, const char* nickName);
-    void removeUserViewInfo(int64_t userNo);
+    void addUserViewInfo(int nickNameLen, const char* nickName);
+    void removeUserViewInfo(int nickNameLen, const char* nickName);
     
     void clickUserInfo(cocos2d::Ref* pSender);
     void clickCloseBtn(cocos2d::Ref* pSender);

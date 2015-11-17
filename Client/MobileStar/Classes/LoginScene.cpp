@@ -4,8 +4,8 @@
 #include "ClientFrontPacket.h"
 #include "NetworkLayer.h"
 #include "GameClient.h"
+#include "CreateAccountLayer.h"
 #include "MiniMapLayer.h"
-
 
 
 
@@ -42,6 +42,9 @@ bool LoginScene::init()
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 100, TAG_MENU);
     
+    createAccountLayer = CreateAccountLayer::create();
+    createAccountLayer->retain();
+    
     GameClient::GetInstance().currentScene = LOGIN_SCENE_NOW;
 
 //    auto cl = ControlLayer::create();
@@ -71,6 +74,45 @@ void LoginScene::clickLoginBtn(Ref* pSender)
 {
     menu->setEnabled(false); //TODO. erase and test
     
-    ((NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER))->handler->frontSendFirstConnectReq();
+    std::string loginToken = UserDefault::getInstance()->getStringForKey("loginToken");
+    
+//    if(loginToken.length() == 0)
+    {
+        char time[36];
+        memcpy(time, &GameClient::GetInstance().sessionId, 36);
+        
+        loginToken = std::string(time, 36);
+        
+        UserDefault::getInstance()->setStringForKey("loginToken", loginToken);
+        CCLOG("??");
+    }
 
+    CCLOG("not have id - %s\n", loginToken.c_str());
+
+    ((NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER))->handler->frontSendLoginReq(loginToken.c_str(), loginToken.length());
+    
 }
+
+void LoginScene::openCreateAccountLayer()
+{
+    menu->setEnabled(false);
+    
+    createAccountLayer->setAnchorPoint(Vec2(0,0));
+    createAccountLayer->setPosition(Vec2(0,0));
+    
+    addChild(createAccountLayer, 100, TAG_CREATE_ACCOUNT_LAYER);
+}
+
+void LoginScene::closeCreateAccountLayer()
+{
+    menu->setEnabled(true);
+    
+    removeChildByTag(TAG_CREATE_ACCOUNT_LAYER, false);
+}
+
+
+void LoginScene::createAccountFail(int failReason)
+{
+    CCLOG("caf");
+}
+

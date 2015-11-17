@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Row>
+        <server_module>front_server</server_module>
+        <server_type>server</server_type>
+        <name>lobby_server</name>
+        <ip>127.0.0.1</ip>
+        <port>20090</port>
+        <ping_interval>0</ping_interval>
+        <disconnect_count>0</disconnect_count>
+    </Row>
+    <Row>
+        <server_module>lobby_server</server_module>
+        <server_type>server</server_type>
+        <name>lobby_server</name>
+        <ip>127.0.0.1</ip>
+        <port>20190</port>
+        <ping_interval>0</ping_interval>
+        <disconnect_count>0</disconnect_count>
+    </Row>
+
+</Root>
