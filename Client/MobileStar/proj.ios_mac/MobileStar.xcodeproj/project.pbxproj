@@ -128,6 +128,7 @@
 		7750D3551B9EBB9100CF2DCB /* Texture in Resources */ = {isa = PBXBuildFile; fileRef = 7750D3541B9EBB9100CF2DCB /* Texture */; };
 		778BFC9F1BC5319300545328 /* LogManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 778BFC9D1BC5319300545328 /* LogManager.cpp */; };
 		77AEEC821BC01FF600F6B7D3 /* IDManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77AEEC801BC01FF600F6B7D3 /* IDManager.cpp */; };
+		77AF217B1BF93C4C00D1CE10 /* TargetSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77AF21791BF93C4C00D1CE10 /* TargetSystem.cpp */; };
 		8262943E1AAF051F00CB7CF7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8262943D1AAF051F00CB7CF7 /* Security.framework */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
@@ -353,6 +354,8 @@
 		778BFC9E1BC5319300545328 /* LogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogManager.h; sourceTree = "<group>"; };
 		77AEEC801BC01FF600F6B7D3 /* IDManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IDManager.cpp; sourceTree = "<group>"; };
 		77AEEC811BC01FF600F6B7D3 /* IDManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDManager.h; sourceTree = "<group>"; };
+		77AF21791BF93C4C00D1CE10 /* TargetSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TargetSystem.cpp; sourceTree = "<group>"; };
+		77AF217A1BF93C4C00D1CE10 /* TargetSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TargetSystem.h; sourceTree = "<group>"; };
 		8262943D1AAF051F00CB7CF7 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -805,6 +808,7 @@
 		7750D33E1B9E7C5200CF2DCB /* Thing */ = {
 			isa = PBXGroup;
 			children = (
+				77AF21781BF93C3D00D1CE10 /* TargetSystem */,
 				7750D3431B9E7CAE00CF2DCB /* Thing.cpp */,
 				7750D3441B9E7CAE00CF2DCB /* Thing.h */,
 				7750D33F1B9E7C5C00CF2DCB /* Unit */,
@@ -914,6 +918,15 @@
 				77AEEC811BC01FF600F6B7D3 /* IDManager.h */,
 			);
 			name = IDManager;
+			sourceTree = "<group>";
+		};
+		77AF21781BF93C3D00D1CE10 /* TargetSystem */ = {
+			isa = PBXGroup;
+			children = (
+				77AF21791BF93C4C00D1CE10 /* TargetSystem.cpp */,
+				77AF217A1BF93C4C00D1CE10 /* TargetSystem.h */,
+			);
+			name = TargetSystem;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1127,6 +1140,7 @@
 				6F86D8011BB3C8B300B3FFDA /* LoginScene.cpp in Sources */,
 				77AEEC821BC01FF600F6B7D3 /* IDManager.cpp in Sources */,
 				6FC9FC281BC8E0AA004F17F5 /* MyObject.mm in Sources */,
+				77AF217B1BF93C4C00D1CE10 /* TargetSystem.cpp in Sources */,
 				778BFC9F1BC5319300545328 /* LogManager.cpp in Sources */,
 				77252AF41BA9358E0086351C /* CellSpace.cpp in Sources */,
 				6F86D7FF1BB3C8B300B3FFDA /* GameClient.cpp in Sources */,

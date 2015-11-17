@@ -32,7 +32,9 @@ struct Telegram{
 struct TelegramMove : public Telegram{
     //현재 subject에 저장된 유닛 수
     int8_t currentSize;
+    //유닛 고유 번호
     uint16_t subject[12];
+    //이동할 타일 인덱스
     int32_t tileIndex;
     
     TelegramMove(int32_t _tileIndex)

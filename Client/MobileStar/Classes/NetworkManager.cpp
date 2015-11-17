@@ -15,7 +15,6 @@ NetworkManager::NetworkManager()
     SecondTaskPacket = 3;
     m_iPlayerFlag = -1;
     m_iCntCarryOutMessages = 0;
-    m_iCntSynchTime = 0;
     
     //초기화시 각 Task에 0번, 1번, 2번 더미 패킷을 한개씩 넣어놓는다.
     for(int i=0;i<3;i++){
@@ -200,7 +199,7 @@ void NetworkManager::PushAutoTask(AutoTask* autotask){
 void NetworkManager::CarryOutMessages(){
     m_iCntCarryOutMessages++;
     
-    //상대방에게 날아온 메시지가 비어있다면, 또는 두 컴퓨터의 패킷 차이가 3이상 차이가 난다면
+    //상대방 컴퓨터와 통신이 두절되었는지 확인한다.
     if(!IsCommunicate()){
         //통신이 두절
         LogMgr->Log("통신 두절");
@@ -246,17 +245,20 @@ void NetworkManager::CarryOutTask(Telegram* pTel,int iPacket){
                 auto pPlanner = pUnit->GetPathPlanner();
                 auto& Path = pPlanner->GetPath();
                 
+                //타겟 시스템을 비운다.
+                pUnit->GetTargetSystem()->ClearTarget();
+                
                 //만일 현재 위치와 TileIndex의 위치가 같으면 종료한다.
                 if(Path.empty() &&
                    pUnit->GetTileIndex() == pTelMove->tileIndex){
                     pUnit->GetFSM()->ChangeState(State_Idle::Instance());
-                    break;
+                    continue;
                 }
                 
                 //만일 유닛이 현재 Path가 남아 있으며 그 목적지와 pTelegramMove->tileIndex가 같으면 종료한다.
                 if(!Path.empty() &&
                    pPlanner->GetDestination() == pTelMove->tileIndex)
-                    break;
+                    continue;
                 
                 int MoveIndex = pTelMove->tileIndex;
                 
@@ -338,36 +340,29 @@ void NetworkManager::CarryOutAutoTask(int _packet){
                 pUnit->MoveToPathFront(pMove->packet);
             }
                 break;
+            case AutoTaskType::Attack:
+            {
+                auto pAttack = (AutoTaskAttack*)pTask;
+                //유닛 리스트를 얻어온다.
+                auto Units = m_pGameWorld->GetUnits();
+                
+                //해당 유닛의 포인터를 가져온다.
+                auto pUnit = Units[pAttack->unitID];
+                
+                //만약 유닛의 AutoTaskPacket과 동기화 되어 있지 않다면 실행시키지 않는다.
+                if(!pUnit->IsValidAutoTask(pAttack->packet))
+                    break;
+                
+                //해당 유닛을 이동시킨다.
+                pUnit->AttackTarget(pAttack->packet);
+            }
+                break;
         }
         delete pTask;
     }
 }
 //통신이 두절되었나 확인한다.
 bool NetworkManager::IsCommunicate()const{
+    //상대방에게 날아온 메시지가 비어있다면, 또는 두 컴퓨터의 패킷 차이가 3이상 차이가 난다면
     return !(SecondTask.empty() || abs(FirstTaskPacket - SecondTaskPacket) >= 3);
-}
-//시간초를 동기화해준다.
-void NetworkManager::SynchTime(){
-    m_iCntSynchTime++;
-    
-    if(PLAY_ALONE)
-        return;
-    
-    char buffer[256];
-    memset(buffer,0,256);
-    
-    int nextBuffer = 0;
-    
-    //메시지 타입 저장
-    int iMessageType = TelegramType::Time;
-    memcpy(&buffer[nextBuffer],(char*)&iMessageType,sizeof(float));
-    nextBuffer += sizeof(float);
-
-    //시간 설정
-    float fStartFrame = m_pGameWorld->GetStartFrame();
-    memcpy(&buffer[nextBuffer],(char*)&fStartFrame,sizeof(float));
-    nextBuffer += sizeof(float);
-    
-    NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-    layer->handler->gameSendClientNotify(nextBuffer,buffer);
 }

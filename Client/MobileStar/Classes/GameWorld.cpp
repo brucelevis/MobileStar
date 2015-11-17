@@ -36,7 +36,7 @@ GameWorld::GameWorld()
     m_pCameraLayer->addChild(m_pMap);
     
     //저글링 생성
-    for(int i=0;i<12;i++){
+    for(int i=0;i<30;i++){
         //auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 205+i : 114+i));
         auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 660+i : 330+i));
         //auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 20800+i : 114+i));
@@ -46,7 +46,7 @@ GameWorld::GameWorld()
         m_Units[pZergling->GetID()] = pZergling;
     }
     
-    for(int i=0;i<3;i++){
+    for(int i=0;i<30;i++){
         auto pZergling = new Zergling(this,1,(DIVIDE_NODE ? 540+i : 270+i));
         m_pCameraLayer->addChild(pZergling);
         m_Units[pZergling->GetID()] = pZergling;
@@ -59,6 +59,7 @@ GameWorld::GameWorld()
     
     //카메라 설정 : 맵 크기 (64*256, 64*256)
     CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
+    CameraMgr->SetMovePos(1000,1000);
     //CameraMgr->SetScreen(6400,3200 - 32);
     
     //네트워크 매니저 초기화
@@ -76,9 +77,9 @@ GameWorld::GameWorld()
     //초기화
     Init();
     
-//    for(int i=0;i<12;i++){
-//        m_TouchedUnits.push_back(m_Units[i]);
-//    }
+    for(int i=0;i<2;i++){
+        m_TouchedUnits.push_back(m_Units[i]);
+    }
 
     //Scene setting
     GameClient::GetInstance().currentScene = GAME_SCENE_NOW;
@@ -178,12 +179,6 @@ void GameWorld::update(float eTime){
     //m_pCameraLayer->setPosition(-CameraMgr->GetPos() + (Vec2(3200,-1600)));
     m_pCameraLayer->setPosition(-CameraMgr->GetPos() + (Vec2(1280,640)));
     
-    //네트워크 시간초 동기화 : 4초마다 시간을 동기화 해준다.
-//    int CntSynchTime = (int)(m_fStartFrame * 0.25) - NetMgr->GetCntSynchTime();
-//    while(CntSynchTime-- > 0){
-//        NetMgr->SynchTime();
-//    }
-    
     //업데이트 네트워크
     int CntUpdateNetwork = (int)(m_fStartFrame * NETWORK_FPS) - NetMgr->GetCntCarryOutMessages();
     while(CntUpdateNetwork-- > 0){
@@ -193,6 +188,16 @@ void GameWorld::update(float eTime){
     //유닛 업데이트
     for(auto pUnit : m_Units){
         pUnit.second->update(eTime);
+    }
+    
+    //만약 유닛을 지워야한다면
+    for(auto pUnit : m_Units){
+        if(pUnit.second->IsErase()){
+            m_Units.erase(pUnit.first);
+            
+            m_pCameraLayer->removeChild(pUnit.second);
+            
+        }
     }
 }
 
@@ -273,6 +278,7 @@ void GameWorld::TouchesCancelled(const std::vector<Touch*>& touches, Event* _eve
     TouchesEnded(touches, _event);
 }
 void GameWorld::TouchesEnded(const std::vector<Touch*>& touches, Event* _event){
+    
     //만약 터치를 한 개만 하였다면
     if(m_iTouchCnt == 1){
         Vec2 TouchVec = touches.front()->getLocation();
@@ -302,7 +308,7 @@ void GameWorld::TouchesEnded(const std::vector<Touch*>& touches, Event* _event){
                 
                 m_TouchedUnits.push_back(pUnit.second);
                 
-                if(m_TouchedUnits.size() >= 12)
+                if(m_TouchedUnits.size() >= 30)
                     break;
             }
         }
@@ -315,4 +321,19 @@ void GameWorld::TouchesEnded(const std::vector<Touch*>& touches, Event* _event){
             pUnit.second->TouchEnded(pTouch, _event);
         }
     }
+}
+std::list<Thing*> GameWorld::GetNearThings(Thing* pOwner,int iDistance){
+    std::list<Thing*> ThingList;
+    
+    //주변 타일 인덱스 리스트를 얻어온다.
+    auto Indices = m_pMap->GetIndicesFromTileIndex(pOwner->GetTileIndex(), iDistance);
+    
+    for(auto Index : Indices){
+        Thing* pThing = m_pMap->GetNavGraph().GetNode(Index).GetThing();
+        
+        //해당 타일에 물체가 존재한다면 리스트에 추가한다.
+        if(pThing)
+            ThingList.push_back(pThing);
+    }
+    return ThingList;
 }

@@ -2,6 +2,8 @@
 #include "GraphNode.h"
 #include "cocos2d.h"
 
+class Thing;
+
 class NavGraphNode : public GraphNode{
 public:
     //노드의 상태
@@ -13,13 +15,18 @@ public:
     };
     
 protected:
+    //노드의 상태
     NodeState m_State;
     
     //노드의 위치
     cocos2d::Vec2 m_vPosition;
+    
+    //노드에 만약 물체가 있다면
+    Thing* m_pThing;
 public:
     NavGraphNode()
     : m_State(NodeState::Empty)
+    , m_pThing(NULL)
     {
     }
     
@@ -37,4 +44,7 @@ public:
     bool IsDynamic()const{return m_State == NodeState::Dynamic;}
     
     NodeState GetState()const{ return m_State; }
+    
+    void SetThing(Thing* pThing){m_pThing = pThing;}
+    Thing* GetThing()const{return m_pThing;}
 };

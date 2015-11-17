@@ -191,4 +191,31 @@ void GameMap::PartitionNavGraph()
         m_pCellSpace->AddObject(pN);
     }
 }
-
+std::list<int> GameMap::GetIndicesFromTileIndex(int iTileIndex, int iDistance){
+    int tileX = (DIVIDE_NODE) ? m_iTileX * 2 : m_iTileX;
+    std::list<int> IndexList;
+    for(int i=-iDistance;i<=iDistance;i++){
+        for(int j=-iDistance;j<=iDistance;j++){
+            int CurrentTileIndex = iTileIndex + i * tileX + j;
+            
+            //만약 내 타일이면 제외시킨다.
+            if(iTileIndex == CurrentTileIndex)
+                continue;
+            
+            //세로로 음수줄이거나 최대치를 넘은 줄이면 제외시킨다.
+            if(iTileIndex + i * tileX >= m_pNavGraph->NumNodes() || iTileIndex + i * tileX < 0)
+                continue;
+            
+            //화면 옆으로 삐져나갈 경우 제외시킨다.
+            if(CurrentTileIndex <  (iTileIndex + i*tileX) /  tileX * tileX || CurrentTileIndex >= ((iTileIndex + i*tileX) / tileX + 1) * tileX )
+                continue;
+            
+            //인덱스가 음수이거나 최대치를 넘으면 제외시킨다.
+            if(CurrentTileIndex < 0 || CurrentTileIndex >= m_pNavGraph->NumNodes())
+                continue;
+            
+            IndexList.push_back(CurrentTileIndex);
+        }
+    }
+    return IndexList;
+}

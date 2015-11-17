@@ -62,6 +62,11 @@ public:
     void TouchesCancelled(const std::vector<Touch*>& touches, Event* _event);
     void TouchesEnded(const std::vector<Touch*>& touches, Event* _event);
     
+    //해당 유닛의 주변 타일에 있는 유닛들의 리스트를 가져온다
+    std::list<Thing*> GetNearThings(Thing* pOwner,int iDistance);
+    
+    //게터세터
+    
     GameMap* GetMap()const{return m_pMap;}
     
     Layer* GetCameraLayer()const{ return m_pCameraLayer; }

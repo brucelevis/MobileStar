@@ -6,11 +6,6 @@
 class GameWorld;
 
 class Unit : public Thing{
-private:
-    enum class Status{
-        Alive,
-        Dead,
-    };
     
 protected:
     //유닛의 방향 구조체
@@ -40,18 +35,8 @@ public:
     int m_iPrevDir;
     int m_iDir;
 protected:
-    Status	m_Status;			//유닛이 죽었나 살았나?
     
-    float	m_fSpeed;			//유닛의 이동속도
-    float	m_fAttackSpeed;		//유닛의 공격속도
-    float	m_fDamage;			//유닛의 공격력
-    float	m_fArmor;			//유닛의 방어력
-    float	m_fMaxHp;			//유닛의 최대HP
-    float	m_fMaxMp;			//유닛의 최대MP
-    float	m_fHp;				//유닛의 HP
-    float	m_fMp;				//유닛의 MP
-    float	m_fHpRegen;			//유닛의 HP 재생력
-    float	m_fMpRegen;			//유닛의 MP 재생력
+    
     
     /*----------------------------------- AI관련 변수 --------------------------------*/
     
@@ -79,10 +64,11 @@ protected:
     Animation m_pAnimation[16];
     
 public:
-    Unit(GameWorld* pGame, int playerFlag, int tileIndex, float hp, float mp, float speed, float attackSpeed, float dmg, float armor);
+    Unit(GameWorld* pGame, int playerFlag, int tileIndex, int hp, int mp, float speed, float attackSpeed, int dmg, int armor);
     ~Unit();
     
     void update(float eTime);
+    void updateDir();
     
     /*								터치 관련 함수								*/
     
@@ -98,52 +84,14 @@ public:
     //AutoTaskMove의 packet 값이 유효한지?
     bool IsValidAutoTask(int packet){ return m_iAutoTaskPacket == packet; }
     
+    void AttackTarget(int CurrentPacket);
+    
+    void FindTarget();
+    
     /*								게터세터 함수								*/
     
-    bool	IsAlive()const{return m_Status == Status::Alive;}
-    bool	IsDead()const{return m_Status == Status::Dead;}
-    void	SetAlive(){m_Status = Status::Alive;}
-    void	SetDead(){m_Status = Status::Dead;}
     
-    void	AddSpeed(float speed){m_fSpeed += speed;}
-    void	SetSpeed(float speed){m_fSpeed = speed;}
-    float	GetSpeed()const{return m_fSpeed;}
     
-    void	AddAttackSpeed(float attackspeed){m_fAttackSpeed += attackspeed;}
-    void	SetAttackSpeed(float attackspeed){m_fAttackSpeed = attackspeed;}
-    float	GetAttackSpeed()const{return m_fAttackSpeed;}
-    
-    void	AddDamage(float damage){m_fDamage += damage;}
-    void	SetDamage(float damage){m_fDamage = damage;}
-    float	GetDamage()const{return m_fDamage;}
-    
-    void	AddArmor(float armor){m_fArmor += armor;}
-    void	SetArmor(float armor){m_fArmor = armor;}
-    float	GetArmor()const{return m_fArmor;}
-    
-    void	AddMaxHp(float maxhp){m_fMaxHp += maxhp;}
-    void	SetMaxHp(float maxhp){m_fMaxHp = maxhp;}
-    float	GetMaxHp()const{return m_fMaxHp;}
-    
-    void	AddMaxMp(float maxmp){m_fMaxMp += maxmp;}
-    void	SetMaxMp(float maxmp){m_fMaxMp = maxmp;}
-    float	GetMaxMp()const{return m_fMaxMp;}
-    
-    void	AddHp(float hp){m_fHp += hp;}
-    void	SetHp(float hp){m_fHp = hp;}
-    float	GetHp()const{return m_fHp;}
-    
-    void	AddMp(float mp){m_fMp += mp;}
-    void	SetMp(float mp){m_fMp = mp;}
-    float	GetMp()const{return m_fMp;}
-    
-    void	AddHpRegen(float hpregen){m_fHpRegen += hpregen;}
-    void	SetHpRegen(float hpregen){m_fHpRegen = hpregen;}
-    float	GetHpRegen()const{return m_fHpRegen;}
-    
-    void	AddMpRegen(float mpregen){m_fMpRegen += mpregen;}
-    void	SetMpRegen(float mpregen){m_fMpRegen = mpregen;}
-    float	GetMpRegen()const{return m_fMpRegen;}
     
     Vec2	GetHeading()const{ return m_vHeading; }
     void	SetHeading(Vec2 new_heading);

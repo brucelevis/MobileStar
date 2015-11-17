@@ -20,8 +20,10 @@ void State_Idle::Begin(Unit* unit){
     unit->m_pSprite->runAction(pForever);
 }
 void State_Idle::Update(Unit* unit,float eTime){
+    
 }
 void State_Idle::End(Unit* unit){
+    
 }
 bool State_Idle::TouchBegan(Unit* unit, Touch* touch, Event* _event){
     
@@ -57,7 +59,6 @@ void State_Move::Begin(Unit* unit){
 }
 void State_Move::Update(Unit* unit,float eTime){
     //애니메이션 설정
-    
     if(unit->m_iPrevDir != unit->m_iDir){
         char buf[128];
         sprintf(buf,"Zergling%s%sRun",StrMgr->GetPlayerFlagStr(unit->GetPlayerFlag()),StrMgr->GetUnitDirStr(unit->m_iDir));
@@ -93,6 +94,10 @@ State_Attack* State_Attack::Instance(){
 }
 
 void State_Attack::Begin(Unit* unit){
+    auto pTarget = unit->GetTargetSystem()->GetTarget();
+    if(pTarget)
+        unit->SetHeading(pTarget->getPosition() - unit->getPosition());
+    
     char buf[128];
     sprintf(buf,"Zergling%s%sAttack",StrMgr->GetPlayerFlagStr(unit->GetPlayerFlag()),StrMgr->GetUnitDirStr(unit->m_iDir));
     unit->m_pSprite->stopAllActions();
@@ -101,7 +106,9 @@ void State_Attack::Begin(Unit* unit){
     unit->m_pSprite->runAction(pForever);
 }
 void State_Attack::Update(Unit* unit,float eTime){
-    //애니메이션 설정
+    auto pTarget = unit->GetTargetSystem()->GetTarget();
+    if(pTarget)
+        unit->SetHeading(pTarget->getPosition() - unit->getPosition());
     
     if(unit->m_iPrevDir != unit->m_iDir){
         char buf[128];
