@@ -22,10 +22,6 @@ void CameraManager::Update(float eTime){
     m_vCameraPos.x = (float)static_cast<int>(m_vCameraPos.x);
     m_vCameraPos.y = (float)static_cast<int>(m_vCameraPos.y);
     
-    if(m_vCameraPos.x < 0) m_vCameraPos.x = 0.0f;
-    if(m_vCameraPos.y < 0) m_vCameraPos.y = 0.0f;
-    if (m_vCameraPos.x > m_iWidth - SCREEN_WIDTH)
-        m_vCameraPos.x = static_cast<float>(m_iWidth - SCREEN_WIDTH);
-    if (m_vCameraPos.y > m_iHeight - SCREEN_HEIGHT)
-        m_vCameraPos.y = static_cast<float>(m_iHeight - SCREEN_HEIGHT);
+    MathMgr->Clamp(m_vCameraPos.x, 0, m_iWidth - SCREEN_WIDTH);
+    MathMgr->Clamp(m_vCameraPos.y, 0, m_iHeight - SCREEN_HEIGHT);
 }

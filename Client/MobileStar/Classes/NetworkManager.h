@@ -39,6 +39,9 @@ private:
     //해당 패킷의 상대방 컴퓨터의 일을 처리한다.
     void CarryOutSecondTask(int _packet);
     
+    //메인 메시지 일 처리 함수
+    void CarryOutTask(Telegram* pTel,int iPacket);
+    
     //AutoTask의 일들을 처리한다.
     void CarryOutAutoTask(int _packet);
     
@@ -74,6 +77,9 @@ public:
     
     //네트워크 메시지 업데이트 처리 횟수
     int GetCntCarryOutMessages()const{return m_iCntCarryOutMessages;}
+    
+    //통신 두절 상태이냐?
+    bool IsCommunicate()const;
     
     //게터 세터
     int GetFirstTaskPacket()const{return FirstTaskPacket;}

@@ -9,7 +9,7 @@ public:
     ~StringManager();
     
     static StringManager* Instance();
-  
+    
     const char* GetPlayerFlagStr(int idx);
     
     const char* GetUnitDirStr(int idx);

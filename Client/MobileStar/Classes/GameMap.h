@@ -52,10 +52,13 @@ public:
     //해당 위치로부터 가장 가까운 유효화된 노드 인덱스를 구한다.
     int GetClosestValidNodeFromPosition(Vec2 pos);
     
+    //해당 타일 인덱스로부터 해당 거리만큼 안에있는 타일 인덱스들의 리스트를 반환한다.
+    std::list<int> GetIndicesFromTileIndex(int iTileIndex, int iDistance);
+    
     //게터 세터 함수
     SparseGraph&                       GetNavGraph()const{return *m_pNavGraph;}
     CellSpace<NavGraphNode*>* const    GetCellSpace()const{return m_pCellSpace;}
-   
+    
     int                                GetTileX()const{return m_iTileX;}
     int                                GetTileY()const{return m_iTileY;}
     float                              GetCellSpaceNeighborhoodRange()const{return m_fCellSpaceNeighborhoodRange;}

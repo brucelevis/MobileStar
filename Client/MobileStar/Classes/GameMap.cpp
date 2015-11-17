@@ -69,10 +69,10 @@ bool GameMap::LoadMap(int tileX,int tileY)
                 m_pNavGraph->AddNode(node);
             }
         }
-    }    
+    }
     //임시 타일 스프라이트
-    for(int i=0;i<10;i++){
-        for(int j=0;j<10;j++){
+    for(int i=0;i<2;i++){
+        for(int j=0;j<2;j++){
             auto pTile = Sprite::create("Texture/TileW.png");
             pTile->setAnchorPoint(Vec2(0.5f,0));
             pTile->setPosition(Vec2((j-i) * 1280 / 2,(j+i) * 640 / 2) + Vec2(0,-32));
@@ -80,39 +80,23 @@ bool GameMap::LoadMap(int tileX,int tileY)
         }
     }
     if(DIVIDE_NODE) {
-//        for(int i=0;i<m_iTileY*2;i++){
-//            for(int j=0;j<m_iTileX*2;j++){
-//                auto pTile = Sprite::create("Texture/DivideTile.png");
-//                pTile->setPosition(m_pNavGraph->GetNode(i*m_iTileX*2 + j).getPosition());
-//                
-//                addChild(pTile);
-//            }
-//        }
+        //        for(int i=0;i<m_iTileY*2;i++){
+        //            for(int j=0;j<m_iTileX*2;j++){
+        //                auto pTile = Sprite::create("Texture/DivideTile.png");
+        //                pTile->setPosition(m_pNavGraph->GetNode(i*m_iTileX*2 + j).getPosition());
+        //
+        //                addChild(pTile);
+        //            }
+        //        }
     }else{
-//        for(int i=0;i<m_iTileY;i++){
-//            for(int j=0;j<m_iTileX;j++){
-//                auto pTile = Sprite::create("Texture/Tile.png");
-//                pTile->setPosition(m_pNavGraph->GetNode(i*m_iTileX + j).getPosition());
-//                addChild(pTile);
-//            }
-//        }
+        //        for(int i=0;i<m_iTileY;i++){
+        //            for(int j=0;j<m_iTileX;j++){
+        //                auto pTile = Sprite::create("Texture/Tile.png");
+        //                pTile->setPosition(m_pNavGraph->GetNode(i*m_iTileX + j).getPosition());
+        //                addChild(pTile);
+        //            }
+        //        }
     }
-//
-//    //노드 비활성화
-//    for(int i=165;i<173;i++){
-//        m_pNavGraph->GetNode(i).SetDynamic();
-//        auto tile = Sprite::create("Texture/Tile.png");
-//        tile->setPosition(m_pNavGraph->GetNode(i).getPosition());
-//        addChild(tile);
-//    }
-//    for(int i=15;i<300;i+=30){
-//        if( i== 165)
-//            continue;
-//        m_pNavGraph->GetNode(i).SetDynamic();
-//        auto tile = Sprite::create("Texture/Tile.png");
-//        tile->setPosition(m_pNavGraph->GetNode(i).getPosition());
-//        addChild(tile);
-//    }
     
     m_pNavGraph->AddAllEdgeFromPresentNode();
     
@@ -140,7 +124,7 @@ int GameMap::GetTileIndexFromPosition(const Vec2& position){
         int tileY = ((MovePos.y / (TILE_HEIGHT_SIZE/4) - (MovePos.x / (TILE_WIDTH_SIZE/4))) / 2 + 1);
         
         int Index = tileY * (m_iTileX*2) + tileX;
-        
+        Index++;
         if(Index < 0 || Index >= m_pNavGraph->NumNodes())
             return -1;
         else
@@ -207,4 +191,31 @@ void GameMap::PartitionNavGraph()
         m_pCellSpace->AddObject(pN);
     }
 }
-
+std::list<int> GameMap::GetIndicesFromTileIndex(int iTileIndex, int iDistance){
+    int tileX = (DIVIDE_NODE) ? m_iTileX * 2 : m_iTileX;
+    std::list<int> IndexList;
+    for(int i=-iDistance;i<=iDistance;i++){
+        for(int j=-iDistance;j<=iDistance;j++){
+            int CurrentTileIndex = iTileIndex + i * tileX + j;
+            
+            //만약 내 타일이면 제외시킨다.
+            if(iTileIndex == CurrentTileIndex)
+                continue;
+            
+            //세로로 음수줄이거나 최대치를 넘은 줄이면 제외시킨다.
+            if(iTileIndex + i * tileX >= m_pNavGraph->NumNodes() || iTileIndex + i * tileX < 0)
+                continue;
+            
+            //화면 옆으로 삐져나갈 경우 제외시킨다.
+            if(CurrentTileIndex <  (iTileIndex + i*tileX) /  tileX * tileX || CurrentTileIndex >= ((iTileIndex + i*tileX) / tileX + 1) * tileX )
+                continue;
+            
+            //인덱스가 음수이거나 최대치를 넘으면 제외시킨다.
+            if(CurrentTileIndex < 0 || CurrentTileIndex >= m_pNavGraph->NumNodes())
+                continue;
+            
+            IndexList.push_back(CurrentTileIndex);
+        }
+    }
+    return IndexList;
+}

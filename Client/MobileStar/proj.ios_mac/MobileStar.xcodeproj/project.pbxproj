@@ -119,16 +119,16 @@
 		772960641BB3C5C200516D0A /* NetworkManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 772960621BB3C5C200516D0A /* NetworkManager.cpp */; };
 		772E56FF1BB0600A0079EF4E /* State_Unit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 772E56FD1BB0600A0079EF4E /* State_Unit.cpp */; };
 		772E57041BB0F3000079EF4E /* CameraManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 772E57021BB0F3000079EF4E /* CameraManager.cpp */; };
-		77330A651BE0E2C1006A06D0 /* CameraLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77330A631BE0E2C1006A06D0 /* CameraLayer.cpp */; };
+		773EFF261BEAEC1400998C0E /* Zergling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 773EFF241BEAEC1400998C0E /* Zergling.cpp */; };
+		773EFF2A1BEAEC6700998C0E /* StringManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 773EFF281BEAEC6700998C0E /* StringManager.cpp */; };
 		7750D3471B9E7CAE00CF2DCB /* Marine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7750D3411B9E7CAE00CF2DCB /* Marine.cpp */; };
 		7750D3481B9E7CAE00CF2DCB /* Thing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7750D3431B9E7CAE00CF2DCB /* Thing.cpp */; };
 		7750D3491B9E7CAE00CF2DCB /* Unit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7750D3451B9E7CAE00CF2DCB /* Unit.cpp */; };
 		7750D3511B9E7DBE00CF2DCB /* MathManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7750D34E1B9E7DBE00CF2DCB /* MathManager.cpp */; };
 		7750D3551B9EBB9100CF2DCB /* Texture in Resources */ = {isa = PBXBuildFile; fileRef = 7750D3541B9EBB9100CF2DCB /* Texture */; };
-		77841F5F1BE9E41A000F020F /* Zergling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77841F5D1BE9E41A000F020F /* Zergling.cpp */; };
-		77841F641BE9F285000F020F /* StringManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77841F621BE9F285000F020F /* StringManager.cpp */; };
 		778BFC9F1BC5319300545328 /* LogManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 778BFC9D1BC5319300545328 /* LogManager.cpp */; };
 		77AEEC821BC01FF600F6B7D3 /* IDManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77AEEC801BC01FF600F6B7D3 /* IDManager.cpp */; };
+		77AF217B1BF93C4C00D1CE10 /* TargetSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77AF21791BF93C4C00D1CE10 /* TargetSystem.cpp */; };
 		8262943E1AAF051F00CB7CF7 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8262943D1AAF051F00CB7CF7 /* Security.framework */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
@@ -329,8 +329,10 @@
 		772E57021BB0F3000079EF4E /* CameraManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraManager.cpp; sourceTree = "<group>"; };
 		772E57031BB0F3000079EF4E /* CameraManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraManager.h; sourceTree = "<group>"; };
 		772E57051BB0F3BE0079EF4E /* DefineHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DefineHeader.h; sourceTree = "<group>"; };
-		77330A631BE0E2C1006A06D0 /* CameraLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraLayer.cpp; sourceTree = "<group>"; };
-		77330A641BE0E2C1006A06D0 /* CameraLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraLayer.h; sourceTree = "<group>"; };
+		773EFF241BEAEC1400998C0E /* Zergling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Zergling.cpp; sourceTree = "<group>"; };
+		773EFF251BEAEC1400998C0E /* Zergling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Zergling.h; sourceTree = "<group>"; };
+		773EFF281BEAEC6700998C0E /* StringManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringManager.cpp; sourceTree = "<group>"; };
+		773EFF291BEAEC6700998C0E /* StringManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringManager.h; sourceTree = "<group>"; };
 		77405E951BBBB7F0001EF034 /* MobileStar-mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MobileStar-mobile.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		77405E971BBBB7F0001EF034 /* MobileStar-desktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MobileStar-desktop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7750D3411B9E7CAE00CF2DCB /* Marine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = Marine.cpp; sourceTree = "<group>"; };
@@ -348,14 +350,12 @@
 		7750D3561B9FF68800CF2DCB /* GraphNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphNode.h; sourceTree = "<group>"; };
 		7750D3581B9FF77500CF2DCB /* NavGraphNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = NavGraphNode.h; sourceTree = "<group>"; };
 		7750D35B1B9FF81B00CF2DCB /* GraphEdge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphEdge.h; sourceTree = "<group>"; };
-		77841F5D1BE9E41A000F020F /* Zergling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Zergling.cpp; sourceTree = "<group>"; };
-		77841F5E1BE9E41A000F020F /* Zergling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Zergling.h; sourceTree = "<group>"; };
-		77841F621BE9F285000F020F /* StringManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringManager.cpp; sourceTree = "<group>"; };
-		77841F631BE9F285000F020F /* StringManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringManager.h; sourceTree = "<group>"; };
 		778BFC9D1BC5319300545328 /* LogManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogManager.cpp; sourceTree = "<group>"; };
 		778BFC9E1BC5319300545328 /* LogManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogManager.h; sourceTree = "<group>"; };
 		77AEEC801BC01FF600F6B7D3 /* IDManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IDManager.cpp; sourceTree = "<group>"; };
 		77AEEC811BC01FF600F6B7D3 /* IDManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDManager.h; sourceTree = "<group>"; };
+		77AF21791BF93C4C00D1CE10 /* TargetSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TargetSystem.cpp; sourceTree = "<group>"; };
+		77AF217A1BF93C4C00D1CE10 /* TargetSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TargetSystem.h; sourceTree = "<group>"; };
 		8262943D1AAF051F00CB7CF7 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -756,21 +756,22 @@
 			name = CameraManager;
 			sourceTree = "<group>";
 		};
-		77330A611BE0E2A8006A06D0 /* GameWorldLayer */ = {
+		773EFF231BEAEC0200998C0E /* Zergling */ = {
 			isa = PBXGroup;
 			children = (
-				77330A621BE0E2B4006A06D0 /* CameraLayer */,
+				773EFF241BEAEC1400998C0E /* Zergling.cpp */,
+				773EFF251BEAEC1400998C0E /* Zergling.h */,
 			);
-			name = GameWorldLayer;
+			name = Zergling;
 			sourceTree = "<group>";
 		};
-		77330A621BE0E2B4006A06D0 /* CameraLayer */ = {
+		773EFF271BEAEC5B00998C0E /* StringManager */ = {
 			isa = PBXGroup;
 			children = (
-				77330A631BE0E2C1006A06D0 /* CameraLayer.cpp */,
-				77330A641BE0E2C1006A06D0 /* CameraLayer.h */,
+				773EFF281BEAEC6700998C0E /* StringManager.cpp */,
+				773EFF291BEAEC6700998C0E /* StringManager.h */,
 			);
-			name = CameraLayer;
+			name = StringManager;
 			sourceTree = "<group>";
 		};
 		77405E961BBBB7F0001EF034 /* Products */ = {
@@ -785,7 +786,6 @@
 		7750D33C1B9E7B7500CF2DCB /* GameWorld */ = {
 			isa = PBXGroup;
 			children = (
-				77330A611BE0E2A8006A06D0 /* GameWorldLayer */,
 				77252AF61BA944C10086351C /* GameMap */,
 				7750D3521B9E7DC700CF2DCB /* AI */,
 				7750D33E1B9E7C5200CF2DCB /* Thing */,
@@ -808,6 +808,7 @@
 		7750D33E1B9E7C5200CF2DCB /* Thing */ = {
 			isa = PBXGroup;
 			children = (
+				77AF21781BF93C3D00D1CE10 /* TargetSystem */,
 				7750D3431B9E7CAE00CF2DCB /* Thing.cpp */,
 				7750D3441B9E7CAE00CF2DCB /* Thing.h */,
 				7750D33F1B9E7C5C00CF2DCB /* Unit */,
@@ -818,7 +819,7 @@
 		7750D33F1B9E7C5C00CF2DCB /* Unit */ = {
 			isa = PBXGroup;
 			children = (
-				77841F5C1BE9E40C000F020F /* Zergling */,
+				773EFF231BEAEC0200998C0E /* Zergling */,
 				7750D3451B9E7CAE00CF2DCB /* Unit.cpp */,
 				7750D3461B9E7CAE00CF2DCB /* Unit.h */,
 				7750D3401B9E7C7700CF2DCB /* Marine */,
@@ -847,8 +848,8 @@
 		7750D34C1B9E7D9500CF2DCB /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				77841F611BE9F275000F020F /* StringManager */,
-				778BFC9C1BC5317B00545328 /* DebugManager */,
+				773EFF271BEAEC5B00998C0E /* StringManager */,
+				778BFC9C1BC5317B00545328 /* LogManager */,
 				77AEEC7F1BC01F2200F6B7D3 /* IDManager */,
 				772960611BB3C5AE00516D0A /* NetworkManager */,
 				772E57011BB0F2EC0079EF4E /* CameraManager */,
@@ -901,31 +902,13 @@
 			name = Edge;
 			sourceTree = "<group>";
 		};
-		77841F5C1BE9E40C000F020F /* Zergling */ = {
-			isa = PBXGroup;
-			children = (
-				77841F5D1BE9E41A000F020F /* Zergling.cpp */,
-				77841F5E1BE9E41A000F020F /* Zergling.h */,
-			);
-			name = Zergling;
-			sourceTree = "<group>";
-		};
-		77841F611BE9F275000F020F /* StringManager */ = {
-			isa = PBXGroup;
-			children = (
-				77841F621BE9F285000F020F /* StringManager.cpp */,
-				77841F631BE9F285000F020F /* StringManager.h */,
-			);
-			name = StringManager;
-			sourceTree = "<group>";
-		};
-		778BFC9C1BC5317B00545328 /* DebugManager */ = {
+		778BFC9C1BC5317B00545328 /* LogManager */ = {
 			isa = PBXGroup;
 			children = (
 				778BFC9D1BC5319300545328 /* LogManager.cpp */,
 				778BFC9E1BC5319300545328 /* LogManager.h */,
 			);
-			name = DebugManager;
+			name = LogManager;
 			sourceTree = "<group>";
 		};
 		77AEEC7F1BC01F2200F6B7D3 /* IDManager */ = {
@@ -935,6 +918,15 @@
 				77AEEC811BC01FF600F6B7D3 /* IDManager.h */,
 			);
 			name = IDManager;
+			sourceTree = "<group>";
+		};
+		77AF21781BF93C3D00D1CE10 /* TargetSystem */ = {
+			isa = PBXGroup;
+			children = (
+				77AF21791BF93C4C00D1CE10 /* TargetSystem.cpp */,
+				77AF217A1BF93C4C00D1CE10 /* TargetSystem.h */,
+			);
+			name = TargetSystem;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1121,6 +1113,7 @@
 			files = (
 				77252AE81BA6AECC0086351C /* main.m in Sources */,
 				46880B8819C43A87006E1F66 /* AppDelegate.cpp in Sources */,
+				773EFF2A1BEAEC6700998C0E /* StringManager.cpp in Sources */,
 				6F86D80E1BB3D24400B3FFDA /* UserInfoLayer.cpp in Sources */,
 				7750D3491B9E7CAE00CF2DCB /* Unit.cpp in Sources */,
 				46880B8A19C43A87006E1F66 /* GameWorld.cpp in Sources */,
@@ -1134,6 +1127,7 @@
 				6F86D8001BB3C8B300B3FFDA /* LobbyScene.cpp in Sources */,
 				77252AEA1BA6BEFF0086351C /* SparseGraph.cpp in Sources */,
 				6FC9FCE81BC940C4004F17F5 /* LobbyClanLayer.cpp in Sources */,
+				773EFF261BEAEC1400998C0E /* Zergling.cpp in Sources */,
 				503AE10017EB989F00D1A890 /* AppController.mm in Sources */,
 				77252AEF1BA7DFFF0086351C /* PathPlanner.cpp in Sources */,
 				772960641BB3C5C200516D0A /* NetworkManager.cpp in Sources */,
@@ -1143,23 +1137,21 @@
 				6F86D80B1BB3C8C300B3FFDA /* UserListLayer.cpp in Sources */,
 				77252AF11BA7EA260086351C /* AStarAlgorithm.cpp in Sources */,
 				77252AF91BA944D10086351C /* GameMap.cpp in Sources */,
-				77841F641BE9F285000F020F /* StringManager.cpp in Sources */,
 				6F86D8011BB3C8B300B3FFDA /* LoginScene.cpp in Sources */,
 				77AEEC821BC01FF600F6B7D3 /* IDManager.cpp in Sources */,
 				6FC9FC281BC8E0AA004F17F5 /* MyObject.mm in Sources */,
+				77AF217B1BF93C4C00D1CE10 /* TargetSystem.cpp in Sources */,
 				778BFC9F1BC5319300545328 /* LogManager.cpp in Sources */,
 				77252AF41BA9358E0086351C /* CellSpace.cpp in Sources */,
 				6F86D7FF1BB3C8B300B3FFDA /* GameClient.cpp in Sources */,
 				7750D3471B9E7CAE00CF2DCB /* Marine.cpp in Sources */,
 				6F86D8031BB3C8B300B3FFDA /* NetworkLayer.cpp in Sources */,
 				6F7368C21BC2516200137613 /* CustomPopUp.cpp in Sources */,
-				77841F5F1BE9E41A000F020F /* Zergling.cpp in Sources */,
 				6FD8FCAD1BCD15C80029BD4A /* MiniMapLayer.cpp in Sources */,
 				6FC9FCDE1BC92F62004F17F5 /* LobbyChannelLayer.cpp in Sources */,
 				6FC9FCEE1BC940CF004F17F5 /* LobbyFriendLayer.cpp in Sources */,
 				6FD8FCAA1BCD0FCA0029BD4A /* ControlLayer.cpp in Sources */,
 				772E56FF1BB0600A0079EF4E /* State_Unit.cpp in Sources */,
-				77330A651BE0E2C1006A06D0 /* CameraLayer.cpp in Sources */,
 				6F86D8021BB3C8B300B3FFDA /* Network.cpp in Sources */,
 				503AE10217EB989F00D1A890 /* RootViewController.mm in Sources */,
 			);

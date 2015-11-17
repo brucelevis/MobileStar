@@ -31,20 +31,23 @@ GameWorld::GameWorld()
     
     //맵 생성
     m_pMap = new GameMap();
-    m_pMap->LoadMap(TILE_WIDTH_NUM,TILE_HEIGHT_NUM);
+    //m_pMap->LoadMap(TILE_WIDTH_NUM * TILE_SIZE / NODE_SIZE, TILE_HEIGHT_NUM * TILE_SIZE / NODE_SIZE);
+    m_pMap->LoadMap(20,20);
     m_pCameraLayer->addChild(m_pMap);
     
     //저글링 생성
-    for(int i=0;i<12;i++){
-        auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 20615+i : 5110+i));
+    for(int i=0;i<30;i++){
+        //auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 205+i : 114+i));
+        auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 660+i : 330+i));
+        //auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 20800+i : 114+i));
         pZergling->setColor(Color3B(255,0,0));
         pZergling->setCascadeColorEnabled(true);
         m_pCameraLayer->addChild(pZergling);
         m_Units[pZergling->GetID()] = pZergling;
     }
     
-    for(int i=0;i<20;i++){
-        auto pZergling = new Zergling(this,1,(DIVIDE_NODE ? 20817 + i: 5213 + i));
+    for(int i=0;i<30;i++){
+        auto pZergling = new Zergling(this,1,(DIVIDE_NODE ? 540+i : 270+i));
         m_pCameraLayer->addChild(pZergling);
         m_Units[pZergling->GetID()] = pZergling;
     }
@@ -54,9 +57,10 @@ GameWorld::GameWorld()
     m_pSelectDrawNode->setVisible(false);
     m_pCameraLayer->addChild(m_pSelectDrawNode);
     
-    
     //카메라 설정 : 맵 크기 (64*256, 64*256)
-    CameraMgr->SetScreen(6400, 3200 - 32);
+    CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
+    CameraMgr->SetMovePos(1000,1000);
+    //CameraMgr->SetScreen(6400,3200 - 32);
     
     //네트워크 매니저 초기화
     NetMgr->SetGameWorld(this);
@@ -70,36 +74,51 @@ GameWorld::GameWorld()
     m_pDebugLabel->setPosition(0,120);
     addChild(m_pDebugLabel);
 
-    
-    //Scene setting
-    GameClient::GetInstance().currentScene = GAME_SCENE_NOW;
-
-    
-    //타일 스캔
-    {
-        auto pDrawNode = DrawNode::create();
-//        for(int i=0;i<=720;i++){
-//            for(int j=0;j<1280;j++){
-//                if(m_pMap->GetTileIndexFromPosition(Vec2(j,i)) == 17){
-//                    pDrawNode->drawDot(Vec2(j,i), 1, Color4F(1,1,1,1));
-//                }
-//            }
-//        }
-        pDrawNode->setTag(5);
-        addChild(pDrawNode);
-    }
-    
     //초기화
     Init();
     
-    for(int i=0;i<12;i++){
+    for(int i=0;i<2;i++){
         m_TouchedUnits.push_back(m_Units[i]);
     }
+
+    //Scene setting
+    GameClient::GetInstance().currentScene = GAME_SCENE_NOW;
     
+    //타일 스캔
+//    {
+//        auto pDrawNode = DrawNode::create();
+//            for(int i=0;i<=720;i++){
+//                for(int j=0;j<1280;j++){
+//                    if(m_pMap->GetTileIndexFromPosition(Vec2(j,i)) == 1){
+//                        pDrawNode->drawDot(Vec2(j,i), 1, Color4F(1,1,1,1));
+//                    }
+//                }
+//            }
+//        pDrawNode->setTag(5);
+//        addChild(pDrawNode);
+//    }
 }
 
 GameWorld::~GameWorld(){
 }
+
+void GameWorld::onEnter(){
+    Layer::onEnter();
+    
+    auto listener = EventListenerTouchAllAtOnce::create();
+    
+
+    
+    listener->onTouchesBegan = CC_CALLBACK_2(GameWorld::TouchesBegan, this);
+    listener->onTouchesMoved = CC_CALLBACK_2(GameWorld::TouchesMoved, this);
+    listener->onTouchesCancelled = CC_CALLBACK_2(GameWorld::TouchesCancelled, this);
+    listener->onTouchesEnded = CC_CALLBACK_2(GameWorld::TouchesEnded, this);
+    
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+    
+    scheduleUpdate();
+}
+
 void GameWorld::Init(){
     char buf[128];
     
@@ -117,11 +136,8 @@ void GameWorld::Init(){
             AnimationCache::getInstance()->addAnimation(ani,buf);
         }
     }
-
+    
     //저글링 이동 애니메이션
-    
-    
-
     for(int i=0;i<2;i++){
         for(int j=0;j<16;j++){
             Animation* ani = Animation::create();
@@ -135,33 +151,33 @@ void GameWorld::Init(){
             AnimationCache::getInstance()->addAnimation(ani,buf);
         }
     }
-}
-void GameWorld::onEnter(){
-    Layer::onEnter();
     
-    auto listener = EventListenerTouchAllAtOnce::create();
-    
-
-    
-    listener->onTouchesBegan = CC_CALLBACK_2(GameWorld::TouchesBegan, this);
-    listener->onTouchesMoved = CC_CALLBACK_2(GameWorld::TouchesMoved, this);
-    listener->onTouchesCancelled = CC_CALLBACK_2(GameWorld::TouchesCancelled, this);
-    listener->onTouchesEnded = CC_CALLBACK_2(GameWorld::TouchesEnded, this);
-    
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
-    
-    scheduleUpdate();
-    
-    //schedule(schedule_selector(GameWorld::updateNetwork),1 / (float)NETWORK_FPS);
+    //저글링 공격 애니메이션
+    for(int i=0;i<2;i++){
+        for(int j=0;j<16;j++){
+            Animation* ani = Animation::create();
+            for(int k=7;k<12;k++){
+                sprintf(buf,"Texture/Zergling/%s/%s/Ani_%02d.png",StrMgr->GetPlayerFlagStr(i),StrMgr->GetUnitDirStr(j),k);
+                ani->addSpriteFrameWithFile(buf);
+            }
+            ani->setDelayPerUnit(0.05f);
+            
+            sprintf(buf,"Zergling%s%sAttack",StrMgr->GetPlayerFlagStr(i),StrMgr->GetUnitDirStr(j));
+            AnimationCache::getInstance()->addAnimation(ani,buf);
+        }
+    }
 }
 
 void GameWorld::update(float eTime){
     //게임 시작 초 계산
-    m_fStartFrame += eTime;
+    if(NetMgr->GetFirstTaskPacket() < NetMgr->GetSecondTaskPacket() + 3)
+        m_fStartFrame += eTime;
     
     //카메라 업데이트
     CameraMgr->Update(eTime);
-    m_pCameraLayer->setPosition(-CameraMgr->GetPos() + (Vec2(3200,-1600)));
+    //m_pCameraLayer->setPosition(-CameraMgr->GetPos());
+    //m_pCameraLayer->setPosition(-CameraMgr->GetPos() + (Vec2(3200,-1600)));
+    m_pCameraLayer->setPosition(-CameraMgr->GetPos() + (Vec2(1280,640)));
     
     //업데이트 네트워크
     int CntUpdateNetwork = (int)(m_fStartFrame * NETWORK_FPS) - NetMgr->GetCntCarryOutMessages();
@@ -174,10 +190,15 @@ void GameWorld::update(float eTime){
         pUnit.second->update(eTime);
     }
     
-//    auto pUnit = getChildByTag(5);
-//    DrawNode* pU = (DrawNode*)pUnit;
-//    pU->drawDot(m_pCameraLayer->convertToWorldSpace(m_pMap->GetNavGraph().GetNode(m_Units[0]->GetTileIndex()).getPosition()), 1, Color4F(1,1,1,1));
-
+    //만약 유닛을 지워야한다면
+    for(auto pUnit : m_Units){
+        if(pUnit.second->IsErase()){
+            m_Units.erase(pUnit.first);
+            
+            m_pCameraLayer->removeChild(pUnit.second);
+            
+        }
+    }
 }
 
 //1초에 4번 실행된다.
@@ -193,7 +214,7 @@ void GameWorld::updateNetwork(float eTime){
     sprintf(buf,"FirstPacket %d, SecondPacket %d\nFirstTaskSize %d, SecondTaskSize %d\nFirstFront %d, SecondFront %d\nTouchCnt %d",
             NetMgr->GetFirstTaskPacket(),NetMgr->GetSecondTaskPacket(),
             NetMgr->GetFirstTaskSize(),NetMgr->GetSecondTaskSize(),
-            NetMgr->GetFirstTaskPacket(),NetMgr->GetSecondTaskPacket(),
+            NetMgr->GetFirstFront(),NetMgr->GetSecondFront(),
             m_iTouchCnt);
     m_pDebugLabel->setString(buf);
 }
@@ -217,17 +238,17 @@ bool GameWorld::TouchesBegan(const std::vector<Touch*>& touches, Event* _event){
         for(auto pTouch : touches){
             pUnit.second->TouchBegan(pTouch, _event);
         }
-
+        
     }
     
     return true;
 }
 void GameWorld::TouchesMoved(const std::vector<Touch*>& touches, Event* _event){
-
+    
     //만약 터치를 한 개만 하였다면
     if(m_iTouchCnt == 1 && !m_bDoubleTouch){
         Vec2 MoveVec = m_vTouchPosition - touches.front()->getLocation();
-
+        
         CameraMgr->AddMovePos(MoveVec);
         m_vTouchPosition = touches.front()->getLocation();
     }else if(m_iTouchCnt == 2){
@@ -235,8 +256,8 @@ void GameWorld::TouchesMoved(const std::vector<Touch*>& touches, Event* _event){
         Vec2 v2 = m_pCameraLayer->convertToNodeSpace(touches.back()->getLocation());
         
         m_SelectRect = Rect( MathMgr->Min(v1.x,v2.x), MathMgr->Min(v1.y,v2.y),
-                    MathMgr->Max(v1.x,v2.x)-MathMgr->Min(v1.x,v2.x),
-                    MathMgr->Max(v1.y,v2.y)-MathMgr->Min(v1.y,v2.y) );
+                            MathMgr->Max(v1.x,v2.x)-MathMgr->Min(v1.x,v2.x),
+                            MathMgr->Max(v1.y,v2.y)-MathMgr->Min(v1.y,v2.y) );
         
         m_pSelectDrawNode->setVisible(true);
         m_pSelectDrawNode->clear();
@@ -246,17 +267,18 @@ void GameWorld::TouchesMoved(const std::vector<Touch*>& touches, Event* _event){
                                     Color4F(46/256.0f,169/256.0f,15/256.0f,1));
         
     }
-
+    
     for(auto pUnit : m_Units){
         for(auto pTouch : touches){
             pUnit.second->TouchMoved(pTouch, _event);
         }
     }
 }
-void GameWorld::TouchesCancelled(const std::vector<Touch*>& touches, Event* _event){    
+void GameWorld::TouchesCancelled(const std::vector<Touch*>& touches, Event* _event){
     TouchesEnded(touches, _event);
 }
 void GameWorld::TouchesEnded(const std::vector<Touch*>& touches, Event* _event){
+    
     //만약 터치를 한 개만 하였다면
     if(m_iTouchCnt == 1){
         Vec2 TouchVec = touches.front()->getLocation();
@@ -286,12 +308,12 @@ void GameWorld::TouchesEnded(const std::vector<Touch*>& touches, Event* _event){
                 
                 m_TouchedUnits.push_back(pUnit.second);
                 
-                if(m_TouchedUnits.size() >= 12)
+                if(m_TouchedUnits.size() >= 30)
                     break;
             }
         }
     }
-
+    
     m_iTouchCnt -= touches.size();
     
     for(auto pUnit : m_Units){
@@ -299,4 +321,19 @@ void GameWorld::TouchesEnded(const std::vector<Touch*>& touches, Event* _event){
             pUnit.second->TouchEnded(pTouch, _event);
         }
     }
+}
+std::list<Thing*> GameWorld::GetNearThings(Thing* pOwner,int iDistance){
+    std::list<Thing*> ThingList;
+    
+    //주변 타일 인덱스 리스트를 얻어온다.
+    auto Indices = m_pMap->GetIndicesFromTileIndex(pOwner->GetTileIndex(), iDistance);
+    
+    for(auto Index : Indices){
+        Thing* pThing = m_pMap->GetNavGraph().GetNode(Index).GetThing();
+        
+        //해당 타일에 물체가 존재한다면 리스트에 추가한다.
+        if(pThing)
+            ThingList.push_back(pThing);
+    }
+    return ThingList;
 }

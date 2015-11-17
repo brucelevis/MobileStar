@@ -25,9 +25,9 @@ public:
     void Update(float eTime);
 public:
     Vec2 GetPos()const{ return m_vCameraPos; }
-//    void SetPos(Vec2 pos){ m_vCameraPos = pos; }
-//    template<typename T>
-//    void SetPos(T x,T y){m_vCameraPos.x = static_cast<float>(x); m_vCameraPos.y = static_cast<float>(y);}
+    //    void SetPos(Vec2 pos){ m_vCameraPos = pos; }
+    //    template<typename T>
+    //    void SetPos(T x,T y){m_vCameraPos.x = static_cast<float>(x); m_vCameraPos.y = static_cast<float>(y);}
     
     
     Vec2 GetMovePos()const{return m_vMovePos;}
@@ -38,7 +38,7 @@ public:
     void AddMovePos(Vec2 pos){ m_vMovePos += pos; }
     template<typename T>
     void AddMovePos(T x,T y){m_vMovePos.x += static_cast<float>(x); m_vMovePos.y += static_cast<float>(y);}
-
+    
     
     int GetWidth()const{return m_iWidth;}
     template<typename T>

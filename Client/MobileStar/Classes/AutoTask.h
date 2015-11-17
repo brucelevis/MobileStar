@@ -6,6 +6,7 @@ struct AutoTaskType{
     enum {
         Null,   //빈 메시지
         Move,
+        Attack,
     };
 };
 
@@ -45,6 +46,17 @@ public:
     
     AutoTaskMove(int _packet, int _unitID)
     : AutoTask(AutoTaskType::Move,_packet, _unitID)
+    {
+        
+    }
+};
+
+//유닛 공격 메시지
+class AutoTaskAttack : public AutoTask{
+public:
+    
+    AutoTaskAttack(int _packet, int _unitID)
+    : AutoTask(AutoTaskType::Attack,_packet, _unitID)
     {
         
     }

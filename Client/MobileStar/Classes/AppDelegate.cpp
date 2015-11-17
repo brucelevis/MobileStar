@@ -47,7 +47,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setOpenGLView(glview);
     }
     
-    
+    glview->setDesignResolutionSize(DISPLAY_WIDTH, DISPLAY_HEIGHT, ResolutionPolicy::SHOW_ALL);
 
     // turn on display FPS
     director->setDisplayStats(true);
@@ -79,9 +79,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
         GameClient::GetInstance().currentScene = LOGIN_SCENE_NOW;
     }
     
-    
-    
-        
     return true;
 }
 

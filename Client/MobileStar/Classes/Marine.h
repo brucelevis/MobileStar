@@ -6,6 +6,8 @@ USING_NS_CC;
 
 class Marine : public Unit{
 private:
+
+
 public:
 	Marine(GameWorld* pGame, int playerFlag, int tileIndex);
 	~Marine();

@@ -3,7 +3,7 @@
 
 
 Zergling::Zergling(GameWorld* pGame, int playerFlag, int tileIndex)
-: Unit(pGame,playerFlag, tileIndex,100,0,1,1,6,1)
+: Unit(pGame,playerFlag, tileIndex,35,0,2,1,6,1)
 {
     char buf[128];
     sprintf(buf, "Texture/Zergling/%s/%s/Ani_00.png",StrMgr->GetPlayerFlagStr(playerFlag),StrMgr->GetUnitDirStr(10));

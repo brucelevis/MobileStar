@@ -224,8 +224,6 @@ void SparseGraph::UpdateEdgeFromNode(int nodeIndex){
             AddEdge(newEdge);
         }
     }
-
-    
 }
 
 //노드를 추가한다.

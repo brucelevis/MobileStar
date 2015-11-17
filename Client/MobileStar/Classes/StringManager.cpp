@@ -12,7 +12,7 @@ StringManager::StringManager()
 StringManager::~StringManager(){
 }
 const char* StringManager::GetPlayerFlagStr(int idx){
-
+    
     switch (idx){
         case 0:
             return "Red";
