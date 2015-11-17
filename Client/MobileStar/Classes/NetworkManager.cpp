@@ -34,9 +34,7 @@ void NetworkManager::SetupWhatPlayerFlag(){
 
     if(PLAY_ALONE){
         m_iPlayerFlag = 0;
-    }else{
-        int UserNo = GameClient::GetInstance().userInfo->userNo;
-        
+    }else{        
         //플레이어 A인가?
         if(GameClient::GetInstance().myGameIndex == 0){
             m_iPlayerFlag = 0;
@@ -44,7 +42,7 @@ void NetworkManager::SetupWhatPlayerFlag(){
             m_iPlayerFlag = 1;
         }
         
-        LogMgr->Log("[0] : %lld, [1] : %lld, userNo : %d",GameClient::GetInstance().gameUserInfo[0].userNo,GameClient::GetInstance().gameUserInfo[1].userNo,UserNo);
+//        LogMgr->Log("[0] : %lld, [1] : %lld, userNo : %d",GameClient::GetInstance().gameUserInfo[0].nickNameInfouserNo,GameClient::GetInstance().gameUserInfo[1].userNo,UserNo);
     }
 }
 //DispatchTask에 쌓인 Message를 서버로 보낸 후, Task에 전송한다.

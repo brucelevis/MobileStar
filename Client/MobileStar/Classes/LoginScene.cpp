@@ -76,7 +76,7 @@ void LoginScene::clickLoginBtn(Ref* pSender)
     
     std::string loginToken = UserDefault::getInstance()->getStringForKey("loginToken");
     
-//    if(loginToken.length() == 0)
+    if(loginToken.length() == 0)
     {
         char time[36];
         memcpy(time, &GameClient::GetInstance().sessionId, 36);
@@ -87,7 +87,7 @@ void LoginScene::clickLoginBtn(Ref* pSender)
         CCLOG("??");
     }
 
-    CCLOG("not have id - %s\n", loginToken.c_str());
+    CCLOG("not have id - %s %d\n", loginToken.c_str(), loginToken.length());
 
     ((NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER))->handler->frontSendLoginReq(loginToken.c_str(), loginToken.length());
     

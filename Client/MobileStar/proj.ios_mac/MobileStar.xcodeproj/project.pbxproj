@@ -109,6 +109,8 @@
 		6FD8FCB31BCD335E0029BD4A /* info_view.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FD8FCAF1BCD335E0029BD4A /* info_view.png */; };
 		6FD8FCB41BCD335E0029BD4A /* menu_btn.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FD8FCB01BCD335E0029BD4A /* menu_btn.png */; };
 		6FD8FCB51BCD335E0029BD4A /* mini_map_back_ground.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FD8FCB11BCD335E0029BD4A /* mini_map_back_ground.png */; };
+		7706B59D1BFBE58400DE3426 /* CreateAccountLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7706B5991BFBE58400DE3426 /* CreateAccountLayer.cpp */; };
+		7706B59E1BFBE58400DE3426 /* HelloWorldScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7706B59B1BFBE58400DE3426 /* HelloWorldScene.cpp */; };
 		77252AE81BA6AECC0086351C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 503AE0FC17EB989F00D1A890 /* main.m */; };
 		77252AEA1BA6BEFF0086351C /* SparseGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77252AE91BA6BEFF0086351C /* SparseGraph.cpp */; };
 		77252AEF1BA7DFFF0086351C /* PathPlanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77252AED1BA7DFFF0086351C /* PathPlanner.cpp */; };
@@ -307,6 +309,10 @@
 		6FD8FCAF1BCD335E0029BD4A /* info_view.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = info_view.png; sourceTree = "<group>"; };
 		6FD8FCB01BCD335E0029BD4A /* menu_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu_btn.png; sourceTree = "<group>"; };
 		6FD8FCB11BCD335E0029BD4A /* mini_map_back_ground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mini_map_back_ground.png; sourceTree = "<group>"; };
+		7706B5991BFBE58400DE3426 /* CreateAccountLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CreateAccountLayer.cpp; sourceTree = "<group>"; };
+		7706B59A1BFBE58400DE3426 /* CreateAccountLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateAccountLayer.h; sourceTree = "<group>"; };
+		7706B59B1BFBE58400DE3426 /* HelloWorldScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HelloWorldScene.cpp; sourceTree = "<group>"; };
+		7706B59C1BFBE58400DE3426 /* HelloWorldScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelloWorldScene.h; sourceTree = "<group>"; };
 		77252AE91BA6BEFF0086351C /* SparseGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SparseGraph.cpp; sourceTree = "<group>"; };
 		77252AEB1BA6C4A90086351C /* PriorityQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PriorityQueue.h; sourceTree = "<group>"; };
 		77252AED1BA7DFFF0086351C /* PathPlanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PathPlanner.cpp; sourceTree = "<group>"; };
@@ -618,6 +624,10 @@
 		6F86D7F31BB3C73E00B3FFDA /* Others */ = {
 			isa = PBXGroup;
 			children = (
+				7706B5991BFBE58400DE3426 /* CreateAccountLayer.cpp */,
+				7706B59A1BFBE58400DE3426 /* CreateAccountLayer.h */,
+				7706B59B1BFBE58400DE3426 /* HelloWorldScene.cpp */,
+				7706B59C1BFBE58400DE3426 /* HelloWorldScene.h */,
 				6FC9FCE61BC940C4004F17F5 /* LobbyClanLayer.cpp */,
 				6FC9FCE91BC940CF004F17F5 /* LobbyClanLayer.h */,
 				6FC9FCEA1BC940CF004F17F5 /* LobbyFriendLayer.cpp */,
@@ -1122,8 +1132,10 @@
 				7750D3481B9E7CAE00CF2DCB /* Thing.cpp in Sources */,
 				6F126F871BBD27120019E028 /* ResultScene.cpp in Sources */,
 				6FC9FCCD1BC90972004F17F5 /* LobbyGameLayer.cpp in Sources */,
+				7706B59E1BFBE58400DE3426 /* HelloWorldScene.cpp in Sources */,
 				6FC9FCE71BC940C4004F17F5 /* LobbyBoardLayer.cpp in Sources */,
 				772E57041BB0F3000079EF4E /* CameraManager.cpp in Sources */,
+				7706B59D1BFBE58400DE3426 /* CreateAccountLayer.cpp in Sources */,
 				6F86D8001BB3C8B300B3FFDA /* LobbyScene.cpp in Sources */,
 				77252AEA1BA6BEFF0086351C /* SparseGraph.cpp in Sources */,
 				6FC9FCE81BC940C4004F17F5 /* LobbyClanLayer.cpp in Sources */,
