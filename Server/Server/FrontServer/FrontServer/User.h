@@ -12,6 +12,7 @@
 
 enum USER_STATE
 {
+    USER_STATE_NOT_LOGIN,
     USER_STATE_LOGIN,
     USER_STATE_MOVING_LOBBY,
 };
@@ -24,27 +25,13 @@ public:
 
 	User();
 
-    bool initialize(SessionId_t* sid, UserInfo* userInfo);
+    bool initialize(SessionId_t* sid, ConnectInfo* _connectInfo);
 
 	ConnectInfo* getConnectInfo() { return connectInfo; }
 	void setConnectInfo(ConnectInfo* _connectInfo) { connectInfo = _connectInfo; }
 
-	int64_t getUserNo() { return userInfo.userNo; }
-	void setUserNo(int64_t userNo) { userInfo.userNo = userNo; }
-
-	const char* getNickName() { return userInfo.nickName; }
-	int8_t getNickNameLen() { return userInfo.nickNameLen; }
-	void setNickName(char* nickName, int8_t nickNameLen)
-	{
-		userInfo.nickNameLen = nickNameLen;
-		memcpy(userInfo.nickName, nickName, userInfo.nickNameLen);
-	}
-
-	int16_t getChannelNo() { return channelNo; }
-	void setChannelNo(int16_t _channelNo) { channelNo = _channelNo; }
-
-	int16_t getRoomNo() { return roomNo; }
-	void setRoomNo(int16_t _roomNo) { roomNo = _roomNo; }
+	int64_t getUserNo() { return userNo; }
+	void setUserNo(int64_t _userNo) { userNo = _userNo; }
 
     int8_t getUserState() { return userState; }
     void setUserState(int8_t _userState) { userState = _userState; }
@@ -52,8 +39,6 @@ public:
     SessionId_t* getSid() { return &sid; }
     void setSid(SessionId_t _sid) { sid = _sid; }
 
-	UserInfo* getUserInfo() { return &userInfo; }
-    
     int getLobbyNo() { return lobbyNo; }
     void setLobbyNo(int _lobbyNo) { lobbyNo = _lobbyNo; }
 
@@ -66,10 +51,8 @@ public:
 private:
     SessionId_t sid;
 	ConnectInfo* connectInfo;
-	UserInfo userInfo;
-
-	int16_t channelNo;
-	int16_t roomNo;
+    int64_t userNo;
+    
     int8_t userState;
     int lobbyNo;
 };
@@ -84,10 +67,11 @@ public:
 	UserManager();
 
 	bool initialize();
-    int addUnconnectedUser(UserInfo* userInfo, SessionId_t* sessionId);
+    int addUnconnectedUser(SessionId_t* sessionId, ConnectInfo* _connectInfo);
     
     
-    int addConnectedUser(SessionId_t* sessionId, ConnectInfo* connectInfo);
+    int addConnectedUser(SessionId_t* sessionId, int64_t userNo);
+    User* getUnConnectedUser(SessionId_t* sessionId);
 	User* getUserByUserNo(int64_t userNo);
 	bool removeUser(User* _user);
 	bool removeUserByUserNo(int64_t userNo);

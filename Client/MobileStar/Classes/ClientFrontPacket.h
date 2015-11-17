@@ -6,13 +6,13 @@
 class ClientFrontPacket
 {
 public:
-
-	////////////Packet Command//////////////
-
-	static const int32_t PACKET_VERSION = 1;
-
-	enum EnumCommand // start number is at least 3.
-	{
+    
+    ////////////Packet Command//////////////
+    
+    static const int32_t PACKET_VERSION = 1;
+    
+    enum EnumCommand // start number is at least 3.
+    {
         FIRST_CONNECT_REQ = 1,
         FIRST_CONNECT_RES,
         FIRST_CONNECT_FAIL,
@@ -21,35 +21,46 @@ public:
         LOGIN_RES,
         LOGIN_FAIL,
         
-        SIGN_UP_REQ,
-        SIGN_UP_RES,
-        SIGN_UP_FAIL,
+        CREATE_ACCOUNT_REQ,
+        CREATE_ACCOUNT_RES,
+        CREATE_ACCOUNT_FAIL,
         
-		ENTER_LOBBY_REQ,
-		ENTER_LOBBY_RES,
-		ENTER_LOBBY_FAIL,
+        ENTER_LOBBY_REQ,
+        ENTER_LOBBY_RES,
+        ENTER_LOBBY_FAIL,
         ENTER_LOBBY_OK,
-	};
-
-	enum EnumFailReason
-	{
-		PACKET_VERSION_INCORRECT = 1,
-		SERVER_ERROR,
-		EXIST_EMAIL,
-		EXIST_NICK_NAME,
-		NOT_EXIST_EMAIL,
-		PASSWORD_INCORRECT,
-		ALREADY_LOGIN,
-		NOT_LOGIN,
-	};
-
-	///////////////////////////////////
-
+    };
+    
+    enum EnumFailReason
+    {
+        PACKET_VERSION_INCORRECT = 1,
+        SERVER_ERROR,
+        EXIST_LOGIN_TOKEN,
+        EXIST_NICK_NAME,
+        ALREADY_LOGIN,
+        NOT_LOGIN,
+    };
+    
+    enum LOGIN_RESULT
+    {
+        LOGIN_RESULT_SUCCESS = 1,
+        LOGIN_RESULT_NOT_EXIST_USER_ID,
+    };
+    
+    enum CREATE_ACCOUNT_RESULT
+    {
+        CREATE_ACCOUNT_RESULT_SUCCESS = 1,
+        CREATE_ACCOUNT_RESULT_USER_ID_EXIST,
+        CREATE_ACCOUNT_RESULT_NICKNAME_EXIST,
+    };
+    
+    ///////////////////////////////////
+    
 #pragma pack(push, 1)
-
-	///////////////////////////////////
-
-
+    
+    ///////////////////////////////////
+    
+    
     struct FirstConnectReqPacket : public Packet
     {
         FirstConnectReqPacket() { cmd = FIRST_CONNECT_REQ; }
@@ -65,36 +76,36 @@ public:
     struct LoginReqPacket : public Packet
     {
         LoginReqPacket() { cmd = LOGIN_REQ; }
-        int8_t nickNameLen;
-        char nickName[MAX_NICK_NAME_LEN];
-        int8_t passwordLen;
-        char password[MAX_PASSWORD_LEN];
+        
+        int16_t userIdLen;
+        char userId[MAX_USER_ID_LEN];
     };
     
     struct LoginResPacket : public Packet
     {
         LoginResPacket() { cmd = LOGIN_RES; }
-        UserInfo userInfo;
+        
+        int8_t loginInfo;
     };
     
-    struct SignUpReqPacket : public Packet
+    struct CreateAccountReqPacket : public Packet
     {
-        SignUpReqPacket() { cmd = SIGN_UP_REQ; }
+        CreateAccountReqPacket() { cmd = CREATE_ACCOUNT_REQ; }
+        
+        int16_t userIdLen;
+        char userId[MAX_USER_ID_LEN];
         int8_t nickNameLen;
         char nickName[MAX_NICK_NAME_LEN];
-        int8_t passwordLen;
-        char password[MAX_PASSWORD_LEN];
-        int8_t emailLen;
-        char email[MAX_EMAIL_LEN];
     };
     
-    struct SignUpResPacket : public Packet
+    struct CreateAccountResPacket : public Packet
     {
-        SignUpResPacket() { cmd = SIGN_UP_RES; }
+        CreateAccountResPacket() { cmd = CREATE_ACCOUNT_RES; }
         
+        int8_t isSuccess;
     };
     
-
+    
     struct EnterLobbyReqPacket : public Packet
     {
         EnterLobbyReqPacket() { cmd = ENTER_LOBBY_REQ; }
@@ -107,18 +118,18 @@ public:
         char ip[MAX_IP_ADDRESS_LEN];
         uint16_t port;
     };
-
+    
     struct EnterLobbyOkPacket : public Packet
     {
         EnterLobbyOkPacket() { cmd = ENTER_LOBBY_OK; }
         
     };
-
+    
     struct FailPacket : public Packet
-	{
-		int32_t failReason;
-	};
-
+    {
+        int32_t failReason;
+    };
+    
 };
 #pragma pack(pop)
 #endif //__CLIENT_FRONT_PACKET_H__

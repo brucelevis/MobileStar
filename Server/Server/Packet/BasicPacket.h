@@ -11,6 +11,7 @@ typedef uint32_t command_t;
 static const int32_t PACKET_VERSION = 7;
 
 static const int MAX_IP_ADDRESS_LEN = 15;
+static const int MAX_USER_ID_LEN = 300;
 static const int MAX_EMAIL_LEN = 16; // check
 static const int MAX_PASSWORD_LEN = 16; // check
 static const int MAX_NICK_NAME_LEN = 16;
@@ -26,12 +27,14 @@ static const int MAX_MEMO_LEN = 100;
 static const int MAX_FRIEND_COUNT = 30;
 static const int MAX_USER_COUNT_IN_CHANNEL = 200;
 static const int MAX_REQUEST_INFO_COUNT = 10;
+static const int MAX_CLAN_NAME_LEN = 20;
 
 static const int MAX_ROOM_SLOT_COUNT = 2;
 
 static const int INVALID_USER_NO = -1;
 static const int INVALID_ROOM_NO = -1;
 static const int INVALID_CHANNEL_NO = -1;
+static const int INVALID_CLAN_NO = 0;
 
 enum RequestType
 {
@@ -71,6 +74,12 @@ struct NickNameInfo
 {
     int8_t nickNameLen;
     char nickName[MAX_NICK_NAME_LEN];
+};
+
+struct ClanNameInfo
+{
+    int8_t clanNameLen;
+    char clanName[MAX_CLAN_NAME_LEN];
 };
 
 
@@ -135,9 +144,6 @@ struct UserInfo
     int64_t userNo;
     int8_t nickNameLen;
     char nickName[MAX_NICK_NAME_LEN];
-    int32_t gold;
-    int8_t memoLen;
-    char memo[MAX_MEMO_LEN];
     int16_t commonWin;
     int16_t commonLose;
     int16_t commonDiss;
@@ -146,7 +152,10 @@ struct UserInfo
     int16_t rankDiss;
     int8_t grade;
     int8_t gradeReachedCount;
-    int8_t playCount;
+    int32_t point;
+    int32_t coin;
+    int32_t clanNo;
+    int8_t clanClass;
 };
 
 struct UserInfoWithSessionId
@@ -157,8 +166,18 @@ struct UserInfoWithSessionId
 
 struct GameUserInfo
 {
-    int64_t userNo;
+    NickNameInfo nickNameInfo;
     int8_t tribe;
+};
+
+struct ClanInfo
+{
+    int32_t clanNo;
+    int8_t clanNameLen;
+    char clanName[MAX_CLAN_NAME_LEN];
+    int32_t win;
+    int32_t lose;
+    int32_t point;
 };
 
 struct Packet

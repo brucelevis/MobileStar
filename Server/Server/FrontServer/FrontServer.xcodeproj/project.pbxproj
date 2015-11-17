@@ -35,6 +35,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6F08C3421BEC899B00A911A3 /* ChattingFrontPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingFrontPacket.h; sourceTree = "<group>"; };
 		6F2DF0271BA2DAD0002A5D43 /* FrontServer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = FrontServer; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F2DF02A1BA2DAD0002A5D43 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6F2DF03D1BA2EA42002A5D43 /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = "../../../../boost_1_55_0/bin.v2/libs/system/build/darwin-4.2.1/debug/address-model-32/threading-multi/libboost_system.dylib"; sourceTree = "<group>"; };
@@ -134,19 +135,20 @@
 		6F2DF03F1BA2EB72002A5D43 /* Packet */ = {
 			isa = PBXGroup;
 			children = (
-				6F3BFD171BAEA9D800C9027F /* GameFrontPacket.h */,
-				6FE7A3591BAC012F00C589D0 /* LobbyFrontPacket.h */,
+				6F08C3421BEC899B00A911A3 /* ChattingFrontPacket.h */,
 				6F2DF0401BA2EB72002A5D43 /* BasicPacket.h */,
-				6F2DF0411BA2EB72002A5D43 /* CenterCachePacket.h */,
 				6F2DF0421BA2EB72002A5D43 /* ClientFrontPacket.h */,
-				6F2DF0431BA2EB72002A5D43 /* ClientGamePacket.h */,
 				6F2DF0441BA2EB72002A5D43 /* ClientLobbyPacket.h */,
-				6F2DF0451BA2EB72002A5D43 /* FrontCachePacket.h */,
-				6F2DF0461BA2EB72002A5D43 /* FrontCenterPacket.h */,
-				6F2DF0481BA2EB72002A5D43 /* GameCachePacket.h */,
-				6F2DF0491BA2EB72002A5D43 /* GameCenterPacket.h */,
+				6F2DF0431BA2EB72002A5D43 /* ClientGamePacket.h */,
+				6FE7A3591BAC012F00C589D0 /* LobbyFrontPacket.h */,
 				6F2DF04A1BA2EB72002A5D43 /* GameLobbyPacket.h */,
+				6F3BFD171BAEA9D800C9027F /* GameFrontPacket.h */,
+				6F2DF0451BA2EB72002A5D43 /* FrontCachePacket.h */,
 				6F2DF04B1BA2EB72002A5D43 /* LobbyCachePacket.h */,
+				6F2DF0481BA2EB72002A5D43 /* GameCachePacket.h */,
+				6F2DF0461BA2EB72002A5D43 /* FrontCenterPacket.h */,
+				6F2DF0491BA2EB72002A5D43 /* GameCenterPacket.h */,
+				6F2DF0411BA2EB72002A5D43 /* CenterCachePacket.h */,
 				6F2DF04C1BA2EB72002A5D43 /* LobbyCenterPacket.h */,
 			);
 			name = Packet;

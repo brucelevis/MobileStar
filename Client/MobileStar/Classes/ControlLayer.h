@@ -24,12 +24,15 @@ public:
     
     
 private:
+    int findButtonIndexByPosition(float x, float y);
+    
     
     bool isMiniMapTouched;
     Touch* pMiniMapTouch;
     
     bool isButtonesTouched;
     Touch* pButtonesTouch;
+    int buttonIndex;
     
     bool isInfoViewTouched;
     Touch* pInfoViewTouch;

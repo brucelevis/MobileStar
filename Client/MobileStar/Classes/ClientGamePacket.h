@@ -27,6 +27,10 @@ public:
         FINISH_GAME_FAIL,
         
         MOVE_LOBBY_OK,
+        
+        RECONNECT_REQ,
+        RECONNECT_RES,
+        RECONNECT_FAIL,
     };
     
     enum EnumFailReason
@@ -89,6 +93,19 @@ public:
     struct MoveLobbyOkPacket : public Packet
     {
         MoveLobbyOkPacket() { cmd = MOVE_LOBBY_OK; }
+    };
+    
+    struct ReconnectReqPacket : public Packet
+    {
+        ReconnectReqPacket() { cmd = RECONNECT_REQ; }
+        
+        SessionId_t sid;
+    };
+    
+    struct ReconnectResPacket : public Packet
+    {
+        ReconnectResPacket() { cmd = RECONNECT_RES; }
+        
     };
     
     

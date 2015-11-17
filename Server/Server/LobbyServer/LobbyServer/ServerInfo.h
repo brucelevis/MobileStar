@@ -11,6 +11,11 @@
 #include "BasicPacket.h"
 #include "Network.h"
 
+struct CacheServerInfo
+{
+    ConnectInfo* connectInfo;
+};
+
 struct ChattingServerInfo
 {
     ConnectInfo* connectInfo;
@@ -19,7 +24,6 @@ struct ChattingServerInfo
     int clientPort;
 };
 
-
 struct GameServerInfo
 {
     ConnectInfo* connectInfo;
@@ -27,6 +31,8 @@ struct GameServerInfo
     int gameServerNo;
     char clientIp[MAX_IP_ADDRESS_LEN];
     int clientPort;
+    
+    int roomCount;
 };
 
 
@@ -36,21 +42,26 @@ public:
 	ServerInfoManager();
 	bool initialize();
     
+    bool addCacheServer(ConnectInfo* connectInfo);
     bool addChattingServer(ConnectInfo* connectInfo, char* clientIp, uint16_t clientPort);
     bool removeChattingServer();
+    CacheServerInfo* getCacheServerInfo() { return cacheServerInfo; }
     ChattingServerInfo* getChattingServerInfo() { return chattingServerInfo; }
     
     bool addGameServer(ConnectInfo* connectInfo, char* clientIp, uint16_t clientPort);
     bool removeGameServer(int gameServerNo);
     
     GameServerInfo* getGameServerInfo(int gameServeNo);
-    GameServerInfo* getFreeGameServerInfo() { return gameServerInfoList[0]; }
+    GameServerInfo* getFreeGameServerInfo();
+    void increaseGameServerRoomCount(int gameServerNo);
+    void decreaseGameServerRoomCount(int gameServerNo);
     
 
 	~ServerInfoManager();
 
 private:
     int createGameServerNo;
+    CacheServerInfo* cacheServerInfo;
     ChattingServerInfo* chattingServerInfo;
     std::vector<GameServerInfo*> gameServerInfoList;
     std::vector<GameServerInfo*>::iterator gameServerInfoListItr;

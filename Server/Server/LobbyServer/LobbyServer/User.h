@@ -12,6 +12,7 @@
 #include <vector>
 
 class ConnectInfo;
+class User;
 
 enum USER_STATE
 {
@@ -31,13 +32,19 @@ enum USER_LOCATION
     USER_LOCATION_ROOM,
 };
 
+struct FriendUser
+{
+    NickNameInfo nickNameInfo;
+    User* user;
+};
+
 class User
 {
 public:
 
 	User();
 
-    bool initialize(SessionId_t* sid, UserInfo* userInfo);
+    bool initialize(SessionId_t* _sid, int64_t userNo);
 
 	ConnectInfo* getConnectInfo() { return connectInfo; }
 	void setConnectInfo(ConnectInfo* _connectInfo) { connectInfo = _connectInfo; }
@@ -66,6 +73,7 @@ public:
     void setSid(SessionId_t _sid) { sid = _sid; }
 
 	UserInfo* getUserInfo() { return &userInfo; }
+    void setUserInfo(UserInfo* _userInfo) { memcpy(&userInfo, _userInfo, sizeof(UserInfo)); }
     
     int8_t getUserLocation() { return userLocation; }
     void* getLocationObject() { return locationObject; }
@@ -73,6 +81,15 @@ public:
 
     void setRequestGameUserNo(int64_t _userNo) { requestGameUserNo = _userNo; }
     int64_t getRequestGameUserNo() { return requestGameUserNo; }
+    
+    bool setFriendUserOn(User* user);
+    bool setFriend(User* user);
+    
+    void getUserInfo(UserInfo* userInfo);
+    
+    int getFriendList(NickNameInfoWithOnline* nickNameInfo);
+    
+    int32_t getClanNo() { return userInfo.clanNo; }
     
 	~User();
 
@@ -93,6 +110,8 @@ private:
     void* locationObject;
     
     int64_t requestGameUserNo;
+    
+    std::vector<FriendUser*> friendList;
 };
 
 
@@ -105,25 +124,32 @@ public:
 	UserManager();
 
 	bool initialize();
-    int addUnconnectedUser(UserInfo* userInfo, SessionId_t* sessionId);
+    int addUnconnectedUser(SessionId_t* sessionId, int64_t userNo);
     
-    int addConnectedUser(SessionId_t* sessionId, ConnectInfo* connectInfo);
+    int addConnectedUser(UserInfo* userInfo, int friendCount, NickNameInfo* friendList, ClanInfo* clanInfo);
 	
     User* getUnconnectedUserByUserNo(int64_t userNo);
+    User* getUnconnectedUserBySessionId(SessionId_t* sessionId);
+
+    User* getUserByNickNameInfo(NickNameInfo* nickNameInfo);
     User* getUserByUserNo(int64_t userNo);
+    
     bool removeUnconnectedUserByUser(User* _user);
     bool removeUnconnectedUserByUserNo(int64_t userNo);
     
     bool removeUser(User* _user);
-	bool removeUserByUserNo(int64_t userNo);
+	bool removeUserByNickNameInfo(NickNameInfo* nickNameInfo);
 
 	~UserManager();
 
 private:
-	boost::unordered_map< int64_t, User* > userMap;
+    std::map<std::string, User*> userMap;
+//	boost::unordered_map< int64_t, User* > userMap;
     std::deque<User*>::iterator unconnectedUserListItr;
     std::deque<User*> unconnectedUserList;
 	long createUserNo;
+    
+    
 };
 
 #endif //__USER_H__

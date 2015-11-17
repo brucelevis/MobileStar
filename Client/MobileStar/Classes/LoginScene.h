@@ -2,16 +2,10 @@
 #define __LOGIN_SCENE_H__
 
 #include "cocos2d.h"
-#include <ui/UIEditBox/UIEditBox.h>
-#include <ui/UIScrollView.h>
 
-USING_NS_CC;
+class CreateAccountLayer;
 
-using namespace ui;
-
-class SignUpLayer;
-
-class LoginScene : public cocos2d::Layer, cocos2d::ui::EditBoxDelegate
+class LoginScene : public cocos2d::Layer
 {
 public:
     static cocos2d::Scene* createScene();
@@ -19,30 +13,19 @@ public:
     virtual bool init();
 
     void menuCloseCallback(cocos2d::Ref* pSender);
-    void clickLoginBtn(cocos2d::Ref* pSender);
-    void clickSignUpBtn(cocos2d::Ref* pSender);
-    
-    void completeFirstConnect();
-    void completeSignUp();
-    void removeSignUpLayer();
+	void clickLoginBtn(cocos2d::Ref* pSender);
+    void openCreateAccountLayer();
+    void closeCreateAccountLayer();
+    void createAccountFail(int failReason);
     
 
 	CREATE_FUNC(LoginScene);
     
-protected:
-    void editBoxEditingDidBegin(cocos2d::ui::EditBox* editBox);
-    void editBoxEditingDidEnd(cocos2d::ui::EditBox* editBox);
-    void editBoxTextChanged(cocos2d::ui::EditBox* editBox, const std::string& text);
-    void editBoxReturn(cocos2d::ui::EditBox* editBox);
-    
 private:
     cocos2d::Menu* menu;
     
-    cocos2d::ui::EditBox* idEditBox;
-    cocos2d::ui::EditBox* passwordEditBox;
+    CreateAccountLayer* createAccountLayer;
     
-    
-    SignUpLayer* signUpLayer;
 };
 
 #endif //__FRONT_SCENE_H__

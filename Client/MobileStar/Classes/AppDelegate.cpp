@@ -6,7 +6,7 @@
 #include "NetworkLayer.h"
 #include "LoginScene.h"
 #include "BasicDefines.h"
-
+#include "HelloWorldScene.h"
 
 USING_NS_CC;
 
@@ -64,11 +64,14 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto networkBGLayer = NetworkLayer::create();
     networkBGLayer->retain();
     
-    auto scene = LoginScene::createScene();
-    scene->addChild(networkBGLayer, 0, TAG_NETWORK_LAYER);
-    director->runWithScene(scene);
+    GameClient::GetInstance().currentScene = NO_SCENE_NOW;
     
-    GameClient::GetInstance().currentScene = LOGIN_SCENE_NOW;
+    Scene* scene = HelloWorld::createScene();
+    
+    scene->addChild(networkBGLayer, 0, TAG_NETWORK_LAYER);
+    Director::getInstance()->runWithScene(scene);
+    
+    networkBGLayer->handler->frontSendFirstConnectReq();
     
     
     

@@ -68,8 +68,8 @@ void NetworkHandler::Receive(ConnectInfo* connectInfo, const char* data, int dat
                 frontHandleLoginRes(connectInfo, pData, pDataSize);
                 break;
                 
-            case ClientFrontPacket::SIGN_UP_RES:
-                frontHandleSignUpRes(connectInfo, pData, pDataSize);
+            case ClientFrontPacket::CREATE_ACCOUNT_RES:
+                frontHandleCreateAccountRes(connectInfo, pData, pDataSize);
                 break;
                 
             case ClientFrontPacket::ENTER_LOBBY_RES:
@@ -258,6 +258,8 @@ void NetworkHandler::Receive(ConnectInfo* connectInfo, const char* data, int dat
                 chattingHandleSendChattingNotify(connectInfo, pData, pDataSize);
                 break;
                 
+                
+                
             default:
                 printf("type invalid - %d", cmd);
                 break;
@@ -276,8 +278,18 @@ void NetworkHandler::frontHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     memcpy(&packet.sessionId, data, sizeof(packet.sessionId));
     
     memcpy(&GameClient::GetInstance().sessionId, &packet.sessionId, sizeof(packet.sessionId));
+//    
+//    NetworkLayer* networkBGLayer = ((NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER));
+//    
+//    auto scene = LoginScene::createScene();
+//    scene->addChild(networkBGLayer, 0, TAG_NETWORK_LAYER);
+//    Director::getInstance()->runWithScene(scene);
+    GameClient::GetInstance().currentScene = NO_SCENE_NOW;
     
-    ((LoginScene*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOGIN_SCENE))->completeFirstConnect();
+    Scene* scene = LoginScene::createScene();
+    
+    ((NetworkLayer*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER)))->AddThisToScene(scene);
+    Director::getInstance()->replaceScene(scene);
 }
 
 void NetworkHandler::frontHandleLoginRes(ConnectInfo* connectInfo, const char* data, int dataSize)
@@ -287,27 +299,54 @@ void NetworkHandler::frontHandleLoginRes(ConnectInfo* connectInfo, const char* d
     ///////////////////TODO. draw waitting bar for user
     
     ClientFrontPacket::LoginResPacket packet;
-    memcpy(&packet.userInfo, data, sizeof(packet.userInfo));
+    memcpy(&packet.loginInfo, data, sizeof(packet.loginInfo));
     
-    printf("%lld", packet.userInfo.userNo);
+    printf("%d", packet.loginInfo);
     
-    GameClient::GetInstance().userInfo->userNo = packet.userInfo.userNo;
-    
-    ///////////////////send enter lobby req
-    
-    frontSendEnterLobbyReq();
+    if(packet.loginInfo == ClientFrontPacket::LOGIN_RESULT_SUCCESS)
+    {
+        frontSendEnterLobbyReq();
+    }
+    else
+    {
+        ((LoginScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOGIN_SCENE)))->openCreateAccountLayer();
+
+    }
 }
 
 
-void NetworkHandler::frontHandleSignUpRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+void NetworkHandler::frontHandleCreateAccountRes(ConnectInfo* connectInfo, const char* data, int dataSize)
 {
-    printf("NetworkHandler::frontHandleLoginRes");
+    printf("NetworkHandler::frontHandleCreateAccountRes");
     
     ///////////////////TODO. draw waitting bar for user
     
-    ClientFrontPacket::SignUpResPacket packet;
+    ClientFrontPacket::CreateAccountResPacket packet;
     
-    ((LoginScene*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOGIN_SCENE))->completeSignUp();
+    memcpy(&packet.isSuccess, data, sizeof(packet.isSuccess));
+    
+    if(packet.isSuccess == ClientFrontPacket::CREATE_ACCOUNT_RESULT_SUCCESS)
+    {
+        std::string loginToken = UserDefault::getInstance()->getStringForKey("loginToken");
+        
+        frontSendLoginReq(loginToken.c_str(), loginToken.length());
+    }
+    else if(packet.isSuccess == ClientFrontPacket::CREATE_ACCOUNT_RESULT_NICKNAME_EXIST)
+    {
+        CCLOG("exist nickName");
+        return ;
+    }
+    else if(packet.isSuccess == ClientFrontPacket::CREATE_ACCOUNT_RESULT_USER_ID_EXIST)
+    {
+        std::string loginToken = UserDefault::getInstance()->getStringForKey("loginToken");
+        
+        frontSendLoginReq(loginToken.c_str(), loginToken.length());
+    }
+    else
+    {
+        CCLOG("exist nickName");
+        return ;
+    }
 }
 
 
@@ -317,7 +356,24 @@ void NetworkHandler::frontHandleEnterLobbyRes(ConnectInfo* connectInfo, const ch
     
     ClientFrontPacket::EnterLobbyResPacket packet;
     
-    ((LoginScene*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOGIN_SCENE))->completeSignUp();
+    const char* pData = data;
+    
+    memcpy(packet.ip, pData, MAX_IP_ADDRESS_LEN);
+    pData += MAX_IP_ADDRESS_LEN;
+    
+    memcpy(&packet.port, pData, sizeof(packet.port));
+    pData += sizeof(packet.port);
+    
+    printf("%s %d", packet.ip, packet.port);
+    
+    //    if(network->connectWithServer(SERVER_MODULE_LOBBY_SERVER, packet.ip, packet.port) < 0)
+    if(network->connectWithServer(SERVER_MODULE_LOBBY_SERVER, IP_ADDRESS, packet.port) < 0)
+    {
+        printf("??");
+        return ;
+    }
+    
+    lobbySendFirstConnectReq();
 }
 
 
@@ -332,6 +388,89 @@ void NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     data += MAX_IP_ADDRESS_LEN;
     
     memcpy(&packet.chattingPort, data, sizeof(packet.chattingPort));
+    data += sizeof(packet.chattingPort);
+    
+    memcpy(&packet.userInfo.userNo, data, sizeof(packet.userInfo.userNo));
+    data += sizeof(packet.userInfo.userNo);
+    
+    memcpy(&packet.userInfo.nickNameLen, data, sizeof(packet.userInfo.nickNameLen));
+    data += sizeof(packet.userInfo.nickNameLen);
+    
+    memcpy(packet.userInfo.nickName, data, packet.userInfo.nickNameLen);
+    data += packet.userInfo.nickNameLen;
+
+    memcpy(&packet.userInfo.commonWin, data, sizeof(packet.userInfo.commonWin));
+    data += sizeof(packet.userInfo.commonWin);
+    
+    memcpy(&packet.userInfo.commonLose, data, sizeof(packet.userInfo.commonLose));
+    data += sizeof(packet.userInfo.commonLose);
+    
+    memcpy(&packet.userInfo.commonDiss, data, sizeof(packet.userInfo.commonDiss));
+    data += sizeof(packet.userInfo.commonDiss);
+    
+    memcpy(&packet.userInfo.rankWin, data, sizeof(packet.userInfo.rankWin));
+    data += sizeof(packet.userInfo.rankWin);
+    
+    memcpy(&packet.userInfo.rankLose, data, sizeof(packet.userInfo.rankLose));
+    data += sizeof(packet.userInfo.rankLose);
+    
+    memcpy(&packet.userInfo.rankDiss, data, sizeof(packet.userInfo.rankDiss));
+    data += sizeof(packet.userInfo.rankDiss);
+    
+    memcpy(&packet.userInfo.grade, data, sizeof(packet.userInfo.grade));
+    data += sizeof(packet.userInfo.grade);
+    
+    memcpy(&packet.userInfo.gradeReachedCount, data, sizeof(packet.userInfo.gradeReachedCount));
+    data += sizeof(packet.userInfo.gradeReachedCount);
+    
+    memcpy(&packet.userInfo.point, data, sizeof(packet.userInfo.point));
+    data += sizeof(packet.userInfo.point);
+    
+    memcpy(&packet.userInfo.coin, data, sizeof(packet.userInfo.coin));
+    data += sizeof(packet.userInfo.coin);
+    
+    memcpy(&packet.userInfo.clanNo, data, sizeof(packet.userInfo.clanNo));
+    data += sizeof(packet.userInfo.clanNo);
+    
+    memcpy(&packet.userInfo.clanClass, data, sizeof(packet.userInfo.clanClass));
+    data += sizeof(packet.userInfo.clanClass);
+    
+    memcpy(&packet.friendCount, data, sizeof(packet.friendCount));
+    data += sizeof(packet.friendCount);
+
+    for(int i = 0; i < packet.friendCount; i++)
+    {
+        memcpy(&packet.nickNameInfoWithOnlineList[i].online, data, sizeof(packet.nickNameInfoWithOnlineList[i].online));
+        data += sizeof(packet.nickNameInfoWithOnlineList[i].online);
+        
+        memcpy(&packet.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen, data, sizeof(packet.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen));
+        data += sizeof(packet.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen);
+        
+        memcpy(packet.nickNameInfoWithOnlineList[i].nickNameInfo.nickName, data, packet.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen);
+        data += packet.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen;
+    }
+    
+    memcpy(&packet.clanInfo.clanNo, data, sizeof(packet.clanInfo.clanNo));
+    data += sizeof(packet.clanInfo.clanNo);
+    
+    if(packet.clanInfo.clanNo != INVALID_CLAN_NO)
+    {
+        memcpy(&packet.clanInfo.clanNameLen, data, sizeof(packet.clanInfo.clanNameLen));
+        data += sizeof(packet.clanInfo.clanNameLen);
+    
+        memcpy(packet.clanInfo.clanName, data, sizeof(packet.clanInfo.clanName));
+        data += sizeof(packet.clanInfo.clanName);
+    
+        memcpy(&packet.clanInfo.win, data, sizeof(packet.clanInfo.win));
+        data += sizeof(packet.clanInfo.win);
+
+        memcpy(&packet.clanInfo.lose, data, sizeof(packet.clanInfo.lose));
+        data += sizeof(packet.clanInfo.lose);
+    
+        memcpy(&packet.clanInfo.point, data, sizeof(packet.clanInfo.point));
+        data += sizeof(packet.clanInfo.point);
+    }
+
     
     if(network->connectWithServer(SERVER_MODULE_CHATTING_SERVER, IP_ADDRESS, packet.chattingPort) < 0)
     {
@@ -340,7 +479,6 @@ void NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     }
     
     chattingSendFirstConnectReq();
-    
     
     int currentScene = GameClient::GetInstance().currentScene;
     
@@ -392,14 +530,11 @@ void NetworkHandler::lobbyHandleChannelInfoNotify(ConnectInfo* connectInfo, cons
     
     for(int i = 0; i < packet.userCount; i++)
     {
-        memcpy(&packet.userViewInfoList[i].userNo, pData, sizeof(packet.userViewInfoList[i].userNo));
-        pData += sizeof(packet.userViewInfoList[i].userNo);
+        memcpy(&packet.nickNameInfoList[i].nickNameLen, pData, sizeof(packet.nickNameInfoList[i].nickNameLen));
+        pData += sizeof(packet.nickNameInfoList[i].nickNameLen);
         
-        memcpy(&packet.userViewInfoList[i].nickNameInfo.nickNameLen, pData, sizeof(packet.userViewInfoList[i].nickNameInfo.nickNameLen));
-        pData += sizeof(packet.userViewInfoList[i].nickNameInfo.nickNameLen);
-        
-        memcpy(packet.userViewInfoList[i].nickNameInfo.nickName, pData, packet.userViewInfoList[i].nickNameInfo.nickNameLen);
-        pData += packet.userViewInfoList[i].nickNameInfo.nickNameLen;
+        memcpy(packet.nickNameInfoList[i].nickName, pData, packet.nickNameInfoList[i].nickNameLen);
+        pData += packet.nickNameInfoList[i].nickNameLen;
     }
     
     
@@ -413,7 +548,7 @@ void NetworkHandler::lobbyHandleChannelInfoNotify(ConnectInfo* connectInfo, cons
     
     for(int i = 0; i < packet.userCount; i++)
     {
-        ((LobbyScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE)))->addUserInfo(packet.userViewInfoList[i].userNo, packet.userViewInfoList[i].nickNameInfo.nickNameLen, packet.userViewInfoList[i].nickNameInfo.nickName);
+        ((LobbyScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE)))->addUserInfo(packet.nickNameInfoList[i].nickNameLen, packet.nickNameInfoList[i].nickName);
     }
     
     if(GameClient::GetInstance().isConnectedWithChattingServer)
@@ -543,17 +678,14 @@ void NetworkHandler::lobbyHandleEnterUserInChannelNotify(ConnectInfo* connectInf
     
     const char* pData = data;
     
-    memcpy(&packet.userViewInfo.userNo, pData, sizeof(packet.userViewInfo.userNo));
-    pData += sizeof(packet.userViewInfo.userNo);
+    memcpy(&packet.nickNameInfo.nickNameLen, pData, sizeof(packet.nickNameInfo.nickNameLen));
+    pData += sizeof(packet.nickNameInfo.nickNameLen);
     
-    memcpy(&packet.userViewInfo.nickNameInfo.nickNameLen, pData, sizeof(packet.userViewInfo.nickNameInfo.nickNameLen));
-    pData += sizeof(packet.userViewInfo.nickNameInfo.nickNameLen);
-    
-    memcpy(packet.userViewInfo.nickNameInfo.nickName, pData, packet.userViewInfo.nickNameInfo.nickNameLen);
-    pData += packet.userViewInfo.nickNameInfo.nickNameLen;
+    memcpy(packet.nickNameInfo.nickName, pData, packet.nickNameInfo.nickNameLen);
+    pData += packet.nickNameInfo.nickNameLen;
     
     
-    ((LobbyScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE)))->addUserInfo(packet.userViewInfo.userNo, packet.userViewInfo.nickNameInfo.nickNameLen, packet.userViewInfo.nickNameInfo.nickName);
+    ((LobbyScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE)))->addUserInfo(packet.nickNameInfo.nickNameLen, packet.nickNameInfo.nickName);
 }
 
 
@@ -568,11 +700,15 @@ void NetworkHandler::lobbyHandleLeaveUserInChannelNotify(ConnectInfo* connectInf
     
     const char* pData = data;
     
-    memcpy(&packet.userNo, pData, sizeof(packet.userNo));
-    pData += sizeof(packet.userNo);
+    memcpy(&packet.nickNameInfo.nickNameLen, pData, sizeof(packet.nickNameInfo.nickNameLen));
+    pData += sizeof(packet.nickNameInfo.nickNameLen);
+    
+    memcpy(packet.nickNameInfo.nickName, pData, packet.nickNameInfo.nickNameLen);
+    pData += packet.nickNameInfo.nickNameLen;
     
     
-    ((LobbyScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE)))->removeUserInfo(packet.userNo);
+    ((LobbyScene*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_LOBBY_SCENE)))->removeUserInfo(packet.nickNameInfo.nickNameLen, packet.nickNameInfo.nickName);
+
 }
 
 
@@ -800,16 +936,22 @@ void NetworkHandler::lobbyHandleStartGameNotify(ConnectInfo* connectInfo, const 
     
     for(int i = 0; i < packet.userCount; i++)
     {
-        memcpy(&packet.gameUserInfo[i].userNo, pData, sizeof(packet.gameUserInfo[i].userNo));
-        pData += sizeof(packet.gameUserInfo[i].userNo);
-    
+        memcpy(&packet.gameUserInfo[i].nickNameInfo.nickNameLen, pData, sizeof(packet.gameUserInfo[i].nickNameInfo.nickNameLen));
+        pData += sizeof(packet.gameUserInfo[i].nickNameInfo.nickNameLen);
+
+        memcpy(packet.gameUserInfo[i].nickNameInfo.nickName, pData, packet.gameUserInfo[i].nickNameInfo.nickNameLen);
+        pData += packet.gameUserInfo[i].nickNameInfo.nickNameLen;
+
         memcpy(&packet.gameUserInfo[i].tribe, pData, sizeof(packet.gameUserInfo[i].tribe));
         pData += sizeof(packet.gameUserInfo[i].tribe);
-        printf("%lld\n", packet.gameUserInfo[i].userNo);
-        GameClient::GetInstance().gameUserInfo[i].userNo = packet.gameUserInfo[i].userNo;
+        
+        
+        GameClient::GetInstance().gameUserInfo[i].nickNameInfo.nickNameLen = packet.gameUserInfo[i].nickNameInfo.nickNameLen;
+        memcpy(GameClient::GetInstance().gameUserInfo[i].nickNameInfo.nickName, packet.gameUserInfo[i].nickNameInfo.nickName, packet.gameUserInfo[i].nickNameInfo.nickNameLen);
+        
         GameClient::GetInstance().gameUserInfo[i].tribe = packet.gameUserInfo[i].tribe;
         
-        if(GameClient::GetInstance().GetUserInfo()->userNo == packet.gameUserInfo[i].userNo)
+        if(memcpy(GameClient::GetInstance().GetUserInfo()->nickName, packet.gameUserInfo[i].nickNameInfo.nickName, packet.gameUserInfo[i].nickNameInfo.nickNameLen) == 0)
         {
             printf("ook");
             GameClient::GetInstance().myGameIndex = i;
@@ -822,7 +964,8 @@ void NetworkHandler::lobbyHandleStartGameNotify(ConnectInfo* connectInfo, const 
     memcpy(&packet.port, pData, sizeof(packet.port));
     pData += sizeof(packet.port);
     
-    
+    memcpy(GameClient::GetInstance().gameServerIp, packet.ip, MAX_IP_ADDRESS_LEN);
+    GameClient::GetInstance().gameServerPort = packet.port;
     
     
     //    if(network->connectWithServer(SERVER_MODULE_GAME_SERVER, packet.ip, packet.port) < 0)
@@ -927,7 +1070,11 @@ void NetworkHandler::gameHandleFinishGameRes(ConnectInfo* connectInfo, const cha
     ((NetworkLayer*)(Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER)))->AddThisToScene(scene);
     Director::getInstance()->replaceScene(scene);
     
-    GameClient::GetInstance().currentScene = RESULT_SCENE_NOW;
+}
+
+void NetworkHandler::gameHandleReconnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)
+{
+    CCLOG("game reconnect");
 }
 
 
@@ -999,64 +1146,53 @@ void NetworkHandler::frontSendFirstConnectReq()
     
 }
 
-void NetworkHandler::frontSendLoginReq(const char* nickName, int8_t nickNameLen, const char* password, int8_t passwordLen)
+void NetworkHandler::frontSendLoginReq(const char* userId, int16_t userIdLen)
 {
     ClientFrontPacket::LoginReqPacket packet;
     
-    packet.nickNameLen = nickNameLen;
-    memcpy(packet.nickName, nickName, nickNameLen);
-    packet.passwordLen = passwordLen;
-    memcpy(packet.password, password, passwordLen);
-    
+    packet.userIdLen = userIdLen;
+    memcpy(packet.userId, userId, userIdLen);
     
     char* pSendBuffer = sendBuffer;
     
-    memcpy(pSendBuffer, &packet.nickNameLen, sizeof(packet.nickNameLen));
-    pSendBuffer += sizeof(packet.nickNameLen);
+    memcpy(pSendBuffer, &packet.cmd, sizeof(packet.cmd));
+    pSendBuffer += sizeof(packet.cmd);
     
-    memcpy(pSendBuffer, packet.nickName, packet.nickNameLen);
-    pSendBuffer += packet.nickNameLen;
+    memcpy(pSendBuffer, &packet.userIdLen, sizeof(packet.userIdLen));
+    pSendBuffer += sizeof(packet.userIdLen);
     
-    memcpy(pSendBuffer, &packet.passwordLen, sizeof(packet.passwordLen));
-    pSendBuffer += sizeof(packet.passwordLen);
-    
-    memcpy(pSendBuffer, packet.password, packet.passwordLen);
-    pSendBuffer += packet.passwordLen;
+    memcpy(pSendBuffer, packet.userId, packet.userIdLen);
+    pSendBuffer += packet.userIdLen;
     
     network->sendPacket(SERVER_MODULE_FRONT_SERVER, sendBuffer, (int)(pSendBuffer - sendBuffer));
 }
 
-void NetworkHandler::frontSendSignUpReq(const char* nickName, int8_t nickNameLen, const char* password, int8_t passwordLen, const char* email, int8_t emailLen)
+
+void NetworkHandler::frontSendCreateAccountReq(const char* userId, int16_t userIdLen, const char* nickName, int8_t nickNameLen)
 {
-    ClientFrontPacket::SignUpReqPacket packet;
+    ClientFrontPacket::CreateAccountReqPacket packet;
     
     packet.nickNameLen = nickNameLen;
     memcpy(packet.nickName, nickName, nickNameLen);
-    packet.passwordLen = passwordLen;
-    memcpy(packet.password, password, passwordLen);
-    packet.emailLen = emailLen;
-    memcpy(packet.email, email, emailLen);
-    
+    packet.userIdLen = userIdLen;
+    memcpy(packet.userId, userId, userIdLen);
     
     char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &packet.cmd, sizeof(packet.cmd));
+    pSendBuffer += sizeof(packet.cmd);
+    
+    memcpy(pSendBuffer, &packet.userIdLen, sizeof(packet.userIdLen));
+    pSendBuffer += sizeof(packet.userIdLen);
+    
+    memcpy(pSendBuffer, packet.userId, packet.userIdLen);
+    pSendBuffer += packet.userIdLen;
     
     memcpy(pSendBuffer, &packet.nickNameLen, sizeof(packet.nickNameLen));
     pSendBuffer += sizeof(packet.nickNameLen);
     
     memcpy(pSendBuffer, packet.nickName, packet.nickNameLen);
     pSendBuffer += packet.nickNameLen;
-    
-    memcpy(pSendBuffer, &packet.passwordLen, sizeof(packet.passwordLen));
-    pSendBuffer += sizeof(packet.passwordLen);
-    
-    memcpy(pSendBuffer, packet.password, packet.passwordLen);
-    pSendBuffer += packet.passwordLen;
-    
-    memcpy(pSendBuffer, &packet.emailLen, sizeof(packet.emailLen));
-    pSendBuffer += sizeof(packet.emailLen);
-    
-    memcpy(pSendBuffer, packet.email, packet.emailLen);
-    pSendBuffer += packet.emailLen;
     
     
     network->sendPacket(SERVER_MODULE_FRONT_SERVER, sendBuffer, (int)(pSendBuffer - sendBuffer));
@@ -1122,21 +1258,46 @@ void NetworkHandler::lobbySendMoveChannelReq(int channelNo)
 }
 
 
-void NetworkHandler::lobbySendGetUserInfoReq(int64_t userNo)
+void NetworkHandler::lobbySendGetUserInfoReq(const char* nickName, int8_t nickNameLen)
 {
     ClientLobbyPacket::GetUserInfoReqPacket packet;
-    packet.userNo = userNo;
     
-    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, (char*)&packet, sizeof(packet));
+    packet.nickNameInfo.nickNameLen = nickNameLen;
+    memcpy(packet.nickNameInfo.nickName, nickName, nickNameLen);
+    
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &packet.cmd, sizeof(packet.cmd));
+    pSendBuffer += sizeof(packet.cmd);
+    
+    memcpy(pSendBuffer, &packet.nickNameInfo.nickNameLen, sizeof(packet.nickNameInfo.nickNameLen));
+    pSendBuffer += sizeof(packet.nickNameInfo.nickNameLen);
+    
+    memcpy(pSendBuffer, packet.nickNameInfo.nickName, packet.nickNameInfo.nickNameLen);
+    pSendBuffer += packet.nickNameInfo.nickNameLen;
+    
+    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, sendBuffer, (int)(pSendBuffer - sendBuffer));
 }
 
 
-void NetworkHandler::lobbySendRequestGameReq(int64_t userNo)
+void NetworkHandler::lobbySendRequestGameReq(const char* nickName, int8_t nickNameLen)
 {
     ClientLobbyPacket::RequestGameReqPacket packet;
-    packet.userNo = userNo;
+    packet.nickNameInfo.nickNameLen = nickNameLen;
+    memcpy(packet.nickNameInfo.nickName, nickName, nickNameLen);
     
-    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, (char*)&packet, sizeof(packet));
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &packet.cmd, sizeof(packet.cmd));
+    pSendBuffer += sizeof(packet.cmd);
+    
+    memcpy(pSendBuffer, &packet.nickNameInfo.nickNameLen, sizeof(packet.nickNameInfo.nickNameLen));
+    pSendBuffer += sizeof(packet.nickNameInfo.nickNameLen);
+    
+    memcpy(pSendBuffer, packet.nickNameInfo.nickName, packet.nickNameInfo.nickNameLen);
+    pSendBuffer += packet.nickNameInfo.nickNameLen;
+    
+    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, sendBuffer, (int)(pSendBuffer - sendBuffer));
     
 }
 
@@ -1150,22 +1311,46 @@ void NetworkHandler::lobbySendRequestGameCancelReq()
 }
 
 
-void NetworkHandler::lobbySendResponseGameYesReq(int64_t userNo)
+void NetworkHandler::lobbySendResponseGameYesReq(const char* nickName, int8_t nickNameLen)
 {
     ClientLobbyPacket::ResponseGameYesReqPacket packet;
-    packet.userNo = userNo;
+    packet.nickNameInfo.nickNameLen = nickNameLen;
+    memcpy(packet.nickNameInfo.nickName, nickName, nickNameLen);
     
-    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, (char*)&packet, sizeof(packet));
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &packet.cmd, sizeof(packet.cmd));
+    pSendBuffer += sizeof(packet.cmd);
+    
+    memcpy(pSendBuffer, &packet.nickNameInfo.nickNameLen, sizeof(packet.nickNameInfo.nickNameLen));
+    pSendBuffer += sizeof(packet.nickNameInfo.nickNameLen);
+    
+    memcpy(pSendBuffer, packet.nickNameInfo.nickName, packet.nickNameInfo.nickNameLen);
+    pSendBuffer += packet.nickNameInfo.nickNameLen;
+    
+    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, sendBuffer, (int)(pSendBuffer - sendBuffer));
 
 }
 
 
-void NetworkHandler::lobbySendResponseGameNoReq(int64_t userNo)
+void NetworkHandler::lobbySendResponseGameNoReq(const char* nickName, int8_t nickNameLen)
 {
     ClientLobbyPacket::ResponseGameNoReqPacket packet;
-    packet.userNo = userNo;
+    packet.nickNameInfo.nickNameLen = nickNameLen;
+    memcpy(packet.nickNameInfo.nickName, nickName, nickNameLen);
     
-    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, (char*)&packet, sizeof(packet));
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &packet.cmd, sizeof(packet.cmd));
+    pSendBuffer += sizeof(packet.cmd);
+    
+    memcpy(pSendBuffer, &packet.nickNameInfo.nickNameLen, sizeof(packet.nickNameInfo.nickNameLen));
+    pSendBuffer += sizeof(packet.nickNameInfo.nickNameLen);
+    
+    memcpy(pSendBuffer, packet.nickNameInfo.nickName, packet.nickNameInfo.nickNameLen);
+    pSendBuffer += packet.nickNameInfo.nickNameLen;
+    
+    network->sendPacket(SERVER_MODULE_LOBBY_SERVER, sendBuffer, (int)(pSendBuffer - sendBuffer));
 }
 
 
@@ -1332,6 +1517,14 @@ void NetworkHandler::gameSendFinishGameReq()
 void NetworkHandler::gameSendMoveLobbyOk()
 {
     ClientGamePacket::MoveLobbyOkPacket packet;
+    
+    network->sendPacket(SERVER_MODULE_GAME_SERVER, (char*)&packet, sizeof(packet));
+}
+
+void NetworkHandler::gameSendReconnectReq()
+{
+    ClientGamePacket::ReconnectReqPacket packet;
+    memcpy(&packet.sid, &GameClient::GetInstance().sessionId, sizeof(SessionId_t));
     
     network->sendPacket(SERVER_MODULE_GAME_SERVER, (char*)&packet, sizeof(packet));
 }

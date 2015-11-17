@@ -62,7 +62,11 @@ bool FrontData::LoadNetworkInfo()
     {
         int8_t module = 0;
         const char* serverModule = element->FirstChildElement("server_module")->GetText();
-        if (strcmp(serverModule, "lobby_server") == 0)
+        if (strcmp(serverModule, "cache_server") == 0)
+        {
+            module = SERVER_MODULE_CACHE_SERVER;
+        }
+        else if (strcmp(serverModule, "lobby_server") == 0)
         {
             module = SERVER_MODULE_LOBBY_SERVER;
         }

@@ -14,7 +14,7 @@ public:
     virtual bool init();
 
     ~UserInfoLayer();
-    void SetUserInfo(int64_t userNo, int nickNameLen, const char* nickName);
+    void SetUserInfo(int nickNameLen, const char* nickName);
 
 //	cocos2d::Sprite* backgroundImage;
 //	void menuCloseCallback(cocos2d::Ref* pSender);

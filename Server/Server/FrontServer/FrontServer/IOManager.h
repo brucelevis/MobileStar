@@ -30,10 +30,15 @@ public:
     
     
     
-    ////////////////////////recv login
-    void loginSessionIn(ConnectInfo* connectInfo);
-    void loginSessionOut(ConnectInfo* connectInfo);
-    void loginReceiveData(ConnectInfo* connectInfo, const char* data, int dataSize);
+    ////////////////////////recv cache
+    void cacheSessionIn(ConnectInfo* connectInfo);
+    void cacheSessionOut(ConnectInfo* connectInfo);
+    void cacheReceiveData(ConnectInfo* connectInfo, command_t cmd, const char* data, int dataSize);
+    
+    void cacheHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void cacheHandleLoginUserRes(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void cacheHandleLoginUserFail(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void cacheHandleCreateUserRes(ConnectInfo* connectInfo, const char* data, int dataSize);
     
     ////////////////////////recv lobby
     void lobbySessionIn(ConnectInfo* connectInfo);
@@ -66,6 +71,8 @@ public:
     void clientReceiveData(ConnectInfo* connectInfo, command_t cmd, const char* data, int dataSize);
     
     void clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void clientHandleLoginReq(ConnectInfo* connectInfo, const char* data, int dataSize);
+    void clientHandleCreateAccountReq(ConnectInfo* connectInfo, const char* data, int dataSize);
     void clientHandleEnterLobbyReq(ConnectInfo* connectInfo, const char* data, int dataSize);
     void clientHandleEnterLobbyOk(ConnectInfo* connectInfo, const char* data, int dataSize);
     

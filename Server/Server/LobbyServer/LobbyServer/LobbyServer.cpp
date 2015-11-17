@@ -17,6 +17,7 @@
 #include "IOManager.h"
 #include "ServerInfo.h"
 #include "QuickPlay.h"
+#include "Clan.h"
 #include "TimerList.h"
 
 #if OS_PLATFORM == PLATFORM_LINUX
@@ -95,6 +96,13 @@ bool LobbyServer::initialize(int workerThreadCount)
     {
         return false;
     }
+    
+    clanMgr = new ClanManager();
+    if(clanMgr->initialize() == false)
+    {
+        return false;
+    }
+    
 
 	return true;
 }

@@ -17,6 +17,7 @@ class RoomManager;
 class UserManager;
 class ServerInfoManager;
 class QuickPlayManager;
+class ClanManager;
 
 class LobbyData;
 
@@ -50,6 +51,7 @@ public:
 	UserManager* userMgr;
     ServerInfoManager* serverInfoMgr;
     QuickPlayManager* quickPlayMgr;
+    ClanManager* clanMgr;
     
 private:
 	long _prevTime;

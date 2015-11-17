@@ -62,7 +62,7 @@ public:
         
         SessionId_t sid;
 
-		UserInfo userInfo;
+		int64_t userNo;
 	};
 
 	struct EnterClientResPacket : public Packet

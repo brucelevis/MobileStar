@@ -93,7 +93,8 @@ public:
     int addConnectedUser(SessionId_t* sessionId, ConnectInfo* connectInfo);
     
     User* getUnconnectedUserByUserNo(int64_t userNo);
-	User* getUserByUserNo(int64_t userNo);
+    User* getUserByUserNo(int64_t userNo);
+    User* getUserBySessionId(SessionId_t* sessionId);
 	bool removeUser(User* _user);
 	bool removeUserByUserNo(int64_t userNo);
 

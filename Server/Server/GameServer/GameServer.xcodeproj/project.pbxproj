@@ -64,17 +64,13 @@
 		6F2DEFB91BA2ACC1002A5D43 /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyxml2.cpp; path = ../../Lib/ExternalLib/tinyxml2/tinyxml2.cpp; sourceTree = "<group>"; };
 		6F2DEFBA1BA2ACC1002A5D43 /* tinyxml2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinyxml2.h; path = ../../Lib/ExternalLib/tinyxml2/tinyxml2.h; sourceTree = "<group>"; };
 		6F2DEFBE1BA2ACF4002A5D43 /* BasicPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BasicPacket.h; path = ../Packet/BasicPacket.h; sourceTree = "<group>"; };
-		6F2DEFBF1BA2ACF4002A5D43 /* CenterCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CenterCachePacket.h; path = ../Packet/CenterCachePacket.h; sourceTree = "<group>"; };
 		6F2DEFC01BA2ACF4002A5D43 /* ClientFrontPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientFrontPacket.h; path = ../Packet/ClientFrontPacket.h; sourceTree = "<group>"; };
 		6F2DEFC11BA2ACF4002A5D43 /* ClientGamePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientGamePacket.h; path = ../Packet/ClientGamePacket.h; sourceTree = "<group>"; };
 		6F2DEFC21BA2ACF4002A5D43 /* ClientLobbyPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientLobbyPacket.h; path = ../Packet/ClientLobbyPacket.h; sourceTree = "<group>"; };
 		6F2DEFC31BA2ACF4002A5D43 /* FrontCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrontCachePacket.h; path = ../Packet/FrontCachePacket.h; sourceTree = "<group>"; };
-		6F2DEFC41BA2ACF4002A5D43 /* FrontCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FrontCenterPacket.h; path = ../Packet/FrontCenterPacket.h; sourceTree = "<group>"; };
 		6F2DEFC61BA2ACF4002A5D43 /* GameCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameCachePacket.h; path = ../Packet/GameCachePacket.h; sourceTree = "<group>"; };
-		6F2DEFC71BA2ACF4002A5D43 /* GameCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameCenterPacket.h; path = ../Packet/GameCenterPacket.h; sourceTree = "<group>"; };
 		6F2DEFC81BA2ACF4002A5D43 /* GameLobbyPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameLobbyPacket.h; path = ../Packet/GameLobbyPacket.h; sourceTree = "<group>"; };
 		6F2DEFC91BA2ACF4002A5D43 /* LobbyCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LobbyCachePacket.h; path = ../Packet/LobbyCachePacket.h; sourceTree = "<group>"; };
-		6F2DEFCA1BA2ACF4002A5D43 /* LobbyCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LobbyCenterPacket.h; path = ../Packet/LobbyCenterPacket.h; sourceTree = "<group>"; };
 		6F2DEFCB1BA2AD42002A5D43 /* ClientReceiveHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClientReceiveHandler.cpp; sourceTree = "<group>"; };
 		6F2DEFCC1BA2AD42002A5D43 /* ClientReceiveHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientReceiveHandler.h; sourceTree = "<group>"; };
 		6F2DEFCD1BA2AD42002A5D43 /* ClientSendHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ClientSendHandler.cpp; sourceTree = "<group>"; };
@@ -209,17 +205,13 @@
 			children = (
 				6F85554D1BAD795E0030AC6A /* GameFrontPacket.h */,
 				6F2DEFBE1BA2ACF4002A5D43 /* BasicPacket.h */,
-				6F2DEFBF1BA2ACF4002A5D43 /* CenterCachePacket.h */,
 				6F2DEFC01BA2ACF4002A5D43 /* ClientFrontPacket.h */,
 				6F2DEFC11BA2ACF4002A5D43 /* ClientGamePacket.h */,
 				6F2DEFC21BA2ACF4002A5D43 /* ClientLobbyPacket.h */,
 				6F2DEFC31BA2ACF4002A5D43 /* FrontCachePacket.h */,
-				6F2DEFC41BA2ACF4002A5D43 /* FrontCenterPacket.h */,
 				6F2DEFC61BA2ACF4002A5D43 /* GameCachePacket.h */,
-				6F2DEFC71BA2ACF4002A5D43 /* GameCenterPacket.h */,
 				6F2DEFC81BA2ACF4002A5D43 /* GameLobbyPacket.h */,
 				6F2DEFC91BA2ACF4002A5D43 /* LobbyCachePacket.h */,
-				6F2DEFCA1BA2ACF4002A5D43 /* LobbyCenterPacket.h */,
 			);
 			name = Packet;
 			sourceTree = "<group>";

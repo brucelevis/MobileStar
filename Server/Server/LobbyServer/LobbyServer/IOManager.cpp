@@ -7,6 +7,7 @@
 #include "LobbyFrontPacket.h"
 #include "GameLobbyPacket.h"
 #include "LobbyChattingPacket.h"
+#include "LobbyCachePacket.h"
 #include "Room.h"
 
 #include "LobbyDefine.h"
@@ -14,6 +15,7 @@
 #include "LobbyData.h"
 #include "ServerInfo.h"
 #include "QuickPlay.h"
+#include "Clan.h"
 
 
 IOManager::IOManager()
@@ -31,6 +33,9 @@ void IOManager::connected(ConnectInfo* connectInfo)
 {
     switch (connectInfo->serverModule)
     {
+        case SERVER_MODULE_CACHE_SERVER:
+            cacheSessionIn(connectInfo);
+            break;
         case SERVER_MODULE_FRONT_SERVER:
             frontSessionIn(connectInfo);
             break;
@@ -65,6 +70,9 @@ void IOManager::disconnected(ConnectInfo* connectInfo)
 
     switch (connectInfo->serverModule)
     {
+        case SERVER_MODULE_CACHE_SERVER:
+            cacheSessionOut(connectInfo);
+            break;
         case SERVER_MODULE_FRONT_SERVER:
             frontSessionOut(connectInfo);
             break;
@@ -112,6 +120,9 @@ void IOManager::receiveData(ConnectInfo* connectInfo, const char* data, int data
     
     switch (connectInfo->serverModule)
     {
+        case SERVER_MODULE_CACHE_SERVER:
+            cacheReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
+            break;
         case SERVER_MODULE_FRONT_SERVER:
             frontReceiveData(connectInfo, cmd, pData, dataSize - sizeof(command_t));
             break;
@@ -134,6 +145,324 @@ void IOManager::receiveData(ConnectInfo* connectInfo, const char* data, int data
             break;
     }
 }
+
+
+
+
+//////////////////////////////////////// cache recv
+
+
+void IOManager::cacheReceiveData(ConnectInfo* connectInfo, const command_t cmd, const char* body, const int bodySize)
+{
+    switch(cmd)
+    {
+        case LobbyCachePacket::FIRST_CONNECT_RES:
+            cacheHandleFirstConnectRes(connectInfo, body, bodySize);
+            break;
+            
+        case LobbyCachePacket::LOGIN_USER_RES:
+            cacheHandleLoginUserRes(connectInfo, body, bodySize);
+            break;
+
+        default:
+            ErrorLog("invalid command - type = %d", cmd);
+            return ;
+    }
+}
+
+
+void IOManager::cacheSessionIn(ConnectInfo* connectInfo)
+{
+    DebugLog("cache session in");
+
+    LobbyCachePacket::FirstConnectReqPacket sendPacket;
+    
+    LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+}
+
+
+void IOManager::cacheSessionOut(ConnectInfo* connectInfo)
+{
+    ErrorLog("never disconnect");
+
+}
+
+
+void IOManager::cacheHandleFirstConnectRes(ConnectInfo* connectInfo, const char* body, const int bodySize)
+{
+    DebugLog("cacheHandleFirstConnectRes");
+
+    if(LobbyServer::getInstance()->serverInfoMgr->addCacheServer(connectInfo) == false)
+    {
+        ErrorLog("??");
+        return ;
+    }
+}
+
+
+void IOManager::cacheHandleLoginUserRes(ConnectInfo* connectInfo, const char* data, int bodySize)
+{
+    LobbyCachePacket::LoginUserResPacket packet;
+    
+    memcpy(&packet.userInfo.userNo, data, sizeof(packet.userInfo.userNo));
+    data += sizeof(packet.userInfo.userNo);
+    
+    memcpy(&packet.userInfo.nickNameLen, data, sizeof(packet.userInfo.nickNameLen));
+    data += sizeof(packet.userInfo.nickNameLen);
+    
+    memcpy(packet.userInfo.nickName, data, packet.userInfo.nickNameLen);
+    data += packet.userInfo.nickNameLen;
+    
+    memcpy(&packet.userInfo.commonWin, data, sizeof(packet.userInfo.commonWin));
+    data += sizeof(packet.userInfo.commonWin);
+    
+    memcpy(&packet.userInfo.commonLose, data, sizeof(packet.userInfo.commonLose));
+    data += sizeof(packet.userInfo.commonLose);
+    
+    memcpy(&packet.userInfo.commonDiss, data, sizeof(packet.userInfo.commonDiss));
+    data += sizeof(packet.userInfo.commonDiss);
+    
+    memcpy(&packet.userInfo.rankWin, data, sizeof(packet.userInfo.rankWin));
+    data += sizeof(packet.userInfo.rankWin);
+    
+    memcpy(&packet.userInfo.rankLose, data, sizeof(packet.userInfo.rankLose));
+    data += sizeof(packet.userInfo.rankLose);
+    
+    memcpy(&packet.userInfo.rankDiss, data, sizeof(packet.userInfo.rankDiss));
+    data += sizeof(packet.userInfo.rankDiss);
+    
+    memcpy(&packet.userInfo.grade, data, sizeof(packet.userInfo.grade));
+    data += sizeof(packet.userInfo.grade);
+    
+    memcpy(&packet.userInfo.gradeReachedCount, data, sizeof(packet.userInfo.gradeReachedCount));
+    data += sizeof(packet.userInfo.gradeReachedCount);
+    
+    memcpy(&packet.userInfo.point, data, sizeof(packet.userInfo.point));
+    data += sizeof(packet.userInfo.point);
+    
+    memcpy(&packet.userInfo.coin, data, sizeof(packet.userInfo.coin));
+    data += sizeof(packet.userInfo.coin);
+    
+    memcpy(&packet.userInfo.clanNo, data, sizeof(packet.userInfo.clanNo));
+    data += sizeof(packet.userInfo.clanNo);
+    
+    memcpy(&packet.userInfo.clanClass, data, sizeof(packet.userInfo.clanClass));
+    data += sizeof(packet.userInfo.clanClass);
+    
+    memcpy(&packet.friendCount, data, sizeof(packet.friendCount));
+    data += sizeof(packet.friendCount);
+    
+    for(int i = 0; i < packet.friendCount; i++)
+    {
+        memcpy(&packet.nickNameInfoList[i].nickNameLen, data, sizeof(packet.nickNameInfoList[i].nickNameLen));
+        data += sizeof(packet.nickNameInfoList[i].nickNameLen);
+        
+        memcpy(packet.nickNameInfoList[i].nickName, data, packet.nickNameInfoList[i].nickNameLen);
+        data += packet.nickNameInfoList[i].nickNameLen;
+    }
+    
+    memcpy(&packet.clanInfo.clanNo, data, sizeof(packet.clanInfo.clanNo));
+    data += sizeof(packet.clanInfo.clanNo);
+    
+    if(packet.clanInfo.clanNo != INVALID_CLAN_NO)
+    {
+        memcpy(&packet.clanInfo.clanNameLen, data, sizeof(packet.clanInfo.clanNameLen));
+        data += sizeof(packet.clanInfo.clanNameLen);
+        
+        memcpy(packet.clanInfo.clanName, data, sizeof(packet.clanInfo.clanName));
+        data += sizeof(packet.clanInfo.clanName);
+        
+        memcpy(&packet.clanInfo.win, data, sizeof(packet.clanInfo.win));
+        data += sizeof(packet.clanInfo.win);
+        
+        memcpy(&packet.clanInfo.lose, data, sizeof(packet.clanInfo.lose));
+        data += sizeof(packet.clanInfo.lose);
+        
+        memcpy(&packet.clanInfo.point, data, sizeof(packet.clanInfo.point));
+        data += sizeof(packet.clanInfo.point);
+    }
+    
+    User* user = LobbyServer::getInstance()->userMgr->getUnconnectedUserByUserNo(packet.userInfo.userNo);
+    
+    if(user == NULL)
+    {
+        DebugLog("already out");
+        return ;
+    }
+    
+    LobbyServer::getInstance()->userMgr->addConnectedUser(&packet.userInfo, packet.friendCount, packet.nickNameInfoList, &packet.clanInfo);
+    
+    
+    LobbyChattingPacket::EnterClientReqPacket sendPacket;
+    
+    memcpy(&sendPacket.sid, user->getSid(), sizeof(sendPacket.sid));
+    sendPacket.userNo = user->getUserNo();
+    sendPacket.nickNameInfo.nickNameLen = user->getNickNameLen();
+    memcpy(sendPacket.nickNameInfo.nickName, user->getNickName(), user->getNickNameLen());
+    
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
+    pSendBuffer += sizeof(sendPacket.cmd);
+    
+    memcpy(pSendBuffer, &sendPacket.sid, sizeof(sendPacket.sid));
+    pSendBuffer += sizeof(sendPacket.sid);
+    
+    memcpy(pSendBuffer, &sendPacket.userNo, sizeof(sendPacket.userNo));
+    pSendBuffer += sizeof(sendPacket.userNo);
+    
+    memcpy(pSendBuffer, &sendPacket.nickNameInfo.nickNameLen, sizeof(sendPacket.nickNameInfo.nickNameLen));
+    pSendBuffer += sizeof(sendPacket.nickNameInfo.nickNameLen);
+    
+    memcpy(pSendBuffer, &sendPacket.nickNameInfo.nickName, sendPacket.nickNameInfo.nickNameLen);
+    pSendBuffer += sendPacket.nickNameInfo.nickNameLen;
+    
+    ChattingServerInfo* chattingServerInfo = LobbyServer::getInstance()->serverInfoMgr->getChattingServerInfo();
+    
+    if(chattingServerInfo->connectInfo == NULL)
+    {
+        ErrorLog("chatting server fuck");
+        return ;
+    }
+    
+    LobbyServer::getInstance()->network->sendPacket(chattingServerInfo->connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
+
+//    ChattingServerInfo* chattingServerInfo = LobbyServer::getInstance()->serverInfoMgr->getChattingServerInfo();
+//    
+//    if(chattingServerInfo == NULL)
+//    {
+//        ErrorLog("chatting server not exist");
+//        return ;
+//    }
+//    
+//    ClientLobbyPacket::FirstConnectResPacket sendPacket;
+//    memcpy(sendPacket.chattingIp, chattingServerInfo->clientIp, MAX_IP_ADDRESS_LEN);
+//    sendPacket.chattingPort = chattingServerInfo->clientPort;
+//        
+//    user->getUserInfo(&sendPacket.userInfo);
+//    
+//    user->getFriendList(sendPacket.nickNameInfoWithOnlineList);
+//    
+//    if(user->getClanNo() != INVALID_CLAN_NO)
+//    {
+//        Clan* clan = LobbyServer::getInstance()->clanMgr->getClanByClanNo(user->getClanNo());
+//        
+//        if(clan != NULL)
+//        {
+//            ErrorLog("clan not exist clan no = %d", user->getClanNo());
+//            return ;
+//        }
+//        
+//        ClanInfo* clanInfo = clan->getClanInfo();
+//        
+//        sendPacket.clanInfo.clanNo = clanInfo->clanNo;
+//        sendPacket.clanInfo.clanNameLen = clanInfo->clanNameLen;
+//        memcpy(sendPacket.clanInfo.clanName, clanInfo->clanName, clanInfo->clanNameLen);
+//        sendPacket.clanInfo.win = clanInfo->win;
+//        sendPacket.clanInfo.lose = clanInfo->lose;
+//        sendPacket.clanInfo.point = clanInfo->point;
+//    }
+//    else
+//    {
+//        sendPacket.clanInfo.clanNo = INVALID_CLAN_NO;
+//    }
+//    
+//    char* pSendBuffer = sendBuffer;
+//    
+//    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
+//    pSendBuffer += sizeof(sendPacket.cmd);
+//    
+//    memcpy(pSendBuffer, &sendPacket.chattingIp, MAX_IP_ADDRESS_LEN);
+//    pSendBuffer += MAX_IP_ADDRESS_LEN;
+//    
+//    memcpy(pSendBuffer, &sendPacket.chattingPort, sizeof(sendPacket.chattingPort));
+//    pSendBuffer += sizeof(sendPacket.chattingPort);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.userNo, sizeof(sendPacket.userInfo.userNo));
+//    pSendBuffer += sizeof(sendPacket.userInfo.userNo);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.nickNameLen, sizeof(sendPacket.userInfo.nickNameLen));
+//    pSendBuffer += sizeof(sendPacket.userInfo.nickNameLen);
+//    
+//    memcpy(pSendBuffer, sendPacket.userInfo.nickName, sendPacket.userInfo.nickNameLen);
+//    pSendBuffer += sendPacket.userInfo.nickNameLen;
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.commonWin, sizeof(sendPacket.userInfo.commonWin));
+//    pSendBuffer += sizeof(sendPacket.userInfo.commonWin);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.commonLose, sizeof(sendPacket.userInfo.commonLose));
+//    pSendBuffer += sizeof(sendPacket.userInfo.commonLose);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.commonDiss, sizeof(sendPacket.userInfo.commonDiss));
+//    pSendBuffer += sizeof(sendPacket.userInfo.commonDiss);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.rankWin, sizeof(sendPacket.userInfo.rankWin));
+//    pSendBuffer += sizeof(sendPacket.userInfo.rankWin);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.rankLose, sizeof(sendPacket.userInfo.rankLose));
+//    pSendBuffer += sizeof(sendPacket.userInfo.rankLose);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.rankDiss, sizeof(sendPacket.userInfo.rankDiss));
+//    pSendBuffer += sizeof(sendPacket.userInfo.rankDiss);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.grade, sizeof(sendPacket.userInfo.grade));
+//    pSendBuffer += sizeof(sendPacket.userInfo.grade);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.gradeReachedCount, sizeof(sendPacket.userInfo.gradeReachedCount));
+//    pSendBuffer += sizeof(sendPacket.userInfo.gradeReachedCount);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.point, sizeof(sendPacket.userInfo.point));
+//    pSendBuffer += sizeof(sendPacket.userInfo.point);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.coin, sizeof(sendPacket.userInfo.coin));
+//    pSendBuffer += sizeof(sendPacket.userInfo.coin);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.clanNo, sizeof(sendPacket.userInfo.clanNo));
+//    pSendBuffer += sizeof(sendPacket.userInfo.clanNo);
+//    
+//    memcpy(pSendBuffer, &sendPacket.userInfo.clanClass, sizeof(sendPacket.userInfo.clanClass));
+//    pSendBuffer += sizeof(sendPacket.userInfo.clanClass);
+//    
+//    memcpy(pSendBuffer, &sendPacket.friendCount, sizeof(sendPacket.friendCount));
+//    pSendBuffer += sizeof(sendPacket.friendCount);
+//    
+//    for(int i = 0; i < sendPacket.friendCount; i++)
+//    {
+//        memcpy(pSendBuffer, &sendPacket.nickNameInfoWithOnlineList[i].online, sizeof(sendPacket.nickNameInfoWithOnlineList[i].online));
+//        pSendBuffer += sizeof(sendPacket.nickNameInfoWithOnlineList[i].online);
+//        
+//        memcpy(pSendBuffer, &sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen, sizeof(sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen));
+//        pSendBuffer += sizeof(sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen);
+//        
+//        memcpy(pSendBuffer, sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickName, sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen);
+//        pSendBuffer += sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen;
+//    }
+//    
+//    memcpy(pSendBuffer, &sendPacket.clanInfo.clanNo, sizeof(sendPacket.clanInfo.clanNo));
+//    pSendBuffer += sizeof(sendPacket.clanInfo.clanNo);
+//    
+//    if(user->getClanNo() != INVALID_CLAN_NO)
+//    {
+//        memcpy(pSendBuffer, &sendPacket.clanInfo.clanNameLen, sizeof(sendPacket.clanInfo.clanNameLen));
+//        pSendBuffer += sizeof(sendPacket.clanInfo.clanNameLen);
+//        
+//        memcpy(pSendBuffer, sendPacket.clanInfo.clanName, sendPacket.clanInfo.clanNameLen);
+//        pSendBuffer += sendPacket.clanInfo.clanNameLen;
+//        
+//        memcpy(pSendBuffer, &sendPacket.clanInfo.win, sizeof(sendPacket.clanInfo.win));
+//        pSendBuffer += sizeof(sendPacket.clanInfo.win);
+//        
+//        memcpy(pSendBuffer, &sendPacket.clanInfo.lose, sizeof(sendPacket.clanInfo.lose));
+//        pSendBuffer += sizeof(sendPacket.clanInfo.lose);
+//        
+//        memcpy(pSendBuffer, &sendPacket.clanInfo.point, sizeof(sendPacket.clanInfo.point));
+//        pSendBuffer += sizeof(sendPacket.clanInfo.point);
+//    }
+//    
+//    LobbyServer::getInstance()->network->sendPacket(user->getConnectInfo(), sendBuffer, (int)(pSendBuffer - sendBuffer));
+    
+}
+
 
 
 //////////////////////////////////////// front recv
@@ -209,17 +538,10 @@ void IOManager::frontHandleEnterClientReq(ConnectInfo* connectInfo, const char* 
     memcpy(&packet.sid, pBody, sizeof(packet.sid));
     pBody += sizeof(packet.sid);
     
-    memcpy(&packet.userInfo.userNo, pBody, sizeof(packet.userInfo.userNo));
-    pBody += sizeof(packet.userInfo.userNo);
+    memcpy(&packet.userNo, pBody, sizeof(packet.userNo));
+    pBody += sizeof(packet.userNo);
     
-    memcpy(&packet.userInfo.nickNameLen, pBody, sizeof(packet.userInfo.nickNameLen));
-    pBody += sizeof(packet.userInfo.nickNameLen);
-    
-    memcpy(packet.userInfo.nickName, pBody, packet.userInfo.nickNameLen);
-    pBody += packet.userInfo.nickNameLen;
-    
-    
-    if(LobbyServer::getInstance()->userMgr->addUnconnectedUser(&packet.userInfo, &packet.sid) != SUCCESS)
+    if(LobbyServer::getInstance()->userMgr->addUnconnectedUser(&packet.sid, packet.userNo) != SUCCESS)
     {
         ErrorLog("??");
         return ;
@@ -231,7 +553,7 @@ void IOManager::frontHandleEnterClientReq(ConnectInfo* connectInfo, const char* 
     
     LobbyFrontPacket::EnterClientResPacket sendPacket;
     
-    sendPacket.userNo = packet.userInfo.userNo;
+    sendPacket.userNo = packet.userNo;
     
     LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
 }
@@ -571,7 +893,128 @@ void IOManager::chattingHandleEnterClientRes(ConnectInfo* connectInfo, const cha
     memcpy(sendPacket.chattingIp, chattingServerInfo->clientIp, MAX_IP_ADDRESS_LEN);
     sendPacket.chattingPort = chattingServerInfo->clientPort;
     
-    LobbyServer::getInstance()->network->sendPacket(user->getConnectInfo(), (char*)&sendPacket, sizeof(sendPacket));
+    user->getUserInfo(&sendPacket.userInfo);
+    
+    user->getFriendList(sendPacket.nickNameInfoWithOnlineList);
+    
+    if(user->getClanNo() != INVALID_CLAN_NO)
+    {
+        Clan* clan = LobbyServer::getInstance()->clanMgr->getClanByClanNo(user->getClanNo());
+        
+        if(clan != NULL)
+        {
+            ErrorLog("clan not exist clan no = %d", user->getClanNo());
+            return ;
+        }
+        
+        ClanInfo* clanInfo = clan->getClanInfo();
+        
+        sendPacket.clanInfo.clanNo = clanInfo->clanNo;
+        sendPacket.clanInfo.clanNameLen = clanInfo->clanNameLen;
+        memcpy(sendPacket.clanInfo.clanName, clanInfo->clanName, clanInfo->clanNameLen);
+        sendPacket.clanInfo.win = clanInfo->win;
+        sendPacket.clanInfo.lose = clanInfo->lose;
+        sendPacket.clanInfo.point = clanInfo->point;
+    }
+    else
+    {
+        sendPacket.clanInfo.clanNo = INVALID_CLAN_NO;
+    }
+    
+    char* pSendBuffer = sendBuffer;
+    
+    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
+    pSendBuffer += sizeof(sendPacket.cmd);
+    
+    memcpy(pSendBuffer, &sendPacket.chattingIp, MAX_IP_ADDRESS_LEN);
+    pSendBuffer += MAX_IP_ADDRESS_LEN;
+    
+    memcpy(pSendBuffer, &sendPacket.chattingPort, sizeof(sendPacket.chattingPort));
+    pSendBuffer += sizeof(sendPacket.chattingPort);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.userNo, sizeof(sendPacket.userInfo.userNo));
+    pSendBuffer += sizeof(sendPacket.userInfo.userNo);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.nickNameLen, sizeof(sendPacket.userInfo.nickNameLen));
+    pSendBuffer += sizeof(sendPacket.userInfo.nickNameLen);
+    
+    memcpy(pSendBuffer, sendPacket.userInfo.nickName, sendPacket.userInfo.nickNameLen);
+    pSendBuffer += sendPacket.userInfo.nickNameLen;
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.commonWin, sizeof(sendPacket.userInfo.commonWin));
+    pSendBuffer += sizeof(sendPacket.userInfo.commonWin);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.commonLose, sizeof(sendPacket.userInfo.commonLose));
+    pSendBuffer += sizeof(sendPacket.userInfo.commonLose);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.commonDiss, sizeof(sendPacket.userInfo.commonDiss));
+    pSendBuffer += sizeof(sendPacket.userInfo.commonDiss);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.rankWin, sizeof(sendPacket.userInfo.rankWin));
+    pSendBuffer += sizeof(sendPacket.userInfo.rankWin);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.rankLose, sizeof(sendPacket.userInfo.rankLose));
+    pSendBuffer += sizeof(sendPacket.userInfo.rankLose);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.rankDiss, sizeof(sendPacket.userInfo.rankDiss));
+    pSendBuffer += sizeof(sendPacket.userInfo.rankDiss);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.grade, sizeof(sendPacket.userInfo.grade));
+    pSendBuffer += sizeof(sendPacket.userInfo.grade);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.gradeReachedCount, sizeof(sendPacket.userInfo.gradeReachedCount));
+    pSendBuffer += sizeof(sendPacket.userInfo.gradeReachedCount);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.point, sizeof(sendPacket.userInfo.point));
+    pSendBuffer += sizeof(sendPacket.userInfo.point);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.coin, sizeof(sendPacket.userInfo.coin));
+    pSendBuffer += sizeof(sendPacket.userInfo.coin);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.clanNo, sizeof(sendPacket.userInfo.clanNo));
+    pSendBuffer += sizeof(sendPacket.userInfo.clanNo);
+    
+    memcpy(pSendBuffer, &sendPacket.userInfo.clanClass, sizeof(sendPacket.userInfo.clanClass));
+    pSendBuffer += sizeof(sendPacket.userInfo.clanClass);
+    
+    memcpy(pSendBuffer, &sendPacket.friendCount, sizeof(sendPacket.friendCount));
+    pSendBuffer += sizeof(sendPacket.friendCount);
+    
+    for(int i = 0; i < sendPacket.friendCount; i++)
+    {
+        memcpy(pSendBuffer, &sendPacket.nickNameInfoWithOnlineList[i].online, sizeof(sendPacket.nickNameInfoWithOnlineList[i].online));
+        pSendBuffer += sizeof(sendPacket.nickNameInfoWithOnlineList[i].online);
+        
+        memcpy(pSendBuffer, &sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen, sizeof(sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen));
+        pSendBuffer += sizeof(sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen);
+        
+        memcpy(pSendBuffer, sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickName, sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen);
+        pSendBuffer += sendPacket.nickNameInfoWithOnlineList[i].nickNameInfo.nickNameLen;
+    }
+    
+    memcpy(pSendBuffer, &sendPacket.clanInfo.clanNo, sizeof(sendPacket.clanInfo.clanNo));
+    pSendBuffer += sizeof(sendPacket.clanInfo.clanNo);
+    
+    if(user->getClanNo() != INVALID_CLAN_NO)
+    {
+        memcpy(pSendBuffer, &sendPacket.clanInfo.clanNameLen, sizeof(sendPacket.clanInfo.clanNameLen));
+        pSendBuffer += sizeof(sendPacket.clanInfo.clanNameLen);
+        
+        memcpy(pSendBuffer, sendPacket.clanInfo.clanName, sendPacket.clanInfo.clanNameLen);
+        pSendBuffer += sendPacket.clanInfo.clanNameLen;
+        
+        memcpy(pSendBuffer, &sendPacket.clanInfo.win, sizeof(sendPacket.clanInfo.win));
+        pSendBuffer += sizeof(sendPacket.clanInfo.win);
+        
+        memcpy(pSendBuffer, &sendPacket.clanInfo.lose, sizeof(sendPacket.clanInfo.lose));
+        pSendBuffer += sizeof(sendPacket.clanInfo.lose);
+        
+        memcpy(pSendBuffer, &sendPacket.clanInfo.point, sizeof(sendPacket.clanInfo.point));
+        pSendBuffer += sizeof(sendPacket.clanInfo.point);
+    }
+    
+    LobbyServer::getInstance()->network->sendPacket(user->getConnectInfo(), sendBuffer, (int)(pSendBuffer - sendBuffer));
+
 }
 
 
@@ -785,67 +1228,53 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
     memcpy(&packet.sid, body, bodySize);
     
     
-    int failReason = LobbyServer::getInstance()->userMgr->addConnectedUser(&packet.sid, connectInfo);
-    if(failReason != SUCCESS)
-    {
-        DebugLog("add user %d", failReason);
-        if(failReason == ALREADY_EXIST_USER)
-        {
-            DebugLog("add user already exist");
-            
-            //TODO dissconnect my other user
-            return ;
-        }
-        else
-        {
-            ErrorLog("??");
-            return ;
-        }
-        
-    }
+    User* user = LobbyServer::getInstance()->userMgr->getUnconnectedUserBySessionId(&packet.sid);
     
-    
-    User* user = (User*)connectInfo->userData;
     if(user == NULL)
     {
-        ErrorLog("user not found ");
+        DebugLog("not exist to recv login info");
         return ;
     }
     
+    user->setConnectInfo(connectInfo);
+    connectInfo->userData = (void*)user;
     
-    LobbyChattingPacket::EnterClientReqPacket sendPacket;
+//    
+//    int failReason = LobbyServer::getInstance()->userMgr->addConnectedUser(&packet.sid, connectInfo);
+//    if(failReason != SUCCESS)
+//    {
+//        DebugLog("add user %d", failReason);
+//        if(failReason == ALREADY_EXIST_USER)
+//        {
+//            DebugLog("add user already exist");
+//            
+//            //TODO dissconnect my other user
+//            return ;
+//        }
+//        else
+//        {
+//            ErrorLog("??");
+//            return ;
+//        }
+//        
+//    }
+//
     
-    memcpy(&sendPacket.sid, user->getSid(), sizeof(sendPacket.sid));
+    LobbyCachePacket::LoginUserReqPacket sendPacket;
+    
     sendPacket.userNo = user->getUserNo();
-    sendPacket.nickNameInfo.nickNameLen = user->getNickNameLen();
-    memcpy(sendPacket.nickNameInfo.nickName, user->getNickName(), user->getNickNameLen());
     
-    char* pSendBuffer = sendBuffer;
+    ConnectInfo* cacheConnectInfo = LobbyServer::getInstance()->serverInfoMgr->getCacheServerInfo()->connectInfo;
     
-    memcpy(pSendBuffer, &sendPacket.cmd, sizeof(sendPacket.cmd));
-    pSendBuffer += sizeof(sendPacket.cmd);
+    LobbyServer::getInstance()->network->sendPacket(cacheConnectInfo, (char*)&sendPacket, sizeof(sendPacket));
     
-    memcpy(pSendBuffer, &sendPacket.sid, sizeof(sendPacket.sid));
-    pSendBuffer += sizeof(sendPacket.sid);
     
-    memcpy(pSendBuffer, &sendPacket.userNo, sizeof(sendPacket.userNo));
-    pSendBuffer += sizeof(sendPacket.userNo);
     
-    memcpy(pSendBuffer, &sendPacket.nickNameInfo.nickNameLen, sizeof(sendPacket.nickNameInfo.nickNameLen));
-    pSendBuffer += sizeof(sendPacket.nickNameInfo.nickNameLen);
+
     
-    memcpy(pSendBuffer, &sendPacket.nickNameInfo.nickName, sendPacket.nickNameInfo.nickNameLen);
-    pSendBuffer += sendPacket.nickNameInfo.nickNameLen;
     
-    ChattingServerInfo* chattingServerInfo = LobbyServer::getInstance()->serverInfoMgr->getChattingServerInfo();
     
-    if(chattingServerInfo->connectInfo == NULL)
-    {
-        ErrorLog("chatting server fuck");
-        return ;
-    }
     
-    LobbyServer::getInstance()->network->sendPacket(chattingServerInfo->connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
     
     
     return;
@@ -1112,9 +1541,8 @@ void IOManager::clientHandleGetUserListReq(ConnectInfo* connectInfo, const char*
     for(itr = userList.begin(); itr != userList.end(); itr++)
     {
         User* otherUser = *itr;
-        packet.userViewInfoList[i].userNo = otherUser->getUserNo();
-        packet.userViewInfoList[i].nickNameInfo.nickNameLen = otherUser->getNickNameLen();
-        memcpy(packet.userViewInfoList[i].nickNameInfo.nickName, otherUser->getNickName(), otherUser->getNickNameLen());
+        packet.nickNameInfoList[i].nickNameLen = otherUser->getNickNameLen();
+        memcpy(packet.nickNameInfoList[i].nickName, otherUser->getNickName(), otherUser->getNickNameLen());
         
         i++;
     }
@@ -1131,14 +1559,11 @@ void IOManager::clientHandleGetUserListReq(ConnectInfo* connectInfo, const char*
     
     for(i = 0; i < packet.userCount; i++)
     {
-        memcpy(pSendBuffer, &packet.userViewInfoList[i].userNo, sizeof(packet.userViewInfoList[i].userNo));
-        pSendBuffer += sizeof(packet.userViewInfoList[i].userNo);
+        memcpy(pSendBuffer, &packet.nickNameInfoList[i].nickNameLen, sizeof(packet.nickNameInfoList[i].nickNameLen));
+        pSendBuffer += sizeof(packet.nickNameInfoList[i].nickNameLen);
         
-        memcpy(pSendBuffer, &packet.userViewInfoList[i].nickNameInfo.nickNameLen, sizeof(packet.userViewInfoList[i].nickNameInfo.nickNameLen));
-        pSendBuffer += sizeof(packet.userViewInfoList[i].nickNameInfo.nickNameLen);
-        
-        memcpy(pSendBuffer, packet.userViewInfoList[i].nickNameInfo.nickName, packet.userViewInfoList[i].nickNameInfo.nickNameLen);
-        pSendBuffer += packet.userViewInfoList[i].nickNameInfo.nickNameLen;
+        memcpy(pSendBuffer, packet.nickNameInfoList[i].nickName, packet.nickNameInfoList[i].nickNameLen);
+        pSendBuffer += packet.nickNameInfoList[i].nickNameLen;
     }
     
     LobbyServer::getInstance()->network->sendPacket(connectInfo, sendBuffer, (int)(pSendBuffer - sendBuffer));
@@ -1147,9 +1572,15 @@ void IOManager::clientHandleGetUserListReq(ConnectInfo* connectInfo, const char*
 void IOManager::clientHandleGetUserInfoReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
     ClientLobbyPacket::GetUserInfoReqPacket packet;
-    memcpy(&packet.userNo, body, sizeof(packet.userNo));
     
-    User* otherUser = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
+    memcpy(&packet.nickNameInfo.nickNameLen, body, sizeof(packet.nickNameInfo.nickNameLen));
+    body += sizeof(packet.nickNameInfo.nickNameLen);
+    
+    memcpy(packet.nickNameInfo.nickName, body, packet.nickNameInfo.nickNameLen);
+    body += packet.nickNameInfo.nickNameLen;
+    
+    
+    User* otherUser = LobbyServer::getInstance()->userMgr->getUserByNickNameInfo(&packet.nickNameInfo);
     
     if(otherUser == NULL)
     {
@@ -1165,155 +1596,155 @@ void IOManager::clientHandleGetUserInfoReq(ConnectInfo* connectInfo, const char*
 
 void IOManager::clientHandleRequestGameReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
-    User* user = (User*)connectInfo->userData;
-    
-    if(user == NULL)
-    {
-        ErrorLog("??");
-        return ;
-    }
-    
-    if(user->getUserState() != USER_STATE_LOBBY)
-    {
-        DebugLog("not lobby");
-        return ;
-    }
-    
-    
-    ClientLobbyPacket::RequestGameReqPacket packet;
-    memcpy(&packet.userNo, body, sizeof(packet.userNo));
-    
-    User* otherUser = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
-    
-    if(otherUser == NULL || otherUser->getUserLocation() != USER_LOCATION_CHANNEL || otherUser->getConnectInfo() == NULL)
-    {
-        DebugLog("not exist user");
-        return ;
-    }
-    
-    ClientLobbyPacket::RequestGameNotifyPacket notifyPacket;
-    notifyPacket.userNo = user->getUserNo();
-    
-    LobbyServer::getInstance()->network->sendPacket(otherUser->getConnectInfo(), (char*)&notifyPacket, sizeof(notifyPacket));
-    
-    user->setRequestGameUserNo(otherUser->getUserNo());
-    
-    ClientLobbyPacket::RequestGameResPacket sendPacket;
-    
-    LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+//    User* user = (User*)connectInfo->userData;
+//    
+//    if(user == NULL)
+//    {
+//        ErrorLog("??");
+//        return ;
+//    }
+//    
+//    if(user->getUserState() != USER_STATE_LOBBY)
+//    {
+//        DebugLog("not lobby");
+//        return ;
+//    }
+//    
+//    
+//    ClientLobbyPacket::RequestGameReqPacket packet;
+//    memcpy(&packet.userNo, body, sizeof(packet.userNo));
+//    
+//    User* otherUser = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
+//    
+//    if(otherUser == NULL || otherUser->getUserLocation() != USER_LOCATION_CHANNEL || otherUser->getConnectInfo() == NULL)
+//    {
+//        DebugLog("not exist user");
+//        return ;
+//    }
+//    
+//    ClientLobbyPacket::RequestGameNotifyPacket notifyPacket;
+//    notifyPacket.userNo = user->getUserNo();
+//    
+//    LobbyServer::getInstance()->network->sendPacket(otherUser->getConnectInfo(), (char*)&notifyPacket, sizeof(notifyPacket));
+//    
+//    user->setRequestGameUserNo(otherUser->getUserNo());
+//    
+//    ClientLobbyPacket::RequestGameResPacket sendPacket;
+//    
+//    LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
 }
 
 
 void IOManager::clientHandleRequestGameCancelReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
-    User* user = (User*)connectInfo->userData;
-    
-    if(user == NULL)
-    {
-        ErrorLog("??");
-        return ;
-    }
-    
-    if(user->getUserState() != USER_STATE_LOBBY)
-    {
-        DebugLog("not waiting state");
-        return ;
-    }
-    
-    user->setRequestGameUserNo(INVALID_USER_NO);
-    
-    ClientLobbyPacket::RequestGameCancelResPacket sendPacket;
-    
-    LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
+//    User* user = (User*)connectInfo->userData;
+//    
+//    if(user == NULL)
+//    {
+//        ErrorLog("??");
+//        return ;
+//    }
+//    
+//    if(user->getUserState() != USER_STATE_LOBBY)
+//    {
+//        DebugLog("not waiting state");
+//        return ;
+//    }
+//    
+//    user->setRequestGameUserNo(INVALID_USER_NO);
+//    
+//    ClientLobbyPacket::RequestGameCancelResPacket sendPacket;
+//    
+//    LobbyServer::getInstance()->network->sendPacket(connectInfo, (char*)&sendPacket, sizeof(sendPacket));
 }
 
 
 void IOManager::clientHandleResponceGameYesReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
-    User* user = (User*)connectInfo->userData;
-    
-    if(user == NULL)
-    {
-        ErrorLog("??");
-        return ;
-    }
-    
-    ClientLobbyPacket::ResponseGameYesReqPacket packet;
-    
-    memcpy(&packet.userNo, body, sizeof(packet.userNo));
-    
-    User* otherUser = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
-    
-    if(otherUser == NULL)
-    {
-        DebugLog("already out");
-        return ;
-    }
-    
-    if(otherUser->getRequestGameUserNo() != user->getUserNo() || otherUser->getUserState() != USER_STATE_LOBBY)
-    {
-        DebugLog("already cancel");
-        return ;
-    }
-    
-    
-    ////////////////start game
-    
-    RoomInfo roomInfo;
-    roomInfo.roomNameLen = 0;
-    
-    user->setRequestGameUserNo(INVALID_USER_NO);
-    
-    Room* room = LobbyServer::getInstance()->roomMgr->createRoom(&roomInfo, otherUser, 0);
-    
-    if(room == NULL)
-    {
-        ErrorLog("??");
-        return ;
-    }
-    
-    otherUser->setRequestGameUserNo(INVALID_USER_NO);
-    
-    if(room->joinUserInRoom(user) != SUCCESS)
-    {
-        ErrorLog("??");
-        return ;
-    }
-    
-    room->startGame();
+//    User* user = (User*)connectInfo->userData;
+//    
+//    if(user == NULL)
+//    {
+//        ErrorLog("??");
+//        return ;
+//    }
+//    
+//    ClientLobbyPacket::ResponseGameYesReqPacket packet;
+//    
+//    memcpy(&packet.userNo, body, sizeof(packet.userNo));
+//    
+//    User* otherUser = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
+//    
+//    if(otherUser == NULL)
+//    {
+//        DebugLog("already out");
+//        return ;
+//    }
+//    
+//    if(otherUser->getRequestGameUserNo() != user->getUserNo() || otherUser->getUserState() != USER_STATE_LOBBY)
+//    {
+//        DebugLog("already cancel");
+//        return ;
+//    }
+//    
+//    
+//    ////////////////start game
+//    
+//    RoomInfo roomInfo;
+//    roomInfo.roomNameLen = 0;
+//    
+//    user->setRequestGameUserNo(INVALID_USER_NO);
+//    
+//    Room* room = LobbyServer::getInstance()->roomMgr->createRoom(&roomInfo, otherUser, 0);
+//    
+//    if(room == NULL)
+//    {
+//        ErrorLog("??");
+//        return ;
+//    }
+//    
+//    otherUser->setRequestGameUserNo(INVALID_USER_NO);
+//    
+//    if(room->joinUserInRoom(user) != SUCCESS)
+//    {
+//        ErrorLog("??");
+//        return ;
+//    }
+//    
+//    room->startGame();
 }
 
 void IOManager::clientHandleResponceGameNoReq(ConnectInfo* connectInfo, const char* body, int bodySize)
 {
-    User* user = (User*)connectInfo->userData;
-    
-    if(user == NULL)
-    {
-        ErrorLog("??");
-        return ;
-    }
-    
-    ClientLobbyPacket::ResponseGameNoReqPacket packet;
-    
-    memcpy(&packet.userNo, body, sizeof(packet.userNo));
-    
-    User* otherUser = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
-    
-    if(otherUser == NULL || otherUser->getUserState() != USER_STATE_LOBBY)
-    {
-        DebugLog("already out");
-        return ;
-    }
-    
-    if(otherUser->getRequestGameUserNo() != user->getUserNo())
-    {
-        DebugLog("already cancel");
-        return ;
-    }
-    
-    ClientLobbyPacket::ResponseGameNoNotifyPacket notifyPacket;
-
-    LobbyServer::getInstance()->network->sendPacket(otherUser->getConnectInfo(), (char*)&notifyPacket, sizeof(notifyPacket));
+//    User* user = (User*)connectInfo->userData;
+//    
+//    if(user == NULL)
+//    {
+//        ErrorLog("??");
+//        return ;
+//    }
+//    
+//    ClientLobbyPacket::ResponseGameNoReqPacket packet;
+//    
+//    memcpy(&packet.userNo, body, sizeof(packet.userNo));
+//    
+//    User* otherUser = LobbyServer::getInstance()->userMgr->getUserByUserNo(packet.userNo);
+//    
+//    if(otherUser == NULL || otherUser->getUserState() != USER_STATE_LOBBY)
+//    {
+//        DebugLog("already out");
+//        return ;
+//    }
+//    
+//    if(otherUser->getRequestGameUserNo() != user->getUserNo())
+//    {
+//        DebugLog("already cancel");
+//        return ;
+//    }
+//    
+//    ClientLobbyPacket::ResponseGameNoNotifyPacket notifyPacket;
+//
+//    LobbyServer::getInstance()->network->sendPacket(otherUser->getConnectInfo(), (char*)&notifyPacket, sizeof(notifyPacket));
 }
 
 

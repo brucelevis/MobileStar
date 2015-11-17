@@ -57,8 +57,8 @@ public:
     
     
     
-    void addUserInfo(int64_t userNo, int nickNameLen, const char* nickName);
-    void removeUserInfo(int64_t userNo);
+    void addUserInfo(int nickNameLen, const char* nickName);
+    void removeUserInfo(int nickNameLen, const char* nickName);
     
     void waitToStart();
 

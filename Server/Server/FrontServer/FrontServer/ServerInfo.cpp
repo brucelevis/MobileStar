@@ -14,9 +14,29 @@ ServerInfoManager::~ServerInfoManager()
 
 bool ServerInfoManager::initialize()
 {
+    cacheServerInfo = NULL;
     chattingServerInfo = NULL;
     lobbyServerInfoList.clear();
     lobbyNoCreator = 1;
+    return true;
+}
+
+bool ServerInfoManager::addCacheServer(ConnectInfo* connectInfo, char* lobbyIp, uint16_t lobbyPort)
+{
+    if(cacheServerInfo != NULL)
+    {
+        ErrorLog("cacheServerInfo already exist");
+        delete cacheServerInfo;
+    }
+    
+    cacheServerInfo = new CacheServerInfo();
+    memcpy(cacheServerInfo->lobbyIp, lobbyIp, MAX_IP_ADDRESS_LEN);
+    cacheServerInfo->lobbyPort = lobbyPort;
+    
+    cacheServerInfo->connectInfo = connectInfo;
+    
+    connectInfo->userData = (void*)cacheServerInfo;
+    
     return true;
 }
 

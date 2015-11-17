@@ -2,7 +2,6 @@
 #define __LOBBY_CACHE_PACKET_H__
 
 #include "BasicPacket.h"
-#include "NetworkDefines.h"
 
 class LobbyCachePacket
 {
@@ -15,39 +14,35 @@ public:
 
 	enum EnumCommand // start number is at least 3.
 	{
-		PACKET_VERSION_REQ = 10,
-		PACKET_VERSION_RES,
-		PACKET_VERSION_FAIL,
-
-		LOGIN_USER_REQ,
-		LOGIN_USER_RES,
-		LOGIN_USER_FAIL,
-
-		LOGOUT_USER_REQ,
-		LOGOUT_USER_RES,
-		LOGOUT_USER_FAIL,
+        FIRST_CONNECT_REQ = 10,
+        FIRST_CONNECT_RES,
+        FIRST_CONNECT_FAIL,
+        
+        LOGIN_USER_REQ,
+        LOGIN_USER_RES,
+        LOGIN_USER_FAIL,
 
 		GET_USER_INFO_REQ,
 		GET_USER_INFO_RES,
 		GET_USER_INFO_FAIL,
-
-		GET_FRIEND_LIST_REQ,
-		GET_FRIEND_LIST_RES,
-		GET_FRIEND_LIST_FAIL,
-
-		ADD_REQUEST_FRIEND_REQ,
-		ADD_REQUEST_FRIEND_RES,
-		ADD_REQUEST_FRIEND_FAIL,
-		ADD_REQUEST_FRIEND_NOTIFY,
-
-		ADD_RESPONSE_FRIEND_REQ,
-		ADD_RESPONSE_FRIEND_RES,
-		ADD_RESPONSE_FRIEND_FAIL,
-
+        
+        GET_FRIEND_LIST_REQ,
+        GET_FRIEND_LIST_RES,
+        GET_FRIEND_LIST_FAIL,
+		
+        GET_CLAN_USER_LIST_REQ,
+        GET_CLAN_USER_LIST_RES,
+        GET_CLAN_USER_LIST_FAIL,
+        
+        ADD_FRIEND_REQ,
+        ADD_FRIEND_RES,
+        ADD_FRIEND_FAIL,
+        
 		REMOVE_FRIEND_REQ,
 		REMOVE_FRIEND_RES,
 		REMOVE_FRIEND_FAIL,
-
+        
+        
 	};
 
 	enum EnumFailReason
@@ -71,51 +66,56 @@ public:
 	///////////////////////////////////
 
 
-	struct PacketVersionReqPacket
+    struct FirstConnectReqPacket : public Packet
+    {
+        FirstConnectReqPacket() { cmd = FIRST_CONNECT_REQ; }
+    };
+    
+    struct FirstConnectResPacket : public Packet
+    {
+        FirstConnectResPacket() { cmd = FIRST_CONNECT_RES; }
+        
+    };
+
+	struct LoginUserReqPacket : public Packet
 	{
-		int32_t packetVersion;
-	};
-
-	struct PacketVersionResPacket
-	{
-
-	};
-
-	struct LoginUserReqPacket
-	{
-		SessionId_t sid;
-
+        LoginUserReqPacket() { cmd = LOGIN_USER_REQ; }
+        
 		int64_t userNo;
 	};
 
-	struct LoginUserResPacket
+	struct LoginUserResPacket : public Packet
 	{
-		SessionId_t sid;
-
-		int16_t requestInfoCount;
-		RequestInfo requestInfoList[MAX_REQUEST_INFO_COUNT];
+        LoginUserResPacket() { cmd = LOGIN_USER_RES; }
+        
+        UserInfo userInfo;
+        
+        int8_t friendCount;
+        NickNameInfo nickNameInfoList[MAX_FRIEND_COUNT];
+        
+        ClanInfo clanInfo;
 	};
 
 	struct LogoutUserReqPacket
 	{
-		int64_t userNo;
+        NickNameInfo myNickNameInfo;
 	};
 
 	struct LogoutUserResPacket
 	{
-		int64_t userNo;
+        NickNameInfo myNickNameInfo;
 	};
 
 	struct GetUserInfoReqPacket
 	{
-		SessionId_t sid;
+        NickNameInfo myNickNameInfo;
 
 		NickNameInfo nickNameInfo;
 	};
 
 	struct GetUserInfoResPacekt
 	{
-		SessionId_t sid;
+        NickNameInfo myNickNameInfo;
 
 		int8_t nickNameLen;
 		char nickName[MAX_NICK_NAME_LEN + 1];
@@ -136,73 +136,52 @@ public:
 
 	struct GetFriendListReqPacket
 	{
-		SessionId_t sid;
-
-		int64_t userNo;
+        NickNameInfo myNickNameInfo;
 	};
 
 	struct GetFriendListResPacket
 	{
-		SessionId_t sid;
-
-		int16_t nickNameInfoWithOnlineListCount;
-		NickNameInfoWithOnline NickNameInfoWithOnlineList[MAX_FRIEND_COUNT];
+        NickNameInfo myNickNameInfo;
+        
+        int8_t friendCount;
+        NickNameInfo nickNameInfoList[MAX_FRIEND_COUNT];
 	};
 
 	struct AddRequestFriendReqPacket
 	{
-		SessionId_t sid;
+        NickNameInfo myNickNameInfo;
 
-		int64_t userNo;
-
-		int8_t nickNameLen;
-		char nickName[MAX_NICK_NAME_LEN + 1];
-	};
+        NickNameInfo nickNameInfo;
+    };
 
 	struct AddRequestFriendResPacket
 	{
-		SessionId_t sid;
+        NickNameInfo myNickNameInfo;
+    };
+
+	struct AddFriendReqPacket
+	{
+        NickNameInfo myNickNameInfo;
+        
+        NickNameInfo nickNameInfo;
 	};
 
-	struct AddRequestFriendNotifyPacket
+	struct AddFriendResPacket
 	{
-		int64_t userNo;
-
-		int8_t nickNameLen;
-		char nickName[MAX_NICK_NAME_LEN + 1];
-	};
-
-	struct AddResponseFriendReqPacket
-	{
-		SessionId_t sid;
-
-		int64_t userNo;
-
-		int8_t nickNameLen;
-		char nickName[MAX_NICK_NAME_LEN + 1];
-
-		int8_t isAccepted;
-	};
-
-	struct AddResponseFriendResPacket
-	{
-		SessionId_t sid;
+        NickNameInfo myNickNameInfo;
 	};
 
 	struct RemoveFriendReqPacket
 	{
-		SessionId_t sid;
+        NickNameInfo myNickNameInfo;
 
-		int64_t userNo;
-
-		int8_t nickNameLen;
-		char nickName[MAX_NICK_NAME_LEN + 1];
-	};
+        NickNameInfo nickNameInfo;
+    };
 
 	struct RemoveFriendResPacket
 	{
-		SessionId_t sid;
-	};
+        NickNameInfo myNickNameInfo;
+    };
 
 	struct FailPacket
 	{

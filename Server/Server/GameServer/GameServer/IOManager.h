@@ -58,6 +58,7 @@ public:
     void clientHandleClientNotify(ConnectInfo* connectInfo, const char* body, int bodySize);
     void clientHandleFinishGameReq(ConnectInfo* connectInfo, const char* body, int bodySize);
     void clientHandleMoveLobbyOk(ConnectInfo* connectInfo, const char* body, int bodySize);
+    void clientHandleReconnectReq(ConnectInfo* connectInfo, const char* body, int bodySize);
     
     
     

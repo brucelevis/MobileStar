@@ -35,9 +35,8 @@ int Channel::addUser(User* user)
     
     ClientLobbyPacket::EnterUserInChannelNotifyPacket notifyPacket;
     
-    notifyPacket.userViewInfo.userNo = user->getUserNo();
-    notifyPacket.userViewInfo.nickNameInfo.nickNameLen = user->getNickNameLen();
-    memcpy(notifyPacket.userViewInfo.nickNameInfo.nickName, user->getNickName(), user->getNickNameLen());
+    notifyPacket.nickNameInfo.nickNameLen = user->getNickNameLen();
+    memcpy(notifyPacket.nickNameInfo.nickName, user->getNickName(), user->getNickNameLen());
     
     
     char* pNotifyBuffer = notifyBuffer;
@@ -45,14 +44,11 @@ int Channel::addUser(User* user)
     memcpy(pNotifyBuffer, &notifyPacket.cmd, sizeof(notifyPacket.cmd));
     pNotifyBuffer += sizeof(notifyPacket.cmd);
     
-    memcpy(pNotifyBuffer, &notifyPacket.userViewInfo.userNo, sizeof(notifyPacket.userViewInfo.userNo));
-    pNotifyBuffer += sizeof(notifyPacket.userViewInfo.userNo);
+    memcpy(pNotifyBuffer, &notifyPacket.nickNameInfo.nickNameLen, sizeof(notifyPacket.nickNameInfo.nickNameLen));
+    pNotifyBuffer += sizeof(notifyPacket.nickNameInfo.nickNameLen);
     
-    memcpy(pNotifyBuffer, &notifyPacket.userViewInfo.nickNameInfo.nickNameLen, sizeof(notifyPacket.userViewInfo.nickNameInfo.nickNameLen));
-    pNotifyBuffer += sizeof(notifyPacket.userViewInfo.nickNameInfo.nickNameLen);
-    
-    memcpy(pNotifyBuffer, &notifyPacket.userViewInfo.nickNameInfo.nickName, notifyPacket.userViewInfo.nickNameInfo.nickNameLen);
-    pNotifyBuffer += notifyPacket.userViewInfo.nickNameInfo.nickNameLen;
+    memcpy(pNotifyBuffer, &notifyPacket.nickNameInfo.nickName, notifyPacket.nickNameInfo.nickNameLen);
+    pNotifyBuffer += notifyPacket.nickNameInfo.nickNameLen;
     
     
     
@@ -96,9 +92,8 @@ int Channel::addUser(User* user)
     for(itr = userList.begin(); itr != userList.end(); itr++)
     {
         User* otherUser = *itr;
-        packet.userViewInfoList[i].userNo = otherUser->getUserNo();
-        packet.userViewInfoList[i].nickNameInfo.nickNameLen = otherUser->getNickNameLen();
-        memcpy(packet.userViewInfoList[i].nickNameInfo.nickName, otherUser->getNickName(), otherUser->getNickNameLen());
+        packet.nickNameInfoList[i].nickNameLen = otherUser->getNickNameLen();
+        memcpy(packet.nickNameInfoList[i].nickName, otherUser->getNickName(), otherUser->getNickNameLen());
         
         i++;
     }
@@ -123,14 +118,11 @@ int Channel::addUser(User* user)
     
     for(i = 0; i < packet.userCount; i++)
     {
-        memcpy(pSendBuffer, &packet.userViewInfoList[i].userNo, sizeof(packet.userViewInfoList[i].userNo));
-        pSendBuffer += sizeof(packet.userViewInfoList[i].userNo);
+        memcpy(pSendBuffer, &packet.nickNameInfoList[i].nickNameLen, sizeof(packet.nickNameInfoList[i].nickNameLen));
+        pSendBuffer += sizeof(packet.nickNameInfoList[i].nickNameLen);
         
-        memcpy(pSendBuffer, &packet.userViewInfoList[i].nickNameInfo.nickNameLen, sizeof(packet.userViewInfoList[i].nickNameInfo.nickNameLen));
-        pSendBuffer += sizeof(packet.userViewInfoList[i].nickNameInfo.nickNameLen);
-        
-        memcpy(pSendBuffer, packet.userViewInfoList[i].nickNameInfo.nickName, packet.userViewInfoList[i].nickNameInfo.nickNameLen);
-        pSendBuffer += packet.userViewInfoList[i].nickNameInfo.nickNameLen;
+        memcpy(pSendBuffer, packet.nickNameInfoList[i].nickName, packet.nickNameInfoList[i].nickNameLen);
+        pSendBuffer += packet.nickNameInfoList[i].nickNameLen;
     }
     
     LobbyServer::getInstance()->network->sendPacket(user->getConnectInfo(), sendBuffer, (int)(pSendBuffer - sendBuffer));
@@ -150,7 +142,19 @@ int Channel::removeUser(User* user)
     
     ClientLobbyPacket::LeaveUserInChannelNotifyPacket notifyPacket;
     
-    notifyPacket.userNo = user->getUserNo();
+    notifyPacket.nickNameInfo.nickNameLen = user->getNickNameLen();
+    memcpy(notifyPacket.nickNameInfo.nickName, user->getNickName(), user->getNickNameLen());
+    
+    char* pSendBuffer = sendBuffer;
+
+    memcpy(pSendBuffer, &notifyPacket.cmd, sizeof(notifyPacket.cmd));
+    pSendBuffer += sizeof(notifyPacket.cmd);
+    
+    memcpy(pSendBuffer, &notifyPacket.nickNameInfo.nickNameLen, sizeof(notifyPacket.nickNameInfo.nickNameLen));
+    pSendBuffer += sizeof(notifyPacket.nickNameInfo.nickNameLen);
+    
+    memcpy(pSendBuffer, notifyPacket.nickNameInfo.nickName, notifyPacket.nickNameInfo.nickNameLen);
+    pSendBuffer += notifyPacket.nickNameInfo.nickNameLen;
     
     std::list<User*>::iterator itr;
     
@@ -159,7 +163,7 @@ int Channel::removeUser(User* user)
     {
         otherUser = *itr;
         
-        LobbyServer::getInstance()->network->sendPacket(otherUser->getConnectInfo(), (char*)&notifyPacket, sizeof(notifyPacket));
+        LobbyServer::getInstance()->network->sendPacket(otherUser->getConnectInfo(), sendBuffer, (int)(pSendBuffer - sendBuffer));
     }
     
     ////////////////////////////////////////
