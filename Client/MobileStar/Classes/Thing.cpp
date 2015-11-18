@@ -32,6 +32,15 @@ Thing::~Thing(){
 
 void Thing::update(float eTime){
 	Layer::update(eTime);
+    
+    //Status가 살아있고, HP가 0보다 작을 때, 죽은 상태로 전환한다.
+    if( GetHp() <= 0 && IsAlive() ){
+        SetDead();
+        m_pGameWorld->GetMap()->GetNavGraph().GetNode(GetTileIndex()).SetEmpty();
+        m_pGameWorld->GetMap()->GetNavGraph().GetNode(GetTileIndex()).SetThing(NULL);
+    }
+    
+    m_pTargetSystem->Update(eTime);
 }
 
 void Thing::SetTileIndex(int _tileindex){

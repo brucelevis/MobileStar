@@ -14,7 +14,21 @@ TargetSystem::~TargetSystem(){
 }
 
 void TargetSystem::Update(float eTime){
+    if(!m_pTarget)
+        return;
     
+    if(m_pTarget->IsDead()){
+        ClearTarget();
+        return;
+    }
+    
+    //타겟이 너무 멀어지면 삭제
+    auto Graph = m_pOwner->GetGameWorld()->GetMap()->GetNavGraph();
+    float dist = Vec2DistanceSq(Graph.GetNode(m_pOwner->GetTileIndex()).getPosition(), Graph.GetNode(m_pTarget->GetTileIndex()).getPosition());
+    if(dist > 200 * 200){
+        ClearTarget();
+        return;
+    }
 }
 void TargetSystem::AddAggro(Thing* pThing,int aggro){
     //나 자신이면 종료한다.

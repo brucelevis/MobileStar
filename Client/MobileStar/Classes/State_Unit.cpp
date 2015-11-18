@@ -134,5 +134,38 @@ void State_Attack::TouchEnded(Unit* unit, Touch* touch, Event *_event){
     
 }
 
+/*----------------------------------------------------------------------------
+ 
+ State_Dead
+ 
+ ----------------------------------------------------------------------------*/
 
+State_Dead* State_Dead::Instance(){
+    static State_Dead instance;
+    return &instance;
+}
 
+void State_Dead::Begin(Unit* unit){
+    unit->m_pSprite->stopAllActions();
+    auto pAnimate = Animate::create(AnimationCache::getInstance()->getAnimation("ZerglingDead"));
+    unit->m_pSprite->runAction(pAnimate);
+}
+void State_Dead::Update(Unit* unit,float eTime){
+    if(unit->m_pSprite->getNumberOfRunningActions() == 0){
+        unit->SetErase(true);
+    }
+}
+void State_Dead::End(Unit* unit){
+}
+bool State_Dead::TouchBegan(Unit* unit, Touch* touch, Event* _event){
+    return true;
+}
+void State_Dead::TouchMoved(Unit* unit, Touch* touch, Event* _event){
+    
+}
+void State_Dead::TouchCancelled(Unit* unit, Touch* touch, Event* _event){
+    
+}
+void State_Dead::TouchEnded(Unit* unit, Touch* touch, Event *_event){
+    
+}

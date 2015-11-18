@@ -105,9 +105,9 @@ public:
     void	SetMaxMp(int maxmp){m_iMaxMp = maxmp;}
     int     GetMaxMp()const{return m_iMaxMp;}
     
-    void	AddHp(float hp){m_iHp += hp;}
-    void	SetHp(float hp){m_iHp = hp;}
-    float	GetHp()const{return m_iHp;}
+    void	AddHp(int hp){m_iHp += hp;}
+    void	SetHp(int hp){m_iHp = hp;}
+    int     GetHp()const{return m_iHp;}
     
     void	AddMp(int mp){m_iMp += mp;}
     void	SetMp(int mp){m_iMp = mp;}
