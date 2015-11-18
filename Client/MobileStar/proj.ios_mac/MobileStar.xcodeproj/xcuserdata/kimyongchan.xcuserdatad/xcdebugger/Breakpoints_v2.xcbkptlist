@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/NetworkLayer.cpp"
-            timestampString = "469528006.174903"
+            timestampString = "469570063.770559"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1181"
-            endingLineNumber = "1181"
+            startingLineNumber = "1184"
+            endingLineNumber = "1184"
             landmarkName = "NetworkHandler::frontSendCreateAccountReq(const char* userId, int16_t userIdLen, const char* nickName, int8_t nickNameLen)"
             landmarkType = "5">
          </BreakpointContent>
@@ -48,6 +48,54 @@
             startingLineNumber = "88"
             endingLineNumber = "88"
             landmarkName = "LoginScene::clickLoginBtn(Ref* pSender)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Classes/NetworkLayer.cpp"
+            timestampString = "469570112.195365"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "964"
+            endingLineNumber = "964"
+            landmarkName = "NetworkHandler::lobbyHandleStartGameNotify(ConnectInfo* connectInfo, const char* data, int dataSize)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Classes/NetworkLayer.cpp"
+            timestampString = "469570303.328856"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "959"
+            endingLineNumber = "959"
+            landmarkName = "NetworkHandler::lobbyHandleStartGameNotify(ConnectInfo* connectInfo, const char* data, int dataSize)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Classes/NetworkLayer.cpp"
+            timestampString = "469570347.076554"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "477"
+            endingLineNumber = "477"
+            landmarkName = "NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const char* data, int dataSize)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
