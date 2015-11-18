@@ -290,7 +290,19 @@ void IOManager::cacheHandleLoginUserRes(ConnectInfo* connectInfo, const char* da
         return ;
     }
     
-    LobbyServer::getInstance()->userMgr->addConnectedUser(&packet.userInfo, packet.friendCount, packet.nickNameInfoList, &packet.clanInfo);
+    if(LobbyServer::getInstance()->userMgr->addConnectedUser(&packet.userInfo, packet.friendCount, packet.nickNameInfoList, &packet.clanInfo) != SUCCESS)
+    {
+        NickNameInfo nickNameInfo;
+        nickNameInfo.nickNameLen = packet.userInfo.nickNameLen;
+        memcpy(nickNameInfo.nickName, packet.userInfo.nickName, sizeof(nickNameInfo.nickNameLen));
+        LobbyServer::getInstance()->userMgr->removeUserByNickNameInfo(&nickNameInfo);
+        if(LobbyServer::getInstance()->userMgr->addConnectedUser(&packet.userInfo, packet.friendCount, packet.nickNameInfoList, &packet.clanInfo) != SUCCESS)
+        {
+            ErrorLog("fuck");
+            
+        }
+        
+    }
     
     
     LobbyChattingPacket::EnterClientReqPacket sendPacket;
