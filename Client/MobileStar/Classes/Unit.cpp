@@ -22,12 +22,10 @@ Unit::~Unit(){
 }
 void Unit::update(float eTime){
     Thing::update(eTime);
-    
-    //Status가 살아있고, HP가 0보다 작을 때, 죽은 상태로 전환한다.
-    if( GetHp() <= 0 && IsAlive() ){
-        SetDead();
-        m_pGameWorld->GetMap()->GetNavGraph().GetNode(GetTileIndex()).SetEmpty();
-        m_pGameWorld->GetMap()->GetNavGraph().GetNode(GetTileIndex()).SetThing(NULL);
+  
+    //임시 : 만약 죽었으면 죽은 상태로 돌림
+    if(IsDead() && m_pFSM->CurrentState() != State_Dead::Instance()){
+        m_pFSM->ChangeState(State_Dead::Instance());
     }
     
     //유한 상태 기계
@@ -57,25 +55,56 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     auto& Path = GetPathPlanner()->GetPath();
     auto pMap = m_pGameWorld->GetMap();
     auto& Graph = pMap->GetNavGraph();
+    auto Targets = m_pGameWorld->GetNearThings(this,4);
     
-    //LogMgr->Log("Path Size : %d",Path.size());
+    //만약 타겟이 없다면 주위에서 타겟을 찾는다.
+    if(!m_pTargetSystem->GetTarget()){
+        auto pClosestTarget = FindTarget(Targets);
+        //만약 타겟이 있으면 타겟시스템에 잡는다.
+        if(pClosestTarget){
+            m_pTargetSystem->SetTarget(pClosestTarget);
+            
+            //해당 타겟으로 새로운 경로를 잡는다.
+            m_pPathPlanner->CreatePathToPosition(pClosestTarget->GetTileIndex());
+            
+            
+        }
+    }
     
-    //타겟팅부터 시작
-//    FindTarget();
-//    
-//    //만약 타겟시스템에 유닛이 있고 해당 유닛이 공격 사정거리 안에 들었을 경우 때린다.
-//    auto pTarget = GetTargetSystem()->GetTarget();
-//    if(pTarget && CanAttackThing(pTarget)){
-//        AttackTarget(CurrentPacket);
-//        
-//        SetHeading(pTarget->getPosition() - getPosition());
-//        GetFSM()->ChangeState(State_Attack::Instance());
-//        return false;
-//    }
+    //타겟들의 시야에도 포착되었으니 인식하게 만든다.
+    for(auto pTarget : Targets){
+        if(!pTarget->GetTargetSystem()->IsTargetPresent()){
+            Unit* pUnit = (Unit*)pTarget;
+            
+            if(pUnit->GetAutoTaskPacket() < CurrentPacket){
+                auto UnitTarget = pUnit->FindTarget(m_pGameWorld->GetNearThings(pUnit,4));
+                if(UnitTarget){
+                    //해당 타겟으로 새로운 경로를 잡는다.
+                    pUnit->GetTargetSystem()->SetTarget(UnitTarget);
+                    pUnit->GetPathPlanner()->CreatePathToPosition(UnitTarget->GetTileIndex());
+                    
+                    NetMgr->PushAutoTask(new AutoTaskMove(CurrentPacket + 1, pUnit->GetID()));
+                    pUnit->SetAutoTaskPacket(CurrentPacket+1);
+                }
+            }
+            
+        }
+    }
+    
+    //만약 타겟시스템에 유닛이 있고 해당 유닛이 공격 사정거리 안에 들었을 경우 때린다.
+    auto pTarget = GetTargetSystem()->GetTarget();
+    if(pTarget && CanAttackThing(pTarget)){
+        AttackTarget(CurrentPacket);
+        
+        SetHeading(pTarget->getPosition() - getPosition());
+        GetFSM()->ChangeState(State_Attack::Instance());
+        return false;
+    }
     
     
     if(Path.empty()){
         //LogMgr->Log("취소");
+        m_pTargetSystem->ClearTarget();
         m_pFSM->ChangeState(State_Idle::Instance());
         return false;
     }
@@ -138,62 +167,66 @@ bool Unit::MoveToPathFront(int CurrentPacket){
 void Unit::AttackTarget(int CurrentPacket){
     auto pTarget = m_pTargetSystem->GetTarget();
     
-    //타겟이 없다면
-    if(!pTarget){
-        GetFSM()->ChangeState(State_Idle::Instance());
+    //타겟이 없다면 또는 공격이 불가하면
+    if(!pTarget || !CanAttackThing(pTarget)){
+        //주변에 타겟이 있으면 새로운 공격, 아니면 정지 상태
+        NetMgr->PushAutoTask(new AutoTaskMove(CurrentPacket + 1, m_iID));
+        SetAutoTaskPacket(CurrentPacket+1);
         return;
     }
     
     pTarget->AddHp( -5 );
     
-    //만약 체력이 0보다 작을 시에, 타겟을 지운다.
+    //타겟이 죽으면 공격 애니메이션을 멈춘다.
     if(pTarget->GetHp() <= 0){
-        pTarget->SetDead();
-        m_pTargetSystem->ClearTarget();
         GetFSM()->ChangeState(State_Idle::Instance());
-        //주변에 타겟이 있으면 새로운 공격, 아니면 정지 상태
-        MoveToPathFront(CurrentPacket);
-        return;
     }
     
-    NetMgr->PushAutoTask(new AutoTaskAttack(CurrentPacket + 5, m_iID));
-    SetAutoTaskPacket(CurrentPacket+5);
-}
-void Unit::FindTarget(){
-    //만약 타겟이 없다면 주위에서 타겟을 찾는다.
-    if(!m_pTargetSystem->GetTarget()){
-        auto Targets = m_pGameWorld->GetNearThings(this,6);
+    //맞은 유닛의 타겟이 없으면 업데이트한다.
+    if(!pTarget->GetTargetSystem()->IsTargetPresent()){
+        Unit* pUnit = (Unit*)pTarget;
         
-        Thing* ClosestTarget = NULL;
-        float ClosestDist = MathMgr->MaxFloat;
-        
-        //가장 가까운 타겟을 찾는다.
-        auto Graph = m_pGameWorld->GetMap()->GetNavGraph();
-        for(auto pTarget : Targets){
-            //만약 해당 타겟의 팀이 내 팀이면 넘긴다.
-            if(pTarget->GetPlayerFlag() == NetMgr->GetPlayerFlag())
-                continue;
-            
-            //타겟이 죽었으면 넘긴다.
-            if(pTarget->IsDead())
-                continue;
-            
-            float Dist = Vec2DistanceSq(Graph.GetNode(GetTileIndex()).getPosition(), Graph.GetNode(pTarget->GetTileIndex()).getPosition());
-            
-            if(Dist < ClosestDist) {
-                ClosestDist = Dist;
-                ClosestTarget = pTarget;
+        if(pUnit->GetAutoTaskPacket() < CurrentPacket){
+            auto UnitTarget = pUnit->FindTarget(m_pGameWorld->GetNearThings(pUnit,4));
+            if(UnitTarget){
+                //해당 타겟으로 새로운 경로를 잡는다.
+                pUnit->GetTargetSystem()->SetTarget(UnitTarget);
+                pUnit->GetPathPlanner()->CreatePathToPosition(UnitTarget->GetTileIndex());
+                
+                NetMgr->PushAutoTask(new AutoTaskMove(CurrentPacket + 1, pUnit->GetID()));
+                pUnit->SetAutoTaskPacket(CurrentPacket+1);
             }
         }
         
-        //만약 타겟이 있으면 타겟시스템에 잡는다.
-        if(ClosestTarget){
-            m_pTargetSystem->SetTarget(ClosestTarget);
-            
-            //해당 타겟으로 새로운 경로를 잡는다.
-            m_pPathPlanner->CreatePathToPosition(ClosestTarget->GetTileIndex());
+    }
+    
+    NetMgr->PushAutoTask(new AutoTaskAttack(CurrentPacket + 4, m_iID));
+    SetAutoTaskPacket(CurrentPacket+4);
+}
+Thing* Unit::FindTarget(const std::list<Thing*>& Targets){
+    Thing* ClosestTarget = NULL;
+    float ClosestDist = MathMgr->MaxFloat;
+    
+    //가장 가까운 타겟을 찾는다.
+    auto Graph = m_pGameWorld->GetMap()->GetNavGraph();
+    for(auto pTarget : Targets){
+        //만약 해당 타겟의 팀이 내 팀이면 넘긴다.
+        if(pTarget->GetPlayerFlag() == GetPlayerFlag())
+            continue;
+        
+        //타겟이 죽었으면 넘긴다.
+        if(pTarget->IsDead())
+            continue;
+        
+        float Dist = Vec2DistanceSq(Graph.GetNode(GetTileIndex()).getPosition(), Graph.GetNode(pTarget->GetTileIndex()).getPosition());
+        
+        if(Dist < ClosestDist) {
+            ClosestDist = Dist;
+            ClosestTarget = pTarget;
         }
     }
+    
+    return ClosestTarget;
 }
 void Unit::SetHeading(Vec2 new_heading){
     m_vHeading = Vec2Normalize(new_heading);

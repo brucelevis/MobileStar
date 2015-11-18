@@ -1,7 +1,7 @@
 #include "GameWorld.h"
 #include "AStarAlgorithm.h"
 #include "GameClient.h"
-
+#include "NetworkLayer.h"
 Scene* GameWorld::createScene()
 {
     auto scene = Scene::create();
@@ -17,6 +17,7 @@ GameWorld::GameWorld()
 : m_fStartFrame(0)
 , m_bDoubleTouch(false)
 , m_iTouchCnt(0)
+, m_bFinish(false)
 {
     //로그 찍을 것인가?
     LogMgr->SetLog(true);
@@ -97,7 +98,7 @@ GameWorld::GameWorld()
 //        pDrawNode->setTag(5);
 //        addChild(pDrawNode);
 //    }
-}
+    }
 
 GameWorld::~GameWorld(){
 }
@@ -160,11 +161,30 @@ void GameWorld::Init(){
                 sprintf(buf,"Texture/Zergling/%s/%s/Ani_%02d.png",StrMgr->GetPlayerFlagStr(i),StrMgr->GetUnitDirStr(j),k);
                 ani->addSpriteFrameWithFile(buf);
             }
-            ani->setDelayPerUnit(0.05f);
+            sprintf(buf,"Texture/Zergling/%s/%s/Ani_00.png",StrMgr->GetPlayerFlagStr(i),StrMgr->GetUnitDirStr(j));
+            ani->addSpriteFrameWithFile(buf);
+            
+            ani->setDelayPerUnit(0.08f);
             
             sprintf(buf,"Zergling%s%sAttack",StrMgr->GetPlayerFlagStr(i),StrMgr->GetUnitDirStr(j));
             AnimationCache::getInstance()->addAnimation(ani,buf);
         }
+    }
+    
+    //저글링 데드 애니메이션
+    {
+        Animation* ani = Animation::create();
+        for(int i=0;i<7;i++){
+            sprintf(buf,"Texture/Zergling/Dead/Ani_%02d.png",i);
+            ani->addSpriteFrameWithFile(buf);
+        }
+        for(int i=0;i<50;i++){
+            sprintf(buf,"Texture/Zergling/Dead/Ani_06.png");
+            ani->addSpriteFrameWithFile(buf);
+        }
+        ani->setDelayPerUnit(0.05f);
+        
+        AnimationCache::getInstance()->addAnimation(ani,"ZerglingDead");
     }
 }
 
@@ -191,14 +211,47 @@ void GameWorld::update(float eTime){
     }
     
     //만약 유닛을 지워야한다면
-    for(auto pUnit : m_Units){
-        if(pUnit.second->IsErase()){
-            m_Units.erase(pUnit.first);
-            
-            m_pCameraLayer->removeChild(pUnit.second);
+//    template
+//    void map_erase_if(Map& m, F pred)
+//    {
+//        typename Map::iterator i = m.begin();
+//        while ((i = std::find_if(i, m.end(), pred)) != m.end())
+//            m.erase(i++);
+//    }
+    auto iter = m_Units.begin();
+    while( (iter = std::find_if(iter, m_Units.end(), [](std::pair<int, Unit*> P){ return P.second->IsErase(); })) != m_Units.end()){
+        auto DeleteUnit = iter->second;
+
+        
+        m_TouchedUnits.remove(DeleteUnit);
+        m_Units.erase(iter++);
+        m_pCameraLayer->removeChild(DeleteUnit);
+    }
+    
+    if(!m_bFinish){
+        int iRedCnt = 0;
+        int iBlueCnt = 0;
+        for(auto pUnit : m_Units){
+            if(pUnit.second->GetPlayerFlag() == 0)
+                iRedCnt++;
+            else
+                iBlueCnt++;
             
         }
+        if(iRedCnt <= 0){
+            //블루 승
+            m_bFinish = true;
+            NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+            layer->handler->gameSendFinishGameReq();
+        }else if (iBlueCnt <= 0){
+            //레드 승
+            m_bFinish = true;
+            
+            NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+            layer->handler->gameSendFinishGameReq();
+        }
     }
+    
 }
 
 //1초에 4번 실행된다.
@@ -211,11 +264,12 @@ void GameWorld::updateNetwork(float eTime){
     
     //디버그용
     char buf[256];
-    sprintf(buf,"FirstPacket %d, SecondPacket %d\nFirstTaskSize %d, SecondTaskSize %d\nFirstFront %d, SecondFront %d\nTouchCnt %d",
+    sprintf(buf,"FirstPacket %d, SecondPacket %d\nFirstTaskSize %d, SecondTaskSize %d\nFirstFront %d, SecondFront %d\nTouchCnt : %d\nUnit Size : %d",
             NetMgr->GetFirstTaskPacket(),NetMgr->GetSecondTaskPacket(),
             NetMgr->GetFirstTaskSize(),NetMgr->GetSecondTaskSize(),
             NetMgr->GetFirstFront(),NetMgr->GetSecondFront(),
-            m_iTouchCnt);
+            m_iTouchCnt,
+            m_Units.size());
     m_pDebugLabel->setString(buf);
 }
 bool GameWorld::TouchesBegan(const std::vector<Touch*>& touches, Event* _event){

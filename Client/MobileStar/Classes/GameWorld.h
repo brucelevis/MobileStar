@@ -43,6 +43,9 @@ private:
     
     //초기화
     void Init();
+    
+    //게임 종료
+    bool m_bFinish;
 public:
     static cocos2d::Scene* createScene();
     

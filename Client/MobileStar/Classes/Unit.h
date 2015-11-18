@@ -86,7 +86,7 @@ public:
     
     void AttackTarget(int CurrentPacket);
     
-    void FindTarget();
+    Thing* FindTarget(const std::list<Thing*>& Targets);
     
     /*								게터세터 함수								*/
     
@@ -106,6 +106,7 @@ public:
     friend class State_Idle;
     friend class State_Move;
     friend class State_Attack;
+    friend class State_Dead;
     
 };
 

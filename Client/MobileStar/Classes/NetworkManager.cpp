@@ -41,8 +41,6 @@ void NetworkManager::SetupWhatPlayerFlag(){
         }else{
             m_iPlayerFlag = 1;
         }
-        
-//        LogMgr->Log("[0] : %lld, [1] : %lld, userNo : %d",GameClient::GetInstance().gameUserInfo[0].nickNameInfouserNo,GameClient::GetInstance().gameUserInfo[1].userNo,UserNo);
     }
 }
 //DispatchTask에 쌓인 Message를 서버로 보낸 후, Task에 전송한다.
@@ -331,6 +329,13 @@ void NetworkManager::CarryOutAutoTask(int _packet){
                 //해당 유닛의 포인터를 가져온다.
                 auto pUnit = Units[pMove->unitID];
                 
+                if(!pUnit)
+                    break;
+                
+                //해당 유닛이 죽었다면 실행시키지 않는다.
+                if(pUnit->IsDead())
+                    break;
+                    
                 //만약 유닛의 AutoTaskPacket과 동기화 되어 있지 않다면 실행시키지 않는다.
                 if(!pUnit->IsValidAutoTask(pMove->packet))
                     break;
@@ -347,6 +352,13 @@ void NetworkManager::CarryOutAutoTask(int _packet){
                 
                 //해당 유닛의 포인터를 가져온다.
                 auto pUnit = Units[pAttack->unitID];
+                
+                if(!pUnit)
+                    break;
+                
+                //해당 유닛이 죽었다면 실행시키지 않는다.
+                if(pUnit->IsDead())
+                    break;
                 
                 //만약 유닛의 AutoTaskPacket과 동기화 되어 있지 않다면 실행시키지 않는다.
                 if(!pUnit->IsValidAutoTask(pAttack->packet))
