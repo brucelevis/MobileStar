@@ -11,6 +11,8 @@
 
 #include "ControlLayer.h"
 
+const char* userId = "12322";
+
 USING_NS_CC;
 
 Scene* LoginScene::createScene()
@@ -73,18 +75,19 @@ void LoginScene::menuCloseCallback(Ref* pSender)
 void LoginScene::clickLoginBtn(Ref* pSender)
 {
     menu->setEnabled(false); //TODO. erase and test
-    
     std::string loginToken = UserDefault::getInstance()->getStringForKey("loginToken");
-    
+
     if(loginToken.length() == 0)
     {
-        char time[36];
+        char time[37] = {0, };
         memcpy(time, &GameClient::GetInstance().sessionId, 36);
         
         loginToken = std::string(time, 36);
         
         UserDefault::getInstance()->setStringForKey("loginToken", loginToken);
-        CCLOG("??");
+        
+        loginToken = UserDefault::getInstance()->getStringForKey("loginToken");
+
     }
 
     CCLOG("not have id - %s %d\n", loginToken.c_str(), loginToken.length());

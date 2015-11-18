@@ -14,6 +14,9 @@
 
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 
 
 IOManager::IOManager()
@@ -542,7 +545,11 @@ void IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char
     
     boost::uuids::uuid uuid = boost::uuids::random_generator()();
     
-    memcpy(&sessionId, &uuid, sizeof(uuid));
+    const std::string tmp = boost::lexical_cast<std::string>(uuid);
+    const char * value = tmp.c_str();
+    
+    
+    memcpy(&sessionId, value, sizeof(sessionId));
     
     FrontServer::getInstance()->userMgr->addUnconnectedUser(&sessionId, connectInfo);
     

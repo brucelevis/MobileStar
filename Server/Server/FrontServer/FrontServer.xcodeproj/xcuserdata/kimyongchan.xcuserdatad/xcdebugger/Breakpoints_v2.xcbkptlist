@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FrontServer/IOManager.cpp"
-            timestampString = "469295640.36171"
+            timestampString = "469540179.242444"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "602"
-            endingLineNumber = "602"
+            startingLineNumber = "609"
+            endingLineNumber = "609"
             landmarkName = "IOManager::clientHandleCreateAccountReq(ConnectInfo* connectInfo, const char* data, int dataSize)"
             landmarkType = "5">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FrontServer/IOManager.cpp"
-            timestampString = "469296001.498792"
+            timestampString = "469540179.242444"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "220"
-            endingLineNumber = "220"
+            startingLineNumber = "223"
+            endingLineNumber = "223"
             landmarkName = "IOManager::cacheHandleLoginUserFail(ConnectInfo* connectInfo, const char* data, int dataSize)"
             landmarkType = "5">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FrontServer/IOManager.cpp"
-            timestampString = "469296003.245944"
+            timestampString = "469540179.242444"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "195"
-            endingLineNumber = "195"
+            startingLineNumber = "198"
+            endingLineNumber = "198"
             landmarkName = "IOManager::cacheHandleLoginUserRes(ConnectInfo* connectInfo, const char* data, int dataSize)"
             landmarkType = "5">
          </BreakpointContent>
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FrontServer/IOManager.cpp"
-            timestampString = "469296012.446956"
+            timestampString = "469540179.242444"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "252"
-            endingLineNumber = "252"
+            startingLineNumber = "255"
+            endingLineNumber = "255"
             landmarkName = "IOManager::cacheHandleCreateUserRes(ConnectInfo* connectInfo, const char* data, int dataSize)"
             landmarkType = "5">
          </BreakpointContent>
@@ -74,12 +74,44 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FrontServer/IOManager.cpp"
-            timestampString = "469300882.02055"
+            timestampString = "469540179.242444"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "563"
-            endingLineNumber = "563"
+            startingLineNumber = "570"
+            endingLineNumber = "570"
             landmarkName = "IOManager::clientHandleLoginReq(ConnectInfo* connectInfo, const char* data, int dataSize)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FrontServer/IOManager.cpp"
+            timestampString = "469540365.045224"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "537"
+            endingLineNumber = "537"
+            landmarkName = "IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char* data, int dataSize)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FrontServer/IOManager.cpp"
+            timestampString = "469540368.70416"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "550"
+            endingLineNumber = "550"
+            landmarkName = "IOManager::clientHandleFirstConnectReq(ConnectInfo* connectInfo, const char* data, int dataSize)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

@@ -198,9 +198,6 @@ bool GameDBChannel::InitUserInMemory(ClanManager* clanMgr, UserManager* userMgr)
         mysql_free_result(resultSet);
     }
     
-    DebugLog("1");
-
-    
     char query1[1024] = { 0, };
     sprintf(query1,
             SELECT_ALL_USER_QUERY);
@@ -246,15 +243,14 @@ bool GameDBChannel::InitUserInMemory(ClanManager* clanMgr, UserManager* userMgr)
             if (row[USER_CLAN_NO]) userInfo.clanNo = atoi(row[USER_CLAN_NO]);
             if (row[USER_CLAN_CLASS]) userInfo.clanClass = atoi(row[USER_CLAN_CLASS]);
 
-	DebugLog("2");
             if (userMgr->addUser(std::string(row[USER_USER_ID], strlen(row[USER_USER_ID])), &userInfo) != SUCCESS)
             {
                 ErrorLog("AddUser error");
                 mysql_free_result(resultSet);
                 return false;
             }
-        DebugLog("2");
-            char userId[12];
+
+            char userId[100] = {0, };
             strcpy(userId, row[USER_USER_ID]);
             
             User* user = userMgr->getUserByUserId(std::string(row[USER_USER_ID], strlen(row[USER_USER_ID])));
@@ -265,7 +261,6 @@ bool GameDBChannel::InitUserInMemory(ClanManager* clanMgr, UserManager* userMgr)
                 mysql_free_result(resultSet);
                 return false;
             }
-         DebugLog("2");
             if(userInfo.clanNo != 0)
             {
                 Clan* clan = clanMgr->getClanByClanNo(userInfo.clanNo);
@@ -276,7 +271,6 @@ bool GameDBChannel::InitUserInMemory(ClanManager* clanMgr, UserManager* userMgr)
                     mysql_free_result(resultSet);
                     return false;
                 }
-          DebugLog("2");
                 if(clan->addUser(user) != SUCCESS)
                 {
                     ErrorLog("adduser error");
@@ -289,8 +283,6 @@ bool GameDBChannel::InitUserInMemory(ClanManager* clanMgr, UserManager* userMgr)
         mysql_free_result(resultSet);
     }
     
-    DebugLog("2");
-
     char query2[1024] = { 0, };
     sprintf(query2,
             SELECT_ALL_FRIEND_QUERY);

@@ -74,7 +74,7 @@ bool CacheServer::initialize(int workerThreadCount)
 	}
     
     gameDBChannel = new GameDBChannel();
-    if(!gameDBChannel->Initialize("localhost", "root", "", "WorldWarDB", 3306))
+    if(!gameDBChannel->Initialize("localhost", "root", "1234", "WorldWarDB", 3306))
     {
         return false;
     }

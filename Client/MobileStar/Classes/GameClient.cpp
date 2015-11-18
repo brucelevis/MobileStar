@@ -10,7 +10,7 @@
 
 GameClient::GameClient()
 {
-    memcpy(&sessionId, "abcdaaaaddddabcdaaaaddddabcdaaaadddd", sizeof(sessionId));
+    memset(&sessionId, 0, sizeof(sessionId));
 }
 
 GameClient& GameClient::GetInstance()

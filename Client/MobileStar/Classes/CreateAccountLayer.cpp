@@ -80,6 +80,12 @@ void CreateAccountLayer::clickOkBtn(cocos2d::Ref* pSender)
     const char* text = editbox->getText();
     
     std::string loginToken = UserDefault::getInstance()->getStringForKey("loginToken");
+    
+    if(loginToken.length() == 0)
+    {
+        exit(0);
+    }
+        
 
     ((NetworkLayer*)Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER))->handler->frontSendCreateAccountReq(loginToken.c_str(), loginToken.length(), text, strlen(text));
 }

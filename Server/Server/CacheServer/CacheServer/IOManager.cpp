@@ -214,6 +214,11 @@ void IOManager::frontHandleCreateUserReq(ConnectInfo* connectInfo, const char* d
     memcpy(packet.nickName, data, packet.nickNameLen);
     data += packet.nickNameLen;
     
+    if(packet.nickNameLen == 0 || packet.userIdLen == 0)
+    {
+        ErrorLog("not good nickName");
+    }
+    
     User* user = CacheServer::getInstance()->userMgr->getUserByUserId(std::string(packet.userId, packet.userIdLen));
     
     if(user != NULL)

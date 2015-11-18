@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 
+
 class CreateAccountLayer;
 
 class LoginScene : public cocos2d::Layer
