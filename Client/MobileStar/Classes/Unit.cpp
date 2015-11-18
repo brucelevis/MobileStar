@@ -55,7 +55,7 @@ bool Unit::MoveToPathFront(int CurrentPacket){
     auto& Path = GetPathPlanner()->GetPath();
     auto pMap = m_pGameWorld->GetMap();
     auto& Graph = pMap->GetNavGraph();
-    auto Targets = m_pGameWorld->GetNearThings(this,4);
+    auto Targets = m_pGameWorld->GetNearThings(this,RandMgr->Rand()%2+2);
     
     //만약 타겟이 없다면 주위에서 타겟을 찾는다.
     if(!m_pTargetSystem->GetTarget()){
@@ -75,14 +75,14 @@ bool Unit::MoveToPathFront(int CurrentPacket){
             Unit* pUnit = (Unit*)pTarget;
             
             if(pUnit->GetAutoTaskPacket() < CurrentPacket){
-                auto UnitTarget = pUnit->FindTarget(m_pGameWorld->GetNearThings(pUnit,4));
+                auto UnitTarget = pUnit->FindTarget(m_pGameWorld->GetNearThings(pUnit,1));
                 if(UnitTarget){
                     //해당 타겟으로 새로운 경로를 잡는다.
                     pUnit->GetTargetSystem()->SetTarget(UnitTarget);
                     pUnit->GetPathPlanner()->CreatePathToPosition(UnitTarget->GetTileIndex());
                     
-                    NetMgr->PushAutoTask(new AutoTaskMove(CurrentPacket + 1, pUnit->GetID()));
-                    pUnit->SetAutoTaskPacket(CurrentPacket+1);
+                    NetMgr->PushAutoTask(new AutoTaskMove(CurrentPacket + 3, pUnit->GetID()));
+                    pUnit->SetAutoTaskPacket(CurrentPacket+3);
                 }
             }
             
@@ -168,8 +168,8 @@ void Unit::AttackTarget(int CurrentPacket){
     //타겟이 없다면 또는 공격이 불가하면
     if(!pTarget || !CanAttackThing(pTarget)){
         //주변에 타겟이 있으면 새로운 공격, 아니면 정지 상태
-        NetMgr->PushAutoTask(new AutoTaskMove(CurrentPacket + 1, m_iID));
-        SetAutoTaskPacket(CurrentPacket+1);
+        NetMgr->PushAutoTask(new AutoTaskMove(CurrentPacket + 3, m_iID));
+        SetAutoTaskPacket(CurrentPacket+3);
         return;
     }
     
@@ -185,21 +185,21 @@ void Unit::AttackTarget(int CurrentPacket){
         Unit* pUnit = (Unit*)pTarget;
         
         if(pUnit->GetAutoTaskPacket() < CurrentPacket){
-            auto UnitTarget = pUnit->FindTarget(m_pGameWorld->GetNearThings(pUnit,4));
+            auto UnitTarget = pUnit->FindTarget(m_pGameWorld->GetNearThings(pUnit,1));
             if(UnitTarget){
                 //해당 타겟으로 새로운 경로를 잡는다.
                 pUnit->GetTargetSystem()->SetTarget(UnitTarget);
                 pUnit->GetPathPlanner()->CreatePathToPosition(UnitTarget->GetTileIndex());
                 
-                NetMgr->PushAutoTask(new AutoTaskMove(CurrentPacket + 1, pUnit->GetID()));
-                pUnit->SetAutoTaskPacket(CurrentPacket+1);
+                NetMgr->PushAutoTask(new AutoTaskMove(CurrentPacket + 3, pUnit->GetID()));
+                pUnit->SetAutoTaskPacket(CurrentPacket+3);
             }
         }
         
     }
     
-    NetMgr->PushAutoTask(new AutoTaskAttack(CurrentPacket + 4, m_iID));
-    SetAutoTaskPacket(CurrentPacket+4);
+    NetMgr->PushAutoTask(new AutoTaskAttack(CurrentPacket + 12, m_iID));
+    SetAutoTaskPacket(CurrentPacket+12);
 }
 Thing* Unit::FindTarget(const std::list<Thing*>& Targets){
     Thing* ClosestTarget = NULL;

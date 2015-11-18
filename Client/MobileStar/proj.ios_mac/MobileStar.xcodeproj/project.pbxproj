@@ -911,8 +911,8 @@
 		7750D3591B9FF80100CF2DCB /* Node */ = {
 			isa = PBXGroup;
 			children = (
-				7750D3561B9FF68800CF2DCB /* GraphNode.h */,
 				7750D3581B9FF77500CF2DCB /* NavGraphNode.h */,
+				7750D3561B9FF68800CF2DCB /* GraphNode.h */,
 			);
 			name = Node;
 			sourceTree = "<group>";

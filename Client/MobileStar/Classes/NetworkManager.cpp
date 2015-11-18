@@ -203,8 +203,11 @@ void NetworkManager::CarryOutMessages(){
         return ;
     }
     //현재 처리하는 패킷이 통신하는 패킷 번호보다 3보다 작거나 같을 때까지 모두 처리한다.
-    while(FirstTask.front().packet <= FirstTaskPacket - 3)
+    while(FirstTask.front().packet <= FirstTaskPacket - 6)
     {
+        if(SecondTask.size() <= 0)
+            break;
+        
         int CurrentPacket = FirstTask.front().packet;
         
         //먼저 AutoTask의 일을 처리한다.
@@ -242,6 +245,10 @@ void NetworkManager::CarryOutTask(Telegram* pTel,int iPacket){
                 
                 //객체의 포인터들을 얻어온다.
                 auto pUnit = Units[pTelMove->subject[i]];
+                
+                if(!pUnit)
+                    continue;
+                
                 auto pPlanner = pUnit->GetPathPlanner();
                 auto& Path = pPlanner->GetPath();
                 
@@ -378,5 +385,5 @@ void NetworkManager::CarryOutAutoTask(int _packet){
 //통신이 두절되었나 확인한다.
 bool NetworkManager::IsCommunicate()const{
     //상대방에게 날아온 메시지가 비어있다면, 또는 두 컴퓨터의 패킷 차이가 3이상 차이가 난다면
-    return !(SecondTask.empty() || abs(FirstTaskPacket - SecondTaskPacket) >= 3);
+    return !(SecondTask.empty() || abs(FirstTaskPacket - SecondTaskPacket) >= 30);
 }
