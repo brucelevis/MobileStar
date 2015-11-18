@@ -85,6 +85,11 @@ GameWorld::GameWorld()
     //Scene setting
     GameClient::GetInstance().currentScene = GAME_SCENE_NOW;
     
+    //랜덤 시드 동기화
+    if(NetMgr->GetPlayerFlag() == 0){
+        
+    }
+    
     //타일 스캔
 //    {
 //        auto pDrawNode = DrawNode::create();
@@ -98,7 +103,7 @@ GameWorld::GameWorld()
 //        pDrawNode->setTag(5);
 //        addChild(pDrawNode);
 //    }
-    }
+}
 
 GameWorld::~GameWorld(){
 }
