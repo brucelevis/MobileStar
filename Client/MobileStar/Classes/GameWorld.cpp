@@ -109,7 +109,7 @@ GameWorld::GameWorld()
     //초기화
     Init();
     
-    for(int i=0;i<15;i++){
+    for(int i=0;i<50;i++){
         m_TouchedUnits.push_back(m_Units[i]);
     }
 
@@ -246,6 +246,7 @@ void GameWorld::update(float eTime){
     }
     int Cnt = 0;
     for(auto pSelectedUnit : m_TouchedUnits){
+        if(Cnt >= 30) break;
         m_pSelectSprite[Cnt]->setPosition(pSelectedUnit->getPosition());
         if(pSelectedUnit->IsAlive())
             m_pSelectSprite[Cnt]->setVisible(true);
