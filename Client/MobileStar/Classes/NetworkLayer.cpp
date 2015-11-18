@@ -472,6 +472,9 @@ void NetworkHandler::lobbyHandleFirstConnectRes(ConnectInfo* connectInfo, const 
     }
 
     
+    GameClient::GetInstance().userInfo->nickNameLen = packet.userInfo.nickNameLen;
+    memcpy(GameClient::GetInstance().userInfo->nickName, packet.userInfo.nickName, packet.userInfo.nickNameLen);
+    
     if(network->connectWithServer(SERVER_MODULE_CHATTING_SERVER, IP_ADDRESS, packet.chattingPort) < 0)
     {
         printf("??");
@@ -951,7 +954,7 @@ void NetworkHandler::lobbyHandleStartGameNotify(ConnectInfo* connectInfo, const 
         
         GameClient::GetInstance().gameUserInfo[i].tribe = packet.gameUserInfo[i].tribe;
         
-        if(memcpy(GameClient::GetInstance().GetUserInfo()->nickName, packet.gameUserInfo[i].nickNameInfo.nickName, packet.gameUserInfo[i].nickNameInfo.nickNameLen) == 0)
+        if(memcmp(GameClient::GetInstance().GetUserInfo()->nickName, packet.gameUserInfo[i].nickNameInfo.nickName, packet.gameUserInfo[i].nickNameInfo.nickNameLen) == 0)
         {
             printf("ook");
             GameClient::GetInstance().myGameIndex = i;
