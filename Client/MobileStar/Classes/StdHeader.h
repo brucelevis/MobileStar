@@ -8,6 +8,7 @@
 #include "IDManager.h"
 #include "LogManager.h"
 #include "StringManager.h"
+#include "RandomManager.h"
 
 USING_NS_CC;
 

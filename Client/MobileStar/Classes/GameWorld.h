@@ -38,6 +38,9 @@ private:
     DrawNode* m_pSelectDrawNode;
     Rect m_SelectRect;
     
+    //유닛 선택 스프라이트
+    Sprite* m_pSelectSprite[30];
+    
     //디버그용
     Label* m_pDebugLabel;
     
@@ -46,6 +49,9 @@ private:
     
     //게임 종료
     bool m_bFinish;
+    
+    //남은 저글링 수
+    Label* m_pZerglingLabel[2];
 public:
     static cocos2d::Scene* createScene();
     
@@ -59,6 +65,8 @@ public:
     void update(float eTime);
     
     void updateNetwork(float eTime);
+    
+    void updateSynch();
     
     bool TouchesBegan(const std::vector<Touch*>& touches, Event* _event);
     void TouchesMoved(const std::vector<Touch*>& touches, Event* _event);

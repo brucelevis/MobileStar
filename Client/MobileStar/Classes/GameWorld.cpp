@@ -37,26 +37,49 @@ GameWorld::GameWorld()
     m_pCameraLayer->addChild(m_pMap);
     
     //저글링 생성
-    for(int i=0;i<30;i++){
-        //auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 205+i : 114+i));
-        auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 660+i : 330+i));
-        //auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 20800+i : 114+i));
-        pZergling->setColor(Color3B(255,0,0));
-        pZergling->setCascadeColorEnabled(true);
-        m_pCameraLayer->addChild(pZergling);
-        m_Units[pZergling->GetID()] = pZergling;
+    for(int i=0;i<7;i++){
+        for(int j=0;j<7;j++){
+            auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 105+j*2 + 80*i : 330+i));
+            
+            m_pCameraLayer->addChild(pZergling, 1);
+            m_Units[pZergling->GetID()] = pZergling;
+        }
     }
-    
-    for(int i=0;i<30;i++){
-        auto pZergling = new Zergling(this,1,(DIVIDE_NODE ? 540+i : 270+i));
-        m_pCameraLayer->addChild(pZergling);
-        m_Units[pZergling->GetID()] = pZergling;
+    for(int i=0;i<7;i++){
+        for(int j=0;j<7;j++){
+            auto pZergling = new Zergling(this,1,(DIVIDE_NODE ? 1002+j*2 + 80*i : 330+i));
+            
+            m_pCameraLayer->addChild(pZergling, 1);
+            m_Units[pZergling->GetID()] = pZergling;
+        }
     }
+//    for(int i=0;i<30;i++){
+//        //auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 205+i : 114+i));
+//        auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 1162+j*2 + 80*i : 330+i));
+//        //auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 20800+i : 114+i));
+//        pZergling->setColor(Color3B(255,0,0));
+//        pZergling->setCascadeColorEnabled(true);
+//        m_pCameraLayer->addChild(pZergling, 1);
+//        m_Units[pZergling->GetID()] = pZergling;
+//    }
+//    
+//    for(int i=0;i<30;i++){
+//        auto pZergling = new Zergling(this,1,(DIVIDE_NODE ? 540+i : 270+i));
+//        m_pCameraLayer->addChild(pZergling, 1);
+//        m_Units[pZergling->GetID()] = pZergling;
+//    }
     
     //선택 DrawNode 생성
     m_pSelectDrawNode = DrawNode::create();
     m_pSelectDrawNode->setVisible(false);
     m_pCameraLayer->addChild(m_pSelectDrawNode);
+    
+    //선택 Sprite 초기화
+    for(int i=0;i<30;i++){
+        m_pSelectSprite[i] = Sprite::create("Texture/Select.png");
+        m_pSelectSprite[i]->setVisible(false);
+        m_pCameraLayer->addChild(m_pSelectSprite[i], 0);
+    }
     
     //카메라 설정 : 맵 크기 (64*256, 64*256)
     CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
@@ -74,17 +97,29 @@ GameWorld::GameWorld()
     m_pDebugLabel->setAnchorPoint(Vec2(0,0));
     m_pDebugLabel->setPosition(0,120);
     addChild(m_pDebugLabel);
-
+    
+    for(int i=0;i<2;i++){
+        m_pZerglingLabel[i] = Label::createWithTTF("","fonts/arial.ttf",36);
+        m_pZerglingLabel[i]->setPosition(500 + 280*i,640);
+        addChild(m_pZerglingLabel[i]);
+    }
+    m_pZerglingLabel[0]->setColor(Color3B(136,21,21));
+    m_pZerglingLabel[1]->setColor(Color3B(21,21,136));
+    
     //초기화
     Init();
     
-    for(int i=0;i<2;i++){
+    for(int i=0;i<50;i++){
         m_TouchedUnits.push_back(m_Units[i]);
     }
 
     //Scene setting
     GameClient::GetInstance().currentScene = GAME_SCENE_NOW;
     
+    //랜덤 시드 동기화
+//    RandMgr->SetSeed(20151119);
+//    CCLOG("Rnad : %d %d %d %d %d",RandMgr->Rand()%100,RandMgr->Rand()%100,RandMgr->Rand()%100,RandMgr->Rand()%100,RandMgr->Rand()%100);
+//    
     //타일 스캔
 //    {
 //        auto pDrawNode = DrawNode::create();
@@ -98,7 +133,7 @@ GameWorld::GameWorld()
 //        pDrawNode->setTag(5);
 //        addChild(pDrawNode);
 //    }
-    }
+}
 
 GameWorld::~GameWorld(){
 }
@@ -205,23 +240,30 @@ void GameWorld::update(float eTime){
         updateNetwork(eTime);
     }
     
+    //선택 유닛 스프라이트
+    for(int i=0;i<30;i++){
+        m_pSelectSprite[i]->setVisible(false);
+    }
+    int Cnt = 0;
+    for(auto pSelectedUnit : m_TouchedUnits){
+        if(Cnt >= 30) break;
+        m_pSelectSprite[Cnt]->setPosition(pSelectedUnit->getPosition());
+        if(pSelectedUnit->IsAlive())
+            m_pSelectSprite[Cnt]->setVisible(true);
+        Cnt++;
+    }
+}
+void GameWorld::updateSynch(){
     //유닛 업데이트
     for(auto pUnit : m_Units){
-        pUnit.second->update(eTime);
+        pUnit.second->update(Director::getInstance()->getDeltaTime());
     }
     
     //만약 유닛을 지워야한다면
-//    template
-//    void map_erase_if(Map& m, F pred)
-//    {
-//        typename Map::iterator i = m.begin();
-//        while ((i = std::find_if(i, m.end(), pred)) != m.end())
-//            m.erase(i++);
-//    }
     auto iter = m_Units.begin();
     while( (iter = std::find_if(iter, m_Units.end(), [](std::pair<int, Unit*> P){ return P.second->IsErase(); })) != m_Units.end()){
         auto DeleteUnit = iter->second;
-
+        
         
         m_TouchedUnits.remove(DeleteUnit);
         m_Units.erase(iter++);
@@ -232,28 +274,35 @@ void GameWorld::update(float eTime){
         int iRedCnt = 0;
         int iBlueCnt = 0;
         for(auto pUnit : m_Units){
-            if(pUnit.second->GetPlayerFlag() == 0)
-                iRedCnt++;
-            else
-                iBlueCnt++;
+            if(pUnit.second->IsAlive()){
+                if(pUnit.second->GetPlayerFlag() == 0)
+                    iRedCnt++;
+                else
+                    iBlueCnt++;
+                
+            }
             
         }
+        
+        m_pZerglingLabel[0]->setString(std::to_string(iRedCnt));
+        m_pZerglingLabel[1]->setString(std::to_string(iBlueCnt));
+        
         if(iRedCnt <= 0){
             //블루 승
             m_bFinish = true;
             NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
             layer->handler->gameSendFinishGameReq();
+            return;
         }else if (iBlueCnt <= 0){
             //레드 승
             m_bFinish = true;
             
             NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
             layer->handler->gameSendFinishGameReq();
+            return;
         }
     }
-    
 }
-
 //1초에 4번 실행된다.
 void GameWorld::updateNetwork(float eTime){
     //DispatchTask에 쌓인 메시지를 서버로 보낸다.
@@ -264,12 +313,13 @@ void GameWorld::updateNetwork(float eTime){
     
     //디버그용
     char buf[256];
-    sprintf(buf,"FirstPacket %d, SecondPacket %d\nFirstTaskSize %d, SecondTaskSize %d\nFirstFront %d, SecondFront %d\nTouchCnt : %d\nUnit Size : %d",
+    sprintf(buf,"FirstPacket %d, SecondPacket %d\nFirstTaskSize %d, SecondTaskSize %d\nFirstFront %d, SecondFront %d\nTouchCnt : %d\nUnit Size : %d\nPlayerFlag : %d",
             NetMgr->GetFirstTaskPacket(),NetMgr->GetSecondTaskPacket(),
             NetMgr->GetFirstTaskSize(),NetMgr->GetSecondTaskSize(),
             NetMgr->GetFirstFront(),NetMgr->GetSecondFront(),
             m_iTouchCnt,
-            m_Units.size());
+            m_Units.size(),
+            GameClient::GetInstance().myGameIndex);
     m_pDebugLabel->setString(buf);
 }
 bool GameWorld::TouchesBegan(const std::vector<Touch*>& touches, Event* _event){
@@ -362,7 +412,7 @@ void GameWorld::TouchesEnded(const std::vector<Touch*>& touches, Event* _event){
                 
                 m_TouchedUnits.push_back(pUnit.second);
                 
-                if(m_TouchedUnits.size() >= 30)
+                if(m_TouchedUnits.size() >= 15)
                     break;
             }
         }

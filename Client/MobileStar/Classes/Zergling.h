@@ -6,7 +6,7 @@ USING_NS_CC;
 
 class Zergling : public Unit{
 private:
-    
+    Sprite* m_pShadow;
 public:
     Zergling(GameWorld* pGame, int playerFlag, int tileIndex);
     ~Zergling();

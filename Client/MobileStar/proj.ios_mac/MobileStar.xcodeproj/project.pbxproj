@@ -111,6 +111,7 @@
 		6FD8FCB51BCD335E0029BD4A /* mini_map_back_ground.png in Resources */ = {isa = PBXBuildFile; fileRef = 6FD8FCB11BCD335E0029BD4A /* mini_map_back_ground.png */; };
 		7706B59D1BFBE58400DE3426 /* CreateAccountLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7706B5991BFBE58400DE3426 /* CreateAccountLayer.cpp */; };
 		7706B59E1BFBE58400DE3426 /* HelloWorldScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7706B59B1BFBE58400DE3426 /* HelloWorldScene.cpp */; };
+		770746591BFCFDA10068015C /* RandomManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 770746571BFCFDA10068015C /* RandomManager.cpp */; };
 		77252AE81BA6AECC0086351C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 503AE0FC17EB989F00D1A890 /* main.m */; };
 		77252AEA1BA6BEFF0086351C /* SparseGraph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77252AE91BA6BEFF0086351C /* SparseGraph.cpp */; };
 		77252AEF1BA7DFFF0086351C /* PathPlanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77252AED1BA7DFFF0086351C /* PathPlanner.cpp */; };
@@ -313,6 +314,8 @@
 		7706B59A1BFBE58400DE3426 /* CreateAccountLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateAccountLayer.h; sourceTree = "<group>"; };
 		7706B59B1BFBE58400DE3426 /* HelloWorldScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HelloWorldScene.cpp; sourceTree = "<group>"; };
 		7706B59C1BFBE58400DE3426 /* HelloWorldScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelloWorldScene.h; sourceTree = "<group>"; };
+		770746571BFCFDA10068015C /* RandomManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RandomManager.cpp; sourceTree = "<group>"; };
+		770746581BFCFDA10068015C /* RandomManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RandomManager.h; sourceTree = "<group>"; };
 		77252AE91BA6BEFF0086351C /* SparseGraph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SparseGraph.cpp; sourceTree = "<group>"; };
 		77252AEB1BA6C4A90086351C /* PriorityQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PriorityQueue.h; sourceTree = "<group>"; };
 		77252AED1BA7DFFF0086351C /* PathPlanner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PathPlanner.cpp; sourceTree = "<group>"; };
@@ -674,6 +677,15 @@
 			name = Control;
 			sourceTree = "<group>";
 		};
+		770746561BFCFD840068015C /* RandomManager */ = {
+			isa = PBXGroup;
+			children = (
+				770746571BFCFDA10068015C /* RandomManager.cpp */,
+				770746581BFCFDA10068015C /* RandomManager.h */,
+			);
+			name = RandomManager;
+			sourceTree = "<group>";
+		};
 		77252AF61BA944C10086351C /* GameMap */ = {
 			isa = PBXGroup;
 			children = (
@@ -858,6 +870,7 @@
 		7750D34C1B9E7D9500CF2DCB /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				770746561BFCFD840068015C /* RandomManager */,
 				773EFF271BEAEC5B00998C0E /* StringManager */,
 				778BFC9C1BC5317B00545328 /* LogManager */,
 				77AEEC7F1BC01F2200F6B7D3 /* IDManager */,
@@ -1143,6 +1156,7 @@
 				503AE10017EB989F00D1A890 /* AppController.mm in Sources */,
 				77252AEF1BA7DFFF0086351C /* PathPlanner.cpp in Sources */,
 				772960641BB3C5C200516D0A /* NetworkManager.cpp in Sources */,
+				770746591BFCFDA10068015C /* RandomManager.cpp in Sources */,
 				6FC9FCCA1BC90454004F17F5 /* MyInfoLayer.cpp in Sources */,
 				6FC9FCEF1BC940CF004F17F5 /* LobbyRankingLayer.cpp in Sources */,
 				7729605B1BB2D3E200516D0A /* TileNode.cpp in Sources */,
