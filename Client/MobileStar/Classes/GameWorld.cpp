@@ -210,23 +210,18 @@ void GameWorld::update(float eTime){
         updateNetwork(eTime);
     }
     
+}
+void GameWorld::updateSynch(){
     //유닛 업데이트
     for(auto pUnit : m_Units){
-        pUnit.second->update(eTime);
+        pUnit.second->update(Director::getInstance()->getDeltaTime());
     }
     
     //만약 유닛을 지워야한다면
-//    template
-//    void map_erase_if(Map& m, F pred)
-//    {
-//        typename Map::iterator i = m.begin();
-//        while ((i = std::find_if(i, m.end(), pred)) != m.end())
-//            m.erase(i++);
-//    }
     auto iter = m_Units.begin();
     while( (iter = std::find_if(iter, m_Units.end(), [](std::pair<int, Unit*> P){ return P.second->IsErase(); })) != m_Units.end()){
         auto DeleteUnit = iter->second;
-
+        
         
         m_TouchedUnits.remove(DeleteUnit);
         m_Units.erase(iter++);
@@ -256,9 +251,7 @@ void GameWorld::update(float eTime){
             layer->handler->gameSendFinishGameReq();
         }
     }
-    
 }
-
 //1초에 4번 실행된다.
 void GameWorld::updateNetwork(float eTime){
     //DispatchTask에 쌓인 메시지를 서버로 보낸다.

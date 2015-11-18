@@ -219,6 +219,9 @@ void NetworkManager::CarryOutMessages(){
             CarryOutFirstTask(CurrentPacket);
 
         }
+        
+        //게임 업데이트
+        m_pGameWorld->updateSynch();
     }
 
 }

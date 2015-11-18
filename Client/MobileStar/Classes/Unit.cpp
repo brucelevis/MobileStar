@@ -66,8 +66,6 @@ bool Unit::MoveToPathFront(int CurrentPacket){
             
             //해당 타겟으로 새로운 경로를 잡는다.
             m_pPathPlanner->CreatePathToPosition(pClosestTarget->GetTileIndex());
-            
-            
         }
     }
     

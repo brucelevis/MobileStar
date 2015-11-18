@@ -60,6 +60,8 @@ public:
     
     void updateNetwork(float eTime);
     
+    void updateSynch();
+    
     bool TouchesBegan(const std::vector<Touch*>& touches, Event* _event);
     void TouchesMoved(const std::vector<Touch*>& touches, Event* _event);
     void TouchesCancelled(const std::vector<Touch*>& touches, Event* _event);
