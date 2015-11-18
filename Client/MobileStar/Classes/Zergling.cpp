@@ -8,9 +8,12 @@ Zergling::Zergling(GameWorld* pGame, int playerFlag, int tileIndex)
     char buf[128];
     sprintf(buf, "Texture/Zergling/%s/%s/Ani_00.png",StrMgr->GetPlayerFlagStr(playerFlag),StrMgr->GetUnitDirStr(10));
     m_pSprite = Sprite::create(buf);
-    addChild(m_pSprite);
+    addChild(m_pSprite,1);
     
     SetTileIndex(tileIndex);
+    
+    m_pShadow = Sprite::create("Texture/Shadow.png");
+    addChild(m_pShadow,0);
 }
 Zergling::~Zergling(){
 }
@@ -18,6 +21,8 @@ Zergling::~Zergling(){
 void Zergling::update(float eTime){
     Unit::update(eTime);
     
+    if(IsDead())
+        m_pShadow->setVisible(false);
 }
 
 bool Zergling::TouchBegan(Touch* touch, Event* _event){

@@ -11,5 +11,5 @@
 
 #define NETWORK_FPS 6
 
-#define PLAY_ALONE 0
+#define PLAY_ALONE 1
 #define DIVIDE_NODE 1
