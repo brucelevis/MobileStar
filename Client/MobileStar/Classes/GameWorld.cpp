@@ -37,17 +37,17 @@ GameWorld::GameWorld()
     m_pCameraLayer->addChild(m_pMap);
     
     //저글링 생성
-    for(int i=0;i<7;i++){
-        for(int j=0;j<7;j++){
-            auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 105+j*2 + 80*i : 330+i));
+    for(int i=0;i<4;i++){
+        for(int j=0;j<6;j++){
+            auto pZergling = new Zergling(this,0,(DIVIDE_NODE ? 107+j*2 + 80*i : 330+i));
             
             m_pCameraLayer->addChild(pZergling, 1);
             m_Units[pZergling->GetID()] = pZergling;
         }
     }
-    for(int i=0;i<7;i++){
-        for(int j=0;j<7;j++){
-            auto pZergling = new Zergling(this,1,(DIVIDE_NODE ? 1002+j*2 + 80*i : 330+i));
+    for(int i=0;i<6;i++){
+        for(int j=0;j<4;j++){
+            auto pZergling = new Zergling(this,1,(DIVIDE_NODE ? 1082+j*2 + 80*i : 330+i));
             
             m_pCameraLayer->addChild(pZergling, 1);
             m_Units[pZergling->GetID()] = pZergling;
@@ -81,14 +81,21 @@ GameWorld::GameWorld()
         m_pCameraLayer->addChild(m_pSelectSprite[i], 0);
     }
     
-    //카메라 설정 : 맵 크기 (64*256, 64*256)
-    CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
-    CameraMgr->SetMovePos(1000,1000);
-    //CameraMgr->SetScreen(6400,3200 - 32);
-    
     //네트워크 매니저 초기화
     NetMgr->SetGameWorld(this);
     NetMgr->SetupWhatPlayerFlag();
+    
+    //카메라 설정 : 맵 크기 (64*256, 64*256)
+    CameraMgr->SetScreen(TILE_WIDTH_SIZE*TILE_WIDTH_NUM, TILE_HEIGHT_SIZE*TILE_HEIGHT_NUM);
+    
+    if(NetMgr->GetPlayerFlag() == 0){
+        CameraMgr->SetMovePos(2000,1200);
+    }else{
+        CameraMgr->SetMovePos(640,1200);
+    }
+    //CameraMgr->SetScreen(6400,3200 - 32);
+    
+    
     
     LogMgr->Log("This is %d Computer",NetMgr->GetPlayerFlag());
 
@@ -106,12 +113,20 @@ GameWorld::GameWorld()
     m_pZerglingLabel[0]->setColor(Color3B(136,21,21));
     m_pZerglingLabel[1]->setColor(Color3B(21,21,136));
     
+    m_pResultSprite[0] = Sprite::create("Texture/Victory.png");
+    m_pResultSprite[1] = Sprite::create("Texture/Defeated.png");
+    for(int i=0;i<2;i++){
+        m_pResultSprite[i]->setPosition(640,360);
+        m_pResultSprite[i]->setVisible(false);
+        addChild(m_pResultSprite[i]);
+    }
+    
     //초기화
     Init();
     
-    for(int i=0;i<50;i++){
-        m_TouchedUnits.push_back(m_Units[i]);
-    }
+//    for(int i=0;i<50;i++){
+//        m_TouchedUnits.push_back(m_Units[i]);
+//    }
 
     //Scene setting
     GameClient::GetInstance().currentScene = GAME_SCENE_NOW;
@@ -232,6 +247,7 @@ void GameWorld::update(float eTime){
     CameraMgr->Update(eTime);
     //m_pCameraLayer->setPosition(-CameraMgr->GetPos());
     //m_pCameraLayer->setPosition(-CameraMgr->GetPos() + (Vec2(3200,-1600)));
+   
     m_pCameraLayer->setPosition(-CameraMgr->GetPos() + (Vec2(1280,640)));
     
     //업데이트 네트워크
@@ -246,7 +262,6 @@ void GameWorld::update(float eTime){
     }
     int Cnt = 0;
     for(auto pSelectedUnit : m_TouchedUnits){
-        if(Cnt >= 30) break;
         m_pSelectSprite[Cnt]->setPosition(pSelectedUnit->getPosition());
         if(pSelectedUnit->IsAlive())
             m_pSelectSprite[Cnt]->setVisible(true);
@@ -261,13 +276,16 @@ void GameWorld::updateSynch(){
     
     //만약 유닛을 지워야한다면
     auto iter = m_Units.begin();
-    while( (iter = std::find_if(iter, m_Units.end(), [](std::pair<int, Unit*> P){ return P.second->IsErase(); })) != m_Units.end()){
-        auto DeleteUnit = iter->second;
+    while( (iter = std::find_if(iter, m_Units.end(), [](std::pair<int, Unit*> P){ return P.second->IsDead(); })) != m_Units.end()){
+        m_TouchedUnits.remove(iter->second);
         
-        
-        m_TouchedUnits.remove(DeleteUnit);
-        m_Units.erase(iter++);
-        m_pCameraLayer->removeChild(DeleteUnit);
+        if(iter->second->IsErase()){
+            auto DeleteUnit = iter->second;
+            
+            m_Units.erase(iter);
+            m_pCameraLayer->removeChild(DeleteUnit);
+        }
+        iter++;
     }
     
     if(!m_bFinish){
@@ -284,21 +302,33 @@ void GameWorld::updateSynch(){
             
         }
         
-        m_pZerglingLabel[0]->setString(std::to_string(iRedCnt));
-        m_pZerglingLabel[1]->setString(std::to_string(iBlueCnt));
+        char buf[256];
+        sprintf(buf,"%d",iRedCnt);
+        m_pZerglingLabel[0]->setString(buf);
+        sprintf(buf,"%d",iBlueCnt);
+        m_pZerglingLabel[1]->setString(buf);
         
         if(iRedCnt <= 0){
             //블루 승
             m_bFinish = true;
-            NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-            layer->handler->gameSendFinishGameReq();
+            if(NetMgr->GetPlayerFlag() == 0){
+                m_pResultSprite[1]->setVisible(true);
+            }else{
+                m_pResultSprite[0]->setVisible(true);
+            }
+//            NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+//            layer->handler->gameSendFinishGameReq();
             return;
         }else if (iBlueCnt <= 0){
             //레드 승
             m_bFinish = true;
-            
-            NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
-            layer->handler->gameSendFinishGameReq();
+            if(NetMgr->GetPlayerFlag() == 0){
+                m_pResultSprite[0]->setVisible(true);
+            }else{
+                m_pResultSprite[1]->setVisible(true);
+            }
+//            NetworkLayer* layer = (NetworkLayer*)cocos2d::Director::getInstance()->getRunningScene()->getChildByTag(TAG_NETWORK_LAYER);
+//            layer->handler->gameSendFinishGameReq();
             return;
         }
     }
@@ -323,7 +353,7 @@ void GameWorld::updateNetwork(float eTime){
     m_pDebugLabel->setString(buf);
 }
 bool GameWorld::TouchesBegan(const std::vector<Touch*>& touches, Event* _event){
-    m_iTouchCnt += touches.size();
+       m_iTouchCnt += touches.size();
     
     printf("Index : %d\n",m_pMap->GetTileIndexFromPosition(m_pCameraLayer->convertToNodeSpace(touches.front()->getLocation())));
     
@@ -348,7 +378,6 @@ bool GameWorld::TouchesBegan(const std::vector<Touch*>& touches, Event* _event){
     return true;
 }
 void GameWorld::TouchesMoved(const std::vector<Touch*>& touches, Event* _event){
-    
     //만약 터치를 한 개만 하였다면
     if(m_iTouchCnt == 1 && !m_bDoubleTouch){
         Vec2 MoveVec = m_vTouchPosition - touches.front()->getLocation();
@@ -382,11 +411,18 @@ void GameWorld::TouchesCancelled(const std::vector<Touch*>& touches, Event* _eve
     TouchesEnded(touches, _event);
 }
 void GameWorld::TouchesEnded(const std::vector<Touch*>& touches, Event* _event){
+    //버튼을 누르면 게임을 종료한다.
+    if(m_bFinish){
+        Vec2 TouchVec = touches.front()->getLocation();
+        if(TouchVec.x >= 506 && TouchVec.x <= 770 && TouchVec.y >= 720-480 && TouchVec.y <= 720-420){
+            exit(0);
+        }
+    }
     
     //만약 터치를 한 개만 하였다면
     if(m_iTouchCnt == 1){
         Vec2 TouchVec = touches.front()->getLocation();
-        if(Vec2DistanceSq(m_vFirstTouchPosition, TouchVec) < 50){
+        if(Vec2DistanceSq(m_vFirstTouchPosition, TouchVec) < 20*20){
             for(auto pUnit : m_TouchedUnits){
                 if(pUnit->GetPlayerFlag() != NetMgr->GetPlayerFlag())
                     continue;

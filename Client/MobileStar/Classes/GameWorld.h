@@ -52,6 +52,9 @@ private:
     
     //남은 저글링 수
     Label* m_pZerglingLabel[2];
+    
+    //결과창
+    Sprite* m_pResultSprite[2];
 public:
     static cocos2d::Scene* createScene();
     

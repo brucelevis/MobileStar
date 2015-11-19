@@ -9,7 +9,7 @@
 #define TILE_WIDTH_NUM 100
 #define TILE_HEIGHT_NUM 100
 
-#define NETWORK_FPS 6
+#define NETWORK_FPS 18
 
 #define PLAY_ALONE 0
 #define DIVIDE_NODE 1
