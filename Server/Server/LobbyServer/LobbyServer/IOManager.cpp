@@ -1116,23 +1116,41 @@ void IOManager::clientSessionOut(ConnectInfo* connectInfo)
 //                    {
 //                        DebugLog("ok");
 //                    }
+                    DebugLog("eeeeee1");
+                    if(LobbyServer::getInstance()->roomMgr->leaveRoom(user) < 0)
+                    {
+                        ErrorLog("??");
+                    }
+                    else
+                    {
+                        
+                    }
                 }
             }
         }
         else if(user->getUserState() == USER_STATE_GAME)
         {
-            connectInfo->userData = NULL;
+            if(LobbyServer::getInstance()->roomMgr->leaveRoom(user) < 0)
+            {
+                ErrorLog("??");
+            }
+            else
+            {
+                
+            }
             
-            user->setConnectInfo(NULL);
-            
-            return ;
+//            connectInfo->userData = NULL;
+//            
+//            user->setConnectInfo(NULL);
+//            
+//            return ;
         }
         else
         {
             // not enter room or channel.. just wait req to enter
         }
     }
-    
+    DebugLog("eeeeee2");
     if(LobbyServer::getInstance()->userMgr->removeUser(user) == false)
     {
         ErrorLog("userMgr->removeUser(user)");
@@ -2773,6 +2791,11 @@ void IOManager::clientHandleQuickPlayReq(ConnectInfo* connectInfo, const char* b
     if(user == NULL)
     {
         ErrorLog("??");
+        return ;
+    }
+    
+    if(user->getUserState() == USER_STATE_WAIT_START_IN_LOBBY)
+    {
         return ;
     }
     

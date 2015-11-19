@@ -17,7 +17,7 @@
 		6F2DF0961BA2EC01002A5D43 /* IOManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF0801BA2EC01002A5D43 /* IOManager.cpp */; };
 		6F2DF0A11BA2EC44002A5D43 /* FrontData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF09C1BA2EC44002A5D43 /* FrontData.cpp */; };
 		6F2DF0A21BA2EC44002A5D43 /* FrontServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F2DF09F1BA2EC44002A5D43 /* FrontServer.cpp */; };
-		6FD8FCA41BCCECA80029BD4A /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 6FD8FCA31BCCECA80029BD4A /* Makefile */; settings = {ASSET_TAGS = (); }; };
+		6FD8FCA41BCCECA80029BD4A /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 6FD8FCA31BCCECA80029BD4A /* Makefile */; };
 		6FE7A3571BABF12D00C589D0 /* User.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6FE7A3561BABF12D00C589D0 /* User.cpp */; };
 		6FE7A35C1BAC31CB00C589D0 /* ServerInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6FE7A35A1BAC31CB00C589D0 /* ServerInfo.cpp */; };
 /* End PBXBuildFile section */
@@ -40,17 +40,13 @@
 		6F2DF02A1BA2DAD0002A5D43 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		6F2DF03D1BA2EA42002A5D43 /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = "../../../../boost_1_55_0/bin.v2/libs/system/build/darwin-4.2.1/debug/address-model-32/threading-multi/libboost_system.dylib"; sourceTree = "<group>"; };
 		6F2DF0401BA2EB72002A5D43 /* BasicPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicPacket.h; sourceTree = "<group>"; };
-		6F2DF0411BA2EB72002A5D43 /* CenterCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CenterCachePacket.h; sourceTree = "<group>"; };
 		6F2DF0421BA2EB72002A5D43 /* ClientFrontPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientFrontPacket.h; sourceTree = "<group>"; };
 		6F2DF0431BA2EB72002A5D43 /* ClientGamePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientGamePacket.h; sourceTree = "<group>"; };
 		6F2DF0441BA2EB72002A5D43 /* ClientLobbyPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientLobbyPacket.h; sourceTree = "<group>"; };
 		6F2DF0451BA2EB72002A5D43 /* FrontCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontCachePacket.h; sourceTree = "<group>"; };
-		6F2DF0461BA2EB72002A5D43 /* FrontCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrontCenterPacket.h; sourceTree = "<group>"; };
 		6F2DF0481BA2EB72002A5D43 /* GameCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameCachePacket.h; sourceTree = "<group>"; };
-		6F2DF0491BA2EB72002A5D43 /* GameCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameCenterPacket.h; sourceTree = "<group>"; };
 		6F2DF04A1BA2EB72002A5D43 /* GameLobbyPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameLobbyPacket.h; sourceTree = "<group>"; };
 		6F2DF04B1BA2EB72002A5D43 /* LobbyCachePacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyCachePacket.h; sourceTree = "<group>"; };
-		6F2DF04C1BA2EB72002A5D43 /* LobbyCenterPacket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LobbyCenterPacket.h; sourceTree = "<group>"; };
 		6F2DF0561BA2EB80002A5D43 /* tinyxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml2.cpp; sourceTree = "<group>"; };
 		6F2DF0571BA2EB80002A5D43 /* tinyxml2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinyxml2.h; sourceTree = "<group>"; };
 		6F2DF0591BA2EB80002A5D43 /* aop_x86_64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aop_x86_64.h; sourceTree = "<group>"; };
@@ -146,10 +142,6 @@
 				6F2DF0451BA2EB72002A5D43 /* FrontCachePacket.h */,
 				6F2DF04B1BA2EB72002A5D43 /* LobbyCachePacket.h */,
 				6F2DF0481BA2EB72002A5D43 /* GameCachePacket.h */,
-				6F2DF0461BA2EB72002A5D43 /* FrontCenterPacket.h */,
-				6F2DF0491BA2EB72002A5D43 /* GameCenterPacket.h */,
-				6F2DF0411BA2EB72002A5D43 /* CenterCachePacket.h */,
-				6F2DF04C1BA2EB72002A5D43 /* LobbyCenterPacket.h */,
 			);
 			name = Packet;
 			path = ../Packet;

@@ -535,13 +535,39 @@ void IOManager::clientSessionOut(ConnectInfo* connectInfo)
                 else if(room->getRoomState() == ROOM_STATE_START)
                 {
                     DebugLog("disconnect when start");
+                    
+                    GameServer::getInstance()->roomMgr->destroyRoom(room->getRoomNo());
+                    
+                    User** userList = room->getUserList();
+                    user = userList[0];
+                    
+                    connectInfo = user->getConnectInfo();
+                    connectInfo->userData = NULL;
+                    user->setConnectInfo(NULL);
+                    
+                    if(GameServer::getInstance()->userMgr->removeUser(user) == false)
+                    {
+                        ErrorLog("??");
+                    }
+                    
+                    user = userList[1];
+                    
+                    connectInfo = user->getConnectInfo();
+                    connectInfo->userData = NULL;
+                    user->setConnectInfo(NULL);
+                    
+                    if(GameServer::getInstance()->userMgr->removeUser(user) == false)
+                    {
+                        ErrorLog("??");
+                    }
+                    
                 }
                 else
                 {
                     
                 }
                 
-                user->setConnectInfo(NULL);
+                
             }
     }
     
